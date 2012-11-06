@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="org.melato.bus.android"
+    android:versionCode="2"
+    android:versionName="1.0-beta" >
+
+    <uses-sdk android:minSdkVersion="8" />
+
+    <!-- 
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+     -->
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.INTERNET" />
+    
+    <application
+        android:icon="@drawable/icon"
+        android:label="@string/app_name" >
+        <uses-library android:name="com.google.android.maps" />
+        <activity
+            android:name=".activity.MainActivity"
+            android:label="@string/main" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".activity.AllRoutesActivity"
+            android:label="@string/all_routes" >
+        </activity>
+        <activity
+            android:name=".activity.RecentRoutesActivity"
+            android:label="@string/recent_routes" >
+        </activity>
+        <activity
+            android:name=".activity.RouteGroupActivity"
+            android:label="@string/all_routes" >
+        </activity>
+        <activity
+            android:name=".activity.ScheduleActivity"
+            android:label="@string/schedule" >
+        </activity>
+        <activity
+            android:name=".activity.SchedulesActivity"
+            android:label="@string/all_schedules" >
+        </activity>
+        <activity
+            android:name=".activity.StopsActivity"
+            android:label="@string/stops" >
+        </activity>
+        <activity
+            android:name=".activity.NearbyActivity"
+            android:label="@string/nearby_routes" >
+        </activity>        
+        <activity
+            android:name=".map.RouteMapActivity"
+            android:label="@string/map" >
+        </activity>
+        <activity
+            android:name=".activity.StopActivity"
+            android:label="@string/stop" >
+        </activity>
+        <activity
+            android:name=".app.UpdateActivity"
+            android:label="@string/available_updates" >
+        </activity>
+        <activity
+            android:name=".app.HelpActivity"
+            android:label="@string/help" >
+        </activity>
+        <activity
+            android:name=".app.AboutActivity"
+            android:label="@string/about" >
+        </activity>
+        <activity
+            android:name=".app.BusPreferencesActivity"
+            android:label="@string/pref_title" >
+        </activity>
+        </application>
+
+</manifest>

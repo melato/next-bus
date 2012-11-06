@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="black">#000000</color>
+    <color name="white">#ffffff</color>
+    <color name="list_background">#000000</color>
+    <color name="list_text">#ffffff</color>
+    <color name="list_highlighted_background">#3eced0</color>
+    <color name="list_highlighted_text">#000000</color>
+    <color name="group1_background">#3eced0</color>
+    <color name="group1_text">#000000</color>
+    <color name="group2_background">#8af4c3</color>
+    <color name="group2_text">#000000</color>
+    
+</resources>

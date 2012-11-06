@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="help_default">Default Help.</string>
+    <string name="help_map">The Map displays one or more routes.
+        When you tap on any point on the map,
+        you are taken to a list of routes that have stops near the point that you tapped on.</string>
+    <string name="help_nearby">The <b>Nearby</b> screen displays the nearest routes to your current location,
+      or to a location that you previously selected by tapping on the map, or from a route stop.</string>
+    <string name="help_stops">
+A distance in parenthesis is a straight line distance from the current location or from a reference location.
+A distance with a + or - sign is a <i>route distance</i>, the distance along the route
+from a reference location on the route.  A positive distance means that the stop is ahead of you.
+A negative distance means that the stop is behind you as you travel along the route.
+\n\n
+The reference route location is the current location, if you are on the route,
+or the closest route location to your current location,
+or the beginning of the route.    
+</string>    
+    <string name="help_stop">
+Displayed information for the selected stop.
+
+
+\n\n<b>Straight Distance</b>\n
+The straight-line distance from your location to the stop.
+
+\n\n<b>Route Distance</b>\n
+The distance from your location to the stop, following the route, i.e. the sum of the distances from stop to stop.
+
+\n\n<b>Distance from Start</b>\n
+The route-distance from the start to the stop.
+
+\n\n<b>ETA)</b>\n
+Expected Time of Arrival at the stop.
+
+\n\n<b>Speed</b>\n
+The average speed of the bus.
+
+\n\n<b>Coordinates</b>\n
+The latitude and longitude of the stop, as published by OASA.
+</string>   
+
+<string name="help_about"><b>To Επόμενο Λεωφορείο</b>\nCopyright &#169; 2012\nAlex Athanasopoulos\nalex@melato.org
+\nhttp://metakinisi.melato.org
+\n\nThe route maps and timetables are provided by OASA and are available to the public from www.oasa.gr.
+Contact OASA to fix errors in its timetables and contact me to fix bugs in the application.
+\n
+If you notice a mistake in a route timetable (e.g. the scheduled departure time shown by the application
+does not match the time posted at the start bus stop):
+\n
+1. Check www.oasa.gr to see if the error is in their data.\n
+2. If so, contact OASA directly (by phone or email) and ask them to correct it.\n
+3. If this application does not match the OASA website,
+please contact me so I can fix the bug or update the application with the latest information from OASA.
+</string>    
+    
+</resources>

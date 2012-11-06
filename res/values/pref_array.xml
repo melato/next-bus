@@ -1,0 +1,11 @@
+<resources
+   xmlns:android="http://schemas.android.com/apk/res/android">
+
+   <string-array
+      name="route_colors">
+      <item>Route Colors</item>
+      <item>Black on White</item>
+      <item>White on Black</item>
+   </string-array>
+
+</resources>

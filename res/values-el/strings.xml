@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Το Επόμενο Λεωφορείο</string>
+    <string name="about">Σχετικά</string>
+    <string name="main">Λωφορεία</string>
+    <string name="menu_all_routes">Όλες</string>
+    <string name="menu_recent_routes">Πρόσφατες</string>
+    <string name="menu_nearby_routes">Κοντινές</string>
+    <string name="all_routes">Όλες οι Γραμμές</string>
+    <string name="recent_routes">Πρόσφατες Γραμμές</string>
+    <string name="schedule">Ωράριο</string>
+    <string name="menu_all_schedules">Όλα</string>
+    <string name="all_schedules">Όλα τα ωράρια</string>
+    <string name="days_Su">Κυριακή</string>
+    <string name="days_M_F">Δευτέρα-Παρασκευή</string>
+    <string name="days_Sa">Σάββατο</string>
+    <string name="days_SaSu">Σάββατο-Κυριακή</string>
+    <string name="days_all">Κάθε μέρα</string>
+    <string name="stops">Στάσεις</string>
+    <string name="stop">Στάση</string>
+    <string name="name">Όνομα</string>
+    <string name="speed">Ταχύτητα</string>
+    <string name="ETA">Αναμενόμενη Άφιξη</string>
+    <string name="walkETA">Αναμενόμενη Άφιξη περπατώντας</string>
+    <string name="bikeETA">Αναμενόμενη Άφιξη με ποδήλατο</string>
+    <string name="nearby_routes">Κοντινές Γραμμές</string>
+    <string name="map">Χάρτης</string>
+    <string name="browse">Ιστοσελίδα</string>
+    <string name="straight_distance">Ευθεία Απόσταση</string>
+    <string name="route_distance">Απόσταση Διαδρομής</string>
+    <string name="position_from_start">Απόσταση από Αφετηρία (%s)</string>
+    <string name="position_from_end">Απόσταση από Τέρμα (%s)</string>
+    <string name="time_from_start">Αναμενόμενη ώρα από την αναχώρηση (%s)</string>
+    <string name="latitude">Γεωγραφικό μήκος</string>
+    <string name="longitude">Γεωγραφικό πλάτος</string>
+    <string name="cancel">Άκυρο</string>
+    <string name="empty"></string>
+    <string name="help">Βοήθεια</string>
+    <string name="refresh">Ανανέωση</string>    
+    <string name="loading">Φορτώνει &#8230;</string>
+    <string name="ok">Ok</string>
+</resources>

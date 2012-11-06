@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Athens Next Bus</string>
+    <string name="about">About</string>
+    <string name="main">BusLines</string>
+    <string name="menu_all_routes">All</string>
+    <string name="menu_recent_routes">Recent</string>
+    <string name="menu_nearby_routes">Nearby</string>
+    <string name="all_routes">All Routes</string>
+    <string name="recent_routes">Recent Routes</string>
+    <string name="nearby_routes">Nearby Routes</string>
+    <string name="schedule">Schedule</string>
+    <string name="menu_all_schedules">All</string>
+    <string name="all_schedules">All Schedules</string>
+    <string name="days_Su">Sunday</string>
+    <string name="days_M_F">Monday-Friday</string>
+    <string name="days_Sa">Saturday</string>
+    <string name="days_SaSu">Saturday-Sunday</string>
+    <string name="days_all">Every Day</string>
+    <string name="stops"> Stops</string>
+    <string name="stop">Stop</string>
+    <string name="name">Name</string>
+    <string name="speed">Speed</string>
+    <string name="ETA">ETA</string>
+    <string name="walkETA">ETA by walking</string>
+    <string name="bikeETA">ETA by bike</string>
+    <string name="map">Map</string>
+    <string name="browse">Web</string>
+    <string name="straight_distance">Straight Distance</string>
+    <string name="route_distance">Route Distance</string>
+    <string name="position_from_start">Distance from Start (%s)</string>
+    <string name="position_from_end">Distance from End (%s)</string>
+    <string name="time_from_start">Expected Time from Start (%s)</string>
+    <string name="latitude">Latitude</string>
+    <string name="longitude">Longitude</string>
+    <string name="cancel">Cancel</string>
+    <string name="empty"></string>
+    <string name="help">Help</string>
+    <string name="refresh">Refresh</string>
+    <string name="loading">Loading &#8230;</string>
+    <string name="ok">Ok</string>
+    
+</resources>

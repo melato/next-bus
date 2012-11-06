@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical" >
+
+    <TextView
+        android:id="@+id/note"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="0.81"
+        android:text="@string/update_comment"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:background="@color/white"
+        android:inputType="textMultiLine"
+        android:scrollbars = "vertical"        
+        android:textColor="@color/black"
+        android:padding="10dp"
+        android:textSize="20sp"      
+        />
+
+    <Button
+        android:id="@+id/ok"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:onClick="ok"
+        android:text="@string/ok" />
+
+</LinearLayout>

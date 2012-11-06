@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen
+   xmlns:android="http://schemas.android.com/apk/res/android"
+   android:title="@string/pref_title">
+
+     <PreferenceCategory
+        android:title="@string/pref_gps">
+        <EditTextPreference
+           android:key="gps_time"
+           android:title="@string/pref_gps_time"
+           android:summary="@string/pref_gps_time_desc"
+           android:defaultValue="1000"
+           android:inputType="number"
+           android:singleLine="true" />
+        <EditTextPreference
+           android:key="gps_distance"
+           android:title="@string/pref_gps_distance"
+           android:summary="@string/pref_gps_distance_desc"
+           android:defaultValue="5"
+           android:inputType="number"
+           android:singleLine="true" />
+        </PreferenceCategory>
+     <PreferenceCategory
+        android:title="@string/appearance">
+         <ListPreference
+            android:key="route_colors"
+            android:title="@string/route_colors"
+            android:summary="Summary"
+            android:entries="@array/route_colors"
+            android:entryValues="@array/route_colors_values"
+            android:defaultValue="original" />
+        </PreferenceCategory>
+</PreferenceScreen>
