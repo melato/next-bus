@@ -25,6 +25,7 @@ import java.util.List;
 
 import org.melato.bus.android.Info;
 import org.melato.bus.android.R;
+import org.melato.bus.android.app.HelpActivity;
 import org.melato.bus.client.TimeOfDay;
 import org.melato.bus.client.TimeOfDayList;
 import org.melato.bus.model.DaySchedule;
@@ -165,6 +166,7 @@ public class ScheduleActivity extends Activity {
   {
      MenuInflater inflater = getMenuInflater();
      inflater.inflate(R.menu.schedule_menu, menu);
+     HelpActivity.addItem(menu, this, R.string.help_schedule);
      return true;
   }
 

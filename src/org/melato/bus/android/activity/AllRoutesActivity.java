@@ -23,6 +23,7 @@ package org.melato.bus.android.activity;
 import java.util.List;
 
 import org.melato.bus.android.R;
+import org.melato.bus.android.app.HelpActivity;
 import org.melato.bus.model.RouteGroup;
 
 import android.view.Menu;
@@ -43,6 +44,7 @@ public class AllRoutesActivity extends RoutesActivity {
   {
      MenuInflater inflater = getMenuInflater();
      inflater.inflate(R.menu.all_routes_menu, menu);
+     HelpActivity.addItem(menu, this, R.string.help_all);
      return true;
   }
 

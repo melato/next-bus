@@ -3,7 +3,8 @@
    xmlns:android="http://schemas.android.com/apk/res/android"
    android:title="@string/pref_title">
 
-     <PreferenceCategory
+    <!-- 
+    <PreferenceCategory
         android:title="@string/pref_gps">
         <EditTextPreference
            android:key="gps_time"
@@ -20,6 +21,7 @@
            android:inputType="number"
            android:singleLine="true" />
         </PreferenceCategory>
+         -->
      <PreferenceCategory
         android:title="@string/appearance">
          <ListPreference

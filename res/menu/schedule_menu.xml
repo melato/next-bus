@@ -1,11 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item android:id="@+id/stops"
+          android:icon="@drawable/stops"                  
           android:title="@string/stops" />
     <item android:id="@+id/map"
+          android:icon="@drawable/map"                  
           android:title="@string/map" />
     <item android:id="@+id/all_schedules"
+          android:icon="@drawable/schedules"                  
           android:title="@string/menu_all_schedules" />
     <item android:id="@+id/browse"
-          android:title="@string/browse" />
+          android:icon="@drawable/oasa"                  
+          android:title="@string/oasa" />
 </menu>

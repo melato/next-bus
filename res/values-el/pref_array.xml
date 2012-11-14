@@ -3,9 +3,9 @@
 
    <string-array
       name="route_colors">
-      <item>Default</item>
-      <item>Black on White</item>
-      <item>White on Black</item>
+      <item>Προεπιλεγμένα</item>
+      <item>Μαύρο σε Άσπρο</item>
+      <item>Άσπρο σε Μαύρο</item>
    </string-array>
 
 </resources>

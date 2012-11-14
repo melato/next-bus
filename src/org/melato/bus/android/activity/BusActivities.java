@@ -26,7 +26,6 @@ import java.util.List;
 
 import org.melato.bus.android.Info;
 import org.melato.bus.android.R;
-import org.melato.bus.android.app.AboutActivity;
 import org.melato.bus.android.app.BusPreferencesActivity;
 import org.melato.bus.android.map.RouteMapActivity;
 import org.melato.bus.model.Route;
@@ -103,10 +102,6 @@ public class BusActivities  {
     showRoute(route, new RouteStop(route.getRouteId()));
   }
   
-  public void showAbout() {
-    context.startActivity( new Intent(context, AboutActivity.class));    
-  }
-  
   public void showInBrowser(Route route) {
     Uri uri = Uri.parse(Info.routeManager(context).getUri(route));
     Intent browserIntent = new Intent(Intent.ACTION_VIEW, uri);
@@ -142,10 +137,6 @@ public class BusActivities  {
           context.startActivity(new Intent(context, RouteMapActivity.class));    
         }
         handled = true;
-        break;
-      case R.id.about:
-        handled = true;
-        showAbout();
         break;
       case R.id.pref:
         handled = true;

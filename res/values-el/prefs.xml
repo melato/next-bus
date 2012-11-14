@@ -8,5 +8,5 @@
     <string name="pref_gps_distance">Ελάχιστη Απόσταση (m)</string>
     <string name="pref_gps_distance_desc">Ελάχιστη Απόσταση μεταξύ διαδοχικών GPS μετρήσεων</string>
     <string name="appearance">Εμφάνιση</string>
-    <string name="route_colors">Χρώματα Γραμμής</string>
+    <string name="route_colors">Χρώματα Γραμμών</string>
 </resources>

@@ -1,9 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item android:id="@+id/stops"
+          android:icon="@drawable/stops"                  
           android:title="@string/stops" />
     <item android:id="@+id/schedule"
+          android:icon="@drawable/schedule"                  
           android:title="@string/schedule" />
     <item android:id="@+id/refresh"
+          android:icon="@drawable/reload"                  
           android:title="@string/refresh" />
 </menu>

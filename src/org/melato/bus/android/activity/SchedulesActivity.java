@@ -21,6 +21,7 @@
 package org.melato.bus.android.activity;
 
 import org.melato.bus.android.R;
+import org.melato.bus.android.app.HelpActivity;
 import org.melato.bus.model.DaySchedule;
 import org.melato.bus.model.Route;
 import org.melato.bus.model.Schedule;
@@ -29,6 +30,9 @@ import org.melato.log.Log;
 import android.app.ListActivity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
@@ -82,7 +86,18 @@ public class SchedulesActivity extends ListActivity {
     Intent intent = new Intent(this, ScheduleActivity.class);
     new IntentHelper(intent).putRoute(route);
     intent.putExtra(ScheduleActivity.KEY_DAYS, days);
-    startActivity(intent);    
-    
+    startActivity(intent);        
   }
+  
+  @Override
+  public boolean onCreateOptionsMenu(Menu menu)
+  {
+     HelpActivity.addItem(menu, this, R.string.help_schedules);
+     return true;
+  }
+
+  @Override
+  public boolean onOptionsItemSelected(MenuItem item) {
+    return activities.onOptionsItemSelected(item);
+  }    
 }

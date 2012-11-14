@@ -21,6 +21,7 @@
 package org.melato.bus.android.activity;
 
 import org.melato.bus.android.R;
+import org.melato.bus.android.app.HelpActivity;
 import org.melato.bus.model.Route;
 
 import android.view.Menu;
@@ -41,6 +42,7 @@ public class RecentRoutesActivity extends RoutesActivity {
   {
      MenuInflater inflater = getMenuInflater();
      inflater.inflate(R.menu.recent_routes_menu, menu);
+     HelpActivity.addItem(menu, this, R.string.help_recent);
      return true;
   }
 

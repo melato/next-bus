@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="org.melato.bus.android"
-    android:versionCode="2"
-    android:versionName="1.0-beta" >
+    android:versionCode="4"
+    android:versionName="1.0-beta2" >
 
     <uses-sdk android:minSdkVersion="8" />
 
@@ -69,10 +69,6 @@
         <activity
             android:name=".app.HelpActivity"
             android:label="@string/help" >
-        </activity>
-        <activity
-            android:name=".app.AboutActivity"
-            android:label="@string/about" >
         </activity>
         <activity
             android:name=".app.BusPreferencesActivity"
