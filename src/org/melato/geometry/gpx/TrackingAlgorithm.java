@@ -18,7 +18,7 @@
  */
 package org.melato.geometry.gpx;
 
-import org.melato.gps.Point;
+import org.melato.gps.PointTime;
 import org.melato.gpx.util.Path;
 
 /**
@@ -62,7 +62,7 @@ public interface TrackingAlgorithm {
    * that the path may use in its algorithm.
    * @param p
    */
-  void setLocation(Point p);
+  void setLocation(PointTime p);
   
   /**
    * Return the index of the waypoint nearest the current location, according to path distance.

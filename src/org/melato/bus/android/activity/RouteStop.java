@@ -21,10 +21,9 @@
 package org.melato.bus.android.activity;
 
 import java.io.Serializable;
-import java.util.List;
 
 import org.melato.bus.model.RouteId;
-import org.melato.gpx.Waypoint;
+import org.melato.bus.model.Stop;
 
 /** Identifies a route and a stop on this route. */
 public class RouteStop implements Serializable {
@@ -37,33 +36,37 @@ public class RouteStop implements Serializable {
     this.routeId = routeId;
   }
   
-  public int getTimeFromStart(List<Waypoint> waypoints) {
+  /** Get the time from the start of the route.
+   * @param waypoints
+   * @return time in seconds.
+   */
+  public int getTimeFromStart(Stop[] stops) {
     if ( stopIndex == -1 && stopSymbol == null )
       return 0;
-    int index = findStopIndex(waypoints);
+    int index = findStopIndex(stops);
     int time = 0;
     for( int i = 0; i <= index; i++ ) {
-      time += (int) (waypoints.get(i).getTime() / 1000);
+      time += (int) (stops[i].getTime() / 1000);
     }
     return time;    
   }
   
-  private int findStopIndex(List<Waypoint> waypoints) {
-    if ( stopIndex >= 0 && stopIndex < waypoints.size() )
+  private int findStopIndex(Stop[] stops) {
+    if ( stopIndex >= 0 && stopIndex < stops.length )
       return stopIndex;
-    int size = waypoints.size();
+    int size = stops.length;
     for( int i = 0; i < size; i++ ) {
-      if ( stopSymbol.equals(waypoints.get(i).getSym())) {
+      if ( stopSymbol.equals(stops[i].getSymbol())) {
         return i;
       }
     }
     return -1;
   }
   
-  public String getStopName(List<Waypoint> waypoints) {
-    int index = findStopIndex(waypoints);
+  public String getStopName(Stop[] stops) {
+    int index = findStopIndex(stops);
     if ( index >= 0 )
-      return waypoints.get(index).getName();
+      return stops[index].getName();
     return null;
   }
   

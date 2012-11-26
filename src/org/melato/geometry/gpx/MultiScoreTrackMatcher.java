@@ -18,10 +18,7 @@
  */
 package org.melato.geometry.gpx;
 
-import java.util.List;
-
-import org.melato.gps.Point;
-import org.melato.gpx.Waypoint;
+import org.melato.gps.PointTime;
 
 
 /**
@@ -136,7 +133,7 @@ public class MultiScoreTrackMatcher implements TrackMatchingAlgorithm {
   }
 
   @Override
-  public void setTrack(List<Waypoint> track) {
+  public void setTrack(PointTime[] track) {
     proximity = new ProximityFinder();
     proximity.setWaypoints(track);
     proximity.setTargetDistance(proximityDistance);
@@ -146,17 +143,17 @@ public class MultiScoreTrackMatcher implements TrackMatchingAlgorithm {
    * @param route The route, specified as a sequence of waypoints.
    * @param score
    */
-  public Score computeScore(List<Waypoint> route) {
+  public Score computeScore(PointTime[] route) {
     MultiScore score = new MultiScore();
     double separationSum = 0;
-    int size = route.size();
+    int size = route.length;
     int nearCount = 0;
     int directionChanges = 0;
     int[] directionCounts = new int[3];
     int lastDirection = 0;
     int lastTrackIndex = -1;
     for( int i = 0; i < size; i++ ) {
-      Point p = route.get(i);
+      PointTime p = route[i];
       int trackIndex = proximity.findClosestNearby(p);
       if ( trackIndex >= 0 ) {
         nearCount++;

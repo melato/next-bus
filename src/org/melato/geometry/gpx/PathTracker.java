@@ -18,7 +18,7 @@
  */
 package org.melato.geometry.gpx;
 
-import org.melato.gps.Point;
+import org.melato.gps.PointTime;
 import org.melato.gpx.util.Path;
 
 /**
@@ -29,7 +29,7 @@ import org.melato.gpx.util.Path;
 public class PathTracker {
   private TrackingAlgorithm tracker;
   private Path path;
-  private Point location;
+  private PointTime location;
 
   public PathTracker(TrackingAlgorithm tracker) {
     super();
@@ -53,7 +53,7 @@ public class PathTracker {
     return path;
   }
 
-  public Point getLocation() {
+  public PointTime getLocation() {
     return location;
   }
 
@@ -68,7 +68,7 @@ public class PathTracker {
    * that the path may use in its algorithm.
    * @param p
    */
-  public void setLocation(Point p) {
+  public void setLocation(PointTime p) {
     this.location = p;
     tracker.setLocation(p);
   }

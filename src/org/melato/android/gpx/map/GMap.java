@@ -20,7 +20,7 @@
  */
 package org.melato.android.gpx.map;
 
-import org.melato.gps.Point;
+import org.melato.gps.Point2D;
 
 import android.location.Location;
 
@@ -30,7 +30,7 @@ public class GMap {
   public static GeoPoint geoPoint(float lat, float lon) {
     return new GeoPoint( (int) (lat * 1E6f), (int)(lon * 1E6f));
   }
-  public static GeoPoint geoPoint(Point p) {   
+  public static GeoPoint geoPoint(Point2D p) {   
     return geoPoint(p.getLat(), p.getLon());    
   }
   public static GeoPoint geoPoint(Location loc) {
@@ -39,7 +39,7 @@ public class GMap {
     return geoPoint((float) loc.getLatitude(), (float) loc.getLongitude());
   }
 
-  public static Point point(GeoPoint p) {   
-    return new Point( p.getLatitudeE6() / 1E6f,  p.getLongitudeE6() / 1E6f);    
+  public static Point2D point(GeoPoint p) {   
+    return new Point2D( p.getLatitudeE6() / 1E6f,  p.getLongitudeE6() / 1E6f);    
   }
 }

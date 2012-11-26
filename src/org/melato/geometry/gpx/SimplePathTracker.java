@@ -21,7 +21,7 @@ package org.melato.geometry.gpx;
 import java.util.List;
 
 import org.melato.gps.Earth;
-import org.melato.gps.Point;
+import org.melato.gps.PointTime;
 import org.melato.gpx.Waypoint;
 import org.melato.gpx.util.Path;
 
@@ -37,7 +37,7 @@ public class SimplePathTracker implements TrackingAlgorithm {
   private Path path;
   private int  pathSize;
 
-  private Point location;
+  private PointTime location;
   private int   nearestIndex;
   private float pathPosition;
     
@@ -81,7 +81,7 @@ public class SimplePathTracker implements TrackingAlgorithm {
    * @param p
    * @return
    */
-  public int[] find2Neighbors(Point p) {
+  public int[] find2Neighbors(PointTime p) {
     int[] neighbors = new int[2];
     int closest = path.findNearestIndex(p);
     if ( closest == 0 ) {
@@ -106,7 +106,7 @@ public class SimplePathTracker implements TrackingAlgorithm {
   }
   
   @Override
-  public void setLocation(Point p) {
+  public void setLocation(PointTime p) {
     this.location = p;
     nearestIndex = path.findNearestIndex(p);
     pathPosition = findPathLength();
@@ -115,11 +115,11 @@ public class SimplePathTracker implements TrackingAlgorithm {
   private float findPathLength() {
     if ( pathSize < 2 )
       return Float.NaN;
-    Point p = location;
+    PointTime p = location;
     int[] neighbor = find2Neighbors(p);
-    Waypoint[] waypoints = path.getWaypoints();
-    Point s1 = waypoints[neighbor[0]];
-    Point s2 = waypoints[neighbor[1]];
+    PointTime[] waypoints = path.getWaypoints();
+    PointTime s1 = waypoints[neighbor[0]];
+    PointTime s2 = waypoints[neighbor[1]];
     float p1 = path.getLength(neighbor[0]);
     float p2 = path.getLength(neighbor[1]);
     float s = p2 - p1;

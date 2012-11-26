@@ -21,13 +21,15 @@
 package org.melato.bus.android.activity;
 
 import org.melato.android.location.Locations;
-import org.melato.gps.Point;
+import org.melato.gps.PointTime;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 
 /**
  * A location listener that attaches itself to an activity and maintains a current location.
@@ -38,9 +40,8 @@ import android.os.Bundle;
  */
 public class LocationContext implements LocationListener {
   protected Context context;
-  private Point   location;
+  private PointTime   location;
   private boolean enabledLocations;
-  
 
   public LocationContext(Context context) {
     super();
@@ -51,10 +52,14 @@ public class LocationContext implements LocationListener {
     if ( enabledLocations == enabled )
       return;
     LocationManager locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
+    //PlaybackManager locationManager = PlaybackManager.getInstance(context);
     if ( enabled ) {
       this.enabledLocations = true;
-      locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 1000L, 100f, this );
-      locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000L, 1f, this);
+      SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+      // The preferences dialog seems to be putting in strings instead of integers
+      long timeInterval = Integer.parseInt(prefs.getString(Pref.GPS_TIME, "1")) * 1000L;
+      float minDistance = Float.parseFloat(prefs.getString(Pref.GPS_DISTANCE, "5"));
+      locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, timeInterval, minDistance, this);
       Location location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
       if ( location == null )
         location = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
@@ -70,13 +75,13 @@ public class LocationContext implements LocationListener {
     setEnabledLocations(false);
   }
 
-  public void setLocation(Point point) {
+  public void setLocation(PointTime point) {
     if ( point == null )
       return;
     location = point;
   }
     
-  public Point getLocation() {
+  public PointTime getLocation() {
     return location;
   }
   

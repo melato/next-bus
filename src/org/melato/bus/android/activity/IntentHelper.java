@@ -28,7 +28,7 @@ import org.melato.bus.model.Route;
 import org.melato.bus.model.RouteGroup;
 import org.melato.bus.model.RouteId;
 import org.melato.bus.model.RouteManager;
-import org.melato.gps.Point;
+import org.melato.gps.Point2D;
 
 import android.app.Activity;
 import android.content.Context;
@@ -68,12 +68,12 @@ public class IntentHelper  {
     this.intent = intent;
   }
 
-  public static void putLocation(Intent intent, Point p) {
+  public static void putLocation(Intent intent, Point2D p) {
     intent.putExtra(KEY_LOCATION, p);
   }
   
-  public static Point getLocation(Intent intent) {
-    return (Point) intent.getSerializableExtra(KEY_LOCATION);
+  public static Point2D getLocation(Intent intent) {
+    return (Point2D) intent.getSerializableExtra(KEY_LOCATION);
   }
   
   public StopInfo getStopInfo() {

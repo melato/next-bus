@@ -3,14 +3,13 @@
    xmlns:android="http://schemas.android.com/apk/res/android"
    android:title="@string/pref_title">
 
-    <!-- 
     <PreferenceCategory
         android:title="@string/pref_gps">
         <EditTextPreference
-           android:key="gps_time"
+           android:key="gps_seconds"
            android:title="@string/pref_gps_time"
            android:summary="@string/pref_gps_time_desc"
-           android:defaultValue="1000"
+           android:defaultValue="1"
            android:inputType="number"
            android:singleLine="true" />
         <EditTextPreference
@@ -21,7 +20,8 @@
            android:inputType="number"
            android:singleLine="true" />
         </PreferenceCategory>
-         -->
+    <!-- 
+    -->
      <PreferenceCategory
         android:title="@string/appearance">
          <ListPreference

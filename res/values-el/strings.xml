@@ -31,7 +31,7 @@
     <string name="route_distance">Απόσταση Διαδρομής</string>
     <string name="position_from_start">Απόσταση από Αφετηρία (%s)</string>
     <string name="position_from_end">Απόσταση από Τέρμα (%s)</string>
-    <string name="time_from_start">Αναμενόμενη ώρα από την αναχώρηση (%s)</string>
+    <string name="time_from_start">Αναμενόμενος χρόνος από την αφετηρία (%s)</string>
     <string name="latitude">Γεωγραφικό μήκος</string>
     <string name="longitude">Γεωγραφικό πλάτος</string>
     <string name="cancel">Άκυρο</string>

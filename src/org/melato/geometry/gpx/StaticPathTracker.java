@@ -20,7 +20,7 @@ package org.melato.geometry.gpx;
 
 import java.util.List;
 
-import org.melato.gps.Point;
+import org.melato.gps.PointTime;
 import org.melato.gpx.Metric;
 import org.melato.gpx.Waypoint;
 import org.melato.gpx.util.Path;
@@ -73,12 +73,12 @@ public class StaticPathTracker implements TrackingAlgorithm {
 
 
   @Override
-  public void setLocation(Point p) {
+  public void setLocation(PointTime p) {
     nearestIndex = path.findNearestIndex(p);
     pathPosition = findPathLength(p);
   }
 
-  float interpolatePosition(Point point, int index1, int index2) {
+  float interpolatePosition(PointTime point, int index1, int index2) {
     float d1 = metric.distance(point, path.getWaypoints()[index1]);
     float d2 = metric.distance(point, path.getWaypoints()[index2]);
     float p1 = path.getLength(index1);
@@ -86,7 +86,7 @@ public class StaticPathTracker implements TrackingAlgorithm {
     return p1 + (p2-p1)*d1/(d1+d2);
   }
   
-  private float findPathLength(Point p) {
+  private float findPathLength(PointTime p) {
     if ( path.size() < 2 )
       return Float.NaN;
     int nearest = path.findNearestIndex(p);

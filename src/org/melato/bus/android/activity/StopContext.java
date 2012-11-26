@@ -21,16 +21,15 @@
 package org.melato.bus.android.activity;
 
 import java.util.Date;
-import java.util.List;
 
 import org.melato.android.ui.PropertiesDisplay;
 import org.melato.bus.android.R;
 import org.melato.bus.model.Schedule;
+import org.melato.bus.model.Stop;
 import org.melato.geometry.gpx.PathTracker;
 import org.melato.geometry.gpx.SpeedTracker;
 import org.melato.gps.Earth;
-import org.melato.gps.Point;
-import org.melato.gpx.Waypoint;
+import org.melato.gps.PointTime;
 import org.melato.gpx.util.Path;
 
 import android.content.Context;
@@ -42,9 +41,9 @@ public class StopContext extends LocationContext {
   public static final float BIKE_OVERHEAD = 1.35f;
   public static final float BIKE_SPEED = 15f;
 
-  private List<Waypoint> waypoints;
+  private Stop[] waypoints;
   private int markerIndex;
-  private Waypoint marker;
+  private Stop marker;
   private int timeFromStart = -1;
 
   private Path path;
@@ -60,7 +59,7 @@ public class StopContext extends LocationContext {
     return straightDistance;
   }
 
-  public Waypoint getMarker() {
+  public Stop getMarker() {
     return marker;
   }
   
@@ -87,7 +86,7 @@ public class StopContext extends LocationContext {
   }
   
   @Override
-  public void setLocation(Point point) {
+  public void setLocation(PointTime point) {
     super.setLocation(point);
     if ( point == null )
       return;
@@ -119,7 +118,7 @@ public class StopContext extends LocationContext {
     }
     return timeFromStart;    
   }
-  public void setWaypoints(List<Waypoint> waypoints) {
+  public void setWaypoints(Stop[] waypoints) {
     this.waypoints = waypoints;
     this.path = new Path(waypoints);
     pathTracker = new PathTracker();
@@ -130,7 +129,7 @@ public class StopContext extends LocationContext {
   
   public void setMarkerIndex(int index) {
     markerIndex = index;
-    marker = waypoints.get(index);
+    marker = waypoints[index];
     setEnabledLocations(true);
     timeFromStart = -1;
   }
@@ -149,7 +148,7 @@ public class StopContext extends LocationContext {
   
   class DistanceFromStart {
     public String toString() {
-      String name = path.getWaypoint(0).getName();
+      String name = waypoints[0].getName();
       String label = String.format(context.getString(R.string.position_from_start), name);
       return PropertiesDisplay.formatProperty( label, UI.routeDistance(getMarkerPosition()));
     }
@@ -157,7 +156,7 @@ public class StopContext extends LocationContext {
   
   class TimeFromStart {
     public String toString() {
-      String name = path.getWaypoint(0).getName();
+      String name = waypoints[0].getName();
       String label = String.format(context.getString(R.string.time_from_start), name);
       int seconds = getTimeFromStart();
       String value = seconds > 0 ? Schedule.formatTime(seconds/60) : "";

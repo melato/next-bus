@@ -20,7 +20,7 @@ package org.melato.geometry.gpx;
 
 import java.util.List;
 
-import org.melato.gps.Point;
+import org.melato.gps.PointTime;
 import org.melato.gpx.GlobalDistance;
 import org.melato.gpx.LocalDistance;
 import org.melato.gpx.Metric;
@@ -43,7 +43,7 @@ public class SequentialPathTracker implements TrackingAlgorithm {
   
 
   /** The last location */
-  private Point location;
+  private PointTime location;
   
   /** The index of the waypoint closest to the last location in path terms */
   private int   nearestIndex = -1;
@@ -58,7 +58,7 @@ public class SequentialPathTracker implements TrackingAlgorithm {
   private int   currentIndex = -1;
 
   /** The waypoint at the current index */
-  private Point currentWaypoint;
+  private PointTime currentWaypoint;
   
   /** The distance from location to currentWaypoint */
   private float currentDistance;
@@ -122,11 +122,11 @@ public class SequentialPathTracker implements TrackingAlgorithm {
     return currentIndex;
   }
   
-  private boolean isSameLocation(Point p1, Point p2) {
+  private boolean isSameLocation(PointTime p1, PointTime p2) {
     return p1.getLat() == p2.getLat() && p1.getLon() == p2.getLon();
   }
   
-  private void setCurrentPosition(Point point, int index) {
+  private void setCurrentPosition(PointTime point, int index) {
     location = point;
     currentIndex = index;
     currentWaypoint = path.getWaypoints()[currentIndex];      
@@ -143,7 +143,7 @@ public class SequentialPathTracker implements TrackingAlgorithm {
    * @param index2
    * @return
    */
-  float interpolatePosition(Path path, Point point, int index1, int index2) {
+  float interpolatePosition(Path path, PointTime point, int index1, int index2) {
     if ( index1 > index2 || index2 < 0 || index1 >= path.size() ) {
       throw new IllegalArgumentException();
     }
@@ -167,7 +167,7 @@ public class SequentialPathTracker implements TrackingAlgorithm {
     }
   }
   
-  void getDistances(Point point, int[] indexes, float[] distances) {
+  void getDistances(PointTime point, int[] indexes, float[] distances) {
     for( int i = 0; i < indexes.length; i++ ) {
       distances[i] = 0;
       int index = indexes[i];
@@ -176,7 +176,7 @@ public class SequentialPathTracker implements TrackingAlgorithm {
       }
     }
   }
-  void setInitialLocation(Point point) {
+  void setInitialLocation(PointTime point) {
     inPath = false;
     setCurrentPosition(point, path.findNearestIndex(point));
     nearestIndex = currentIndex;
@@ -202,14 +202,14 @@ public class SequentialPathTracker implements TrackingAlgorithm {
   }
     
   @Override
-  public void setLocation(Point point) {
+  public void setLocation(PointTime point) {
     if ( location != null && isSameLocation(point, location)) {
       return;
     }
     if ( location == null ) {
       setInitialLocation(point);
     } else {
-      Log.info( "seq.tracker inPath=" + inPath + " currentIndex=" + currentIndex);
+      //Log.info( "seq.tracker inPath=" + inPath + " currentIndex=" + currentIndex);
       if ( inPath ) {
         float d = metric.distance(point, currentWaypoint);
         if ( d <= currentDistance ) {
@@ -217,23 +217,23 @@ public class SequentialPathTracker implements TrackingAlgorithm {
           currentDistance = d;
           location = point;
           pathPosition = interpolatePosition(path, point, currentIndex - 1, currentIndex);
-          Log.info( "approaching " + currentWaypoint );
+          //Log.info( "approaching " + currentWaypoint );
         } else {
           // we seem to be moving away from current waypoint
           // check if we're approaching one of the following waypoints
           for( int i = currentIndex; i + 1 < path.size(); i++ ) {
-            Point nextWaypoint = path.getWaypoints()[i+1];
+            PointTime nextWaypoint = path.getWaypoints()[i+1];
             float dNext = metric.distance(point, nextWaypoint);
             float dLocationNext = metric.distance(location, nextWaypoint);
             if ( dNext < dLocationNext ) {
               // ok, we're moving closer to the nextWaypoint
               pathPosition = interpolatePosition(path, point, i, i + 1);
               setCurrentPosition(point, i+1);
-              Log.info( "moved to: " + currentWaypoint );
+              //Log.info( "moved to: " + currentWaypoint );
               break;
             }
           }
-          Log.info( "left path");
+          //Log.info( "left path");
           // we are not approaching any path waypoint.  Assume we are no longer following it.
           setInitialLocation(point);
         }
@@ -243,7 +243,7 @@ public class SequentialPathTracker implements TrackingAlgorithm {
         // between the nearest waypoint and either of its neighbors
         // B) at least one of the three distances is decreasing.
         // This is not very accurate, but we also check along the way
-        Point previousLocation = location;
+        PointTime previousLocation = location;
         setInitialLocation(point);
         if ( isNear() || isApproaching(previousLocation, point, currentIndex-1, currentIndex+1)) {
           inPath = true;
@@ -278,10 +278,10 @@ public class SequentialPathTracker implements TrackingAlgorithm {
    * @param index2
    * @return
    */
-  private boolean isApproaching(Point previous, Point current, int index1, int index2) {
+  private boolean isApproaching(PointTime previous, PointTime current, int index1, int index2) {
     for( int index = index1; index <= index2; index++ ) {
       if ( 0 <= index && index < path.size() ) {
-        Waypoint p = path.getWaypoint(index);
+        PointTime p = path.getWaypoint(index);
         if ( metric.distance(current, p) < metric.distance(previous, p) )
           return true;
       }

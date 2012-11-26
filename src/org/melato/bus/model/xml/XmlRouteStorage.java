@@ -2,18 +2,20 @@
  * Copyright (c) 2012, Alex Athanasopoulos.  All Rights Reserved.
  * alex@melato.org
  *-------------------------------------------------------------------------
- * This program is free software: you can redistribute it and/or modify
+ * This file is part of Athens Next Bus
+ *
+ * Athens Next Bus is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * This program is distributed in the hope that it will be useful,
+ * Athens Next Bus is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * along with Athens Next Bus.  If not, see <http://www.gnu.org/licenses/>.
  *-------------------------------------------------------------------------
  */
 package org.melato.bus.model.xml;
@@ -23,6 +25,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -32,7 +35,8 @@ import org.melato.bus.model.NearbyFilter;
 import org.melato.bus.model.Route;
 import org.melato.bus.model.RouteId;
 import org.melato.bus.model.Schedule;
-import org.melato.gps.Point;
+import org.melato.bus.model.Stop;
+import org.melato.gps.Point2D;
 import org.melato.gpx.GPX;
 import org.melato.gpx.GPXParser;
 import org.melato.gpx.Waypoint;
@@ -129,8 +133,7 @@ public class XmlRouteStorage extends AbstractRouteStorage {
   }
 
 
-  @Override
-  public List<Waypoint> loadWaypoints(RouteId routeId) {
+  private List<Waypoint> loadWaypoints(RouteId routeId) {
     try {
       URL url = makeUrl( GPX_DIR, routeId + ".gpx" );
       GPXParser parser = new GPXParser();
@@ -144,6 +147,23 @@ public class XmlRouteStorage extends AbstractRouteStorage {
     }
   }
   
+  List<Stop> waypointsToStops(List<Waypoint> waypoints) {
+    Stop[] stops = new Stop[waypoints.size()];
+    for( int i = 0; i < stops.length; i++ ) {
+      Waypoint p = waypoints.get(i);
+      Stop stop = new Stop(p);
+      stop.setSymbol(p.getSym());
+      stop.setName(p.getName());
+      stops[i] = stop;
+    }
+    return Arrays.asList(stops);
+  }
+  
+  @Override
+  public List<Stop> loadStops(RouteId routeId) {
+    return waypointsToStops(loadWaypoints(routeId));
+  }
+  
   public void iterateAllStops(Collection<Waypoint> collector) {
     try {
       URL url = makeUrl( STOPS_FILE );
@@ -155,7 +175,7 @@ public class XmlRouteStorage extends AbstractRouteStorage {
   }
   
   @Override
-  public void iterateNearbyStops(Point point, float latDiff, float lonDiff,
+  public void iterateNearbyStops(Point2D point, float latDiff, float lonDiff,
       Collection<Waypoint> collector) {
     iterateAllStops(new NearbyFilter(point, latDiff, lonDiff, collector));
   }

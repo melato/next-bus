@@ -20,15 +20,15 @@ package org.melato.android.location;
 
 import java.util.Date;
 
-import org.melato.gps.Point;
+import org.melato.gps.GpsPoint;
 
 import android.location.Location;
 
 public class Locations {
-  public static Point location2Point(Location loc) {
+  public static GpsPoint location2Point(Location loc) {
     if ( loc == null )
       return null;
-    Point p = new Point( (float) loc.getLatitude(), (float) loc.getLongitude());
+    GpsPoint p = new GpsPoint( (float) loc.getLatitude(), (float) loc.getLongitude());
     p.setTime(new Date(loc.getTime()));
     if ( loc.hasSpeed() ) {
       p.setSpeed(loc.getSpeed());

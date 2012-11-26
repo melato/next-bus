@@ -23,7 +23,7 @@ package org.melato.bus.android.activity;
 import org.melato.bus.android.R;
 import org.melato.bus.android.app.HelpActivity;
 import org.melato.bus.client.NearbyStop;
-import org.melato.gps.Point;
+import org.melato.gps.Point2D;
 
 import android.app.ListActivity;
 import android.content.Context;
@@ -78,7 +78,7 @@ public class NearbyActivity extends ListActivity {
     return activities.onOptionsItemSelected(item);
   }
   
-  public static void start(Context context, Point center) {
+  public static void start(Context context, Point2D center) {
     Intent intent = new Intent(context, NearbyActivity.class);
     IntentHelper.putLocation(intent, center);
     context.startActivity(intent);    

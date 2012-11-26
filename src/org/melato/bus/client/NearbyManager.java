@@ -2,18 +2,20 @@
  * Copyright (c) 2012, Alex Athanasopoulos.  All Rights Reserved.
  * alex@melato.org
  *-------------------------------------------------------------------------
- * This program is free software: you can redistribute it and/or modify
+ * This file is part of Athens Next Bus
+ *
+ * Athens Next Bus is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * This program is distributed in the hope that it will be useful,
+ * Athens Next Bus is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * along with Athens Next Bus.  If not, see <http://www.gnu.org/licenses/>.
  *-------------------------------------------------------------------------
  */
 package org.melato.bus.client;
@@ -32,13 +34,12 @@ import java.util.Set;
 import org.melato.bus.model.Route;
 import org.melato.bus.model.RouteManager;
 import org.melato.gps.Earth;
-import org.melato.gps.Point;
+import org.melato.gps.Point2D;
 import org.melato.gpx.GPX;
 import org.melato.gpx.GPXParser;
 import org.melato.gpx.GPXWriter;
 import org.melato.gpx.Waypoint;
 import org.melato.log.Clock;
-import org.melato.log.Log;
 
 /**
  * Provides access to nearby stops.
@@ -69,7 +70,7 @@ public class NearbyManager {
     this.cacheDir = cacheDir;
   }
 
-  public Point getLastLocation() {
+  public Point2D getLastLocation() {
     File file = new File(cacheDir, LOCATION_FILE );
     if ( file.exists() ) {
       try {
@@ -86,7 +87,7 @@ public class NearbyManager {
     return null;
   }
   
-  private void setLastLocation(Point location) {
+  private void setLastLocation(Point2D location) {
     GPX gpx = new GPX();
     gpx.setWaypoints(Collections.singletonList(new Waypoint(location)));
     GPXWriter writer = new GPXWriter();
@@ -97,7 +98,7 @@ public class NearbyManager {
     }
   }
       
-  private Waypoint[] filterDistance(List<Waypoint> waypoints, Point target) {    
+  private Waypoint[] filterDistance(List<Waypoint> waypoints, Point2D target) {    
     WaypointDistance[] array = WaypointDistance.createArray(waypoints, target);
     Arrays.sort(array);
     int size = 0;
@@ -112,15 +113,15 @@ public class NearbyManager {
     return result;
   }
   
-  private List<Waypoint> readCache(Point location) {
+  private List<Waypoint> readCache(Point2D location) {
     Clock clock = new Clock("readCache");
-    Point lastLocation = getLastLocation();
+    Point2D lastLocation = getLastLocation();
     File file = new File(cacheDir, NEARBY_FILE ); 
     if ( lastLocation != null && Earth.distance(lastLocation, location) < CACHE_DISTANCE ) {
       try {
         GPXParser parser = new GPXParser();
         GPX gpx = parser.parse(file);
-        Log.info(clock);
+        //Log.info(clock);
         return gpx.getWaypoints();
       } catch( IOException e ) {
         file.delete();
@@ -131,7 +132,7 @@ public class NearbyManager {
     return null;
   }
 
-  private void writeCache(List<Waypoint> list, Point location) {
+  private void writeCache(List<Waypoint> list, Point2D location) {
     File file = new File(cacheDir, NEARBY_FILE ); 
     GPX gpx = new GPX();
     gpx.setWaypoints(list);
@@ -143,12 +144,11 @@ public class NearbyManager {
     }        
   }
   
-  public Waypoint[] getNearbyWaypoints(Point location) {
+  public Waypoint[] getNearbyWaypoints(Point2D location) {
     List<Waypoint> list = null;
     list = readCache(location);
     if ( list == null ) {
       // not in cache.  filter the global list
-      Log.info( "querying database for nearby");
       list = routeManager.findNearbyStops(location, TARGET_DISTANCE + CACHE_DISTANCE);
       writeCache(list, location);
     }
@@ -162,10 +162,8 @@ public class NearbyManager {
     }
     return map;
   }
-  public NearbyStop[] getNearby(Point location) {
-    Log.info("getNearby location=" + location);
+  public NearbyStop[] getNearby(Point2D location) {
     Waypoint[] waypoints = getNearbyWaypoints(location);
-    Log.info("getNearbyWaypoints: " + waypoints.length );
     List<NearbyStop> nearby = new ArrayList<NearbyStop>();
     Set<String> links = new HashSet<String>();
     Map<String,Route> map = getRouteMap();
@@ -183,7 +181,6 @@ public class NearbyManager {
       }
     }
     NearbyStop[] array = nearby.toArray(new NearbyStop[0]);
-    Log.info( "nearby.length=" + array.length);
     // sort them by distance and name.
     Arrays.sort( array, new NearbyStop.Comparer() );
     return array;

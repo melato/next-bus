@@ -16,20 +16,41 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *-------------------------------------------------------------------------
  */
-package org.melato.geometry.gpx;
+package org.melato.util;
 
-import org.melato.gps.PointTime;
+import java.util.Iterator;
 
 /**
- * Matches a track against a route and creates a matching score that can be used to select
- * the best route that matches the track.
+ * Converts List<S> into a List<T>, provided S is a subclass of T.
+ * (Since Java doesn't do this automatically)
  * @author Alex Athanasopoulos
  *
+ * @param <S> Subclass of T
+ * @param <T> Any class
  */
-public interface TrackMatchingAlgorithm {
-  void setProximityDistance(float targetDistance);
-  void setTrack(PointTime[] track);
-  Score computeScore(PointTime[] route);
-  String[] getScoreFieldNames();
-  Object[] getFields(Score score);
+public class DelegateIterator<T> implements Iterator<T> {
+  Iterator<? extends T> iterator;
+
+  
+  public DelegateIterator(Iterator<? extends T> iterator) {
+    super();
+    this.iterator = iterator;
+  }
+
+  @Override
+  public boolean hasNext() {
+    return iterator.hasNext();
+  }
+
+  @Override
+  public T next() {
+    T t = (T) iterator.next();
+    return t;
+  }
+
+  @Override
+  public void remove() {
+    iterator.remove();
+  }
+  
 }

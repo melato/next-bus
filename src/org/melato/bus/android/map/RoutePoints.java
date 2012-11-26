@@ -22,7 +22,7 @@ package org.melato.bus.android.map;
 
 import java.util.List;
 
-import org.melato.gps.Point;
+import org.melato.gps.Point2D;
 
 import com.google.android.maps.GeoPoint;
 
@@ -65,12 +65,12 @@ public class RoutePoints {
     this.lon = lon;
   }
 
-  public static RoutePoints createFromPoints(List<Point> waypoints) {
+  public static RoutePoints createFromPoints(List<Point2D> waypoints) {
     int n = waypoints.size();
     int[] lat = new int[n];
     int[] lon = new int[n];
     for( int i = 0; i < n; i++ ) {
-      Point p = waypoints.get(i);
+      Point2D p = waypoints.get(i);
       lat[i] = (int) (p.getLat()*1e6f);
       lon[i] = (int) (p.getLon()*1e6f);
     }

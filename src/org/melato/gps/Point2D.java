@@ -16,30 +16,58 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *-------------------------------------------------------------------------
  */
-package org.melato.gpx;
+package org.melato.gps;
 
-import org.melato.gps.Earth;
-import org.melato.gps.Point2D;
+import java.io.Serializable;
 
-/** A faster distance computation that is accurate near a particular reference point.
- * It is 6 times faster than GlobalDistance
- * A rough measurement shows it to be accurate within about 10 cm for distances ~ 10 Km for latitude 38.
- * @author Alex Athanasopoulos
- */
-public class LocalDistance implements Metric {
-  private float latScale;
-  private float lonScale;
+public class Point2D implements Serializable {
+  private static final long serialVersionUID = 1L;
+  public float  lat;
+  public float  lon;
+
+  public float getLat() {
+    return lat;
+  }
+  public void setLat(float lat) {
+    this.lat = lat;
+  }
+  public float getLon() {
+    return lon;
+  }
+  public void setLon(float lon) {
+    this.lon = lon;
+  }
   
-  public LocalDistance(Point2D reference) {
-    latScale = Earth.metersPerDegreeLatitude();
-    lonScale = Earth.metersPerDegreeLongitude(reference.getLat());
-  }
-
   @Override
-  public float distance(Point2D p1, Point2D p2) {
-    float x = (p2.getLon() - p1.getLon()) * lonScale;
-    float y = (p2.getLat() - p1.getLat()) * latScale;    
-    return (float) Math.sqrt(x*x + y*y);
+  public boolean equals(Object x) {
+    if ( x instanceof PointTime ) {
+      PointTime p = (PointTime) x;
+      return lat == p.lat && lon == p.lon;
+    }
+    return false;
   }
-
+  
+  @Override
+  public int hashCode() {
+    return new Float(lat).hashCode() + new Float(lon).hashCode();   
+  }
+  
+  @Override
+  public String toString() {
+    return lat + ";" + lon;
+  }
+    
+  public Point2D() {    
+  }
+  
+  public Point2D(float lat, float lon) {
+    super();
+    this.lat = lat;
+    this.lon = lon;
+  }
+  
+  public Point2D(Point2D p) {
+    this.lat = p.lat;
+    this.lon = p.lon;
+  }
 }

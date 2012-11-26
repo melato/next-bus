@@ -2,18 +2,20 @@
  * Copyright (c) 2012, Alex Athanasopoulos.  All Rights Reserved.
  * alex@melato.org
  *-------------------------------------------------------------------------
- * This program is free software: you can redistribute it and/or modify
+ * This file is part of Athens Next Bus
+ *
+ * Athens Next Bus is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * This program is distributed in the hope that it will be useful,
+ * Athens Next Bus is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * along with Athens Next Bus.  If not, see <http://www.gnu.org/licenses/>.
  *-------------------------------------------------------------------------
  */
 package org.melato.bus.model;
@@ -22,16 +24,16 @@ import java.util.AbstractCollection;
 import java.util.Collection;
 import java.util.Iterator;
 
-import org.melato.gps.Point;
+import org.melato.gps.Point2D;
 import org.melato.gpx.Waypoint;
 
 public class NearbyFilter extends AbstractCollection<Waypoint> {
   private Collection<Waypoint> result;
-  private Point target;
+  private Point2D target;
   private float latDelta;
   private float lonDelta;
   
-  public NearbyFilter(Point target, float latDiff, float lonDiff, Collection<Waypoint> result) {
+  public NearbyFilter(Point2D target, float latDiff, float lonDiff, Collection<Waypoint> result) {
     super();
     this.result = result;
     this.target = target;

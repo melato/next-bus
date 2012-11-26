@@ -20,7 +20,7 @@ package org.melato.geometry.gpx;
 
 import java.util.Date;
 
-import org.melato.gps.Point;
+import org.melato.gps.PointTime;
 
 /** Computes speed and expected times of arrival on a path */
 public class SpeedTracker {
@@ -57,14 +57,14 @@ public class SpeedTracker {
     if ( Float.isNaN(time)) {
       return null;
     }
-    Point location = tracker.getLocation();
+    PointTime location = tracker.getLocation();
     if ( location == null )
       return null;
     return new Date(location.getTime() + (long) (time * 1000)); 
   }
   
   private float computeSpeed() {
-    Point location = tracker.getLocation();
+    PointTime location = tracker.getLocation();
     if (location == null)
       return Float.NaN;
     long time = location.getTime();

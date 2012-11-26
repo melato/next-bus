@@ -21,7 +21,7 @@ package org.melato.geometry.gpx;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.melato.gps.Point;
+import org.melato.gps.PointTime;
 import org.melato.gpx.LocalDistance;
 import org.melato.gpx.Metric;
 import org.melato.util.CircularList;
@@ -125,7 +125,7 @@ public class RollingSpeedManager {
 
   private RollingSpeed maxInterval;
   
-  private Point  lastPoint;
+  private PointTime  lastPoint;
   private Metric  metric;
 
   public RollingSpeedManager( Metric metric ) {
@@ -153,7 +153,7 @@ public class RollingSpeedManager {
     return addRollingSpeed(seconds);
   }
   
-  public void addPoint(Point p) {
+  public void addPoint(PointTime p) {
     if ( lastPoint == null ) {
       if ( metric == null ) {
         metric = new LocalDistance(p);
@@ -162,7 +162,7 @@ public class RollingSpeedManager {
       return;
     }
     Span span = new Span(metric.distance(lastPoint,  p),
-        Point.timeDifferenceMillis(lastPoint, p));
+        PointTime.timeDifferenceMillis(lastPoint, p));
     lastPoint = p;
     addSpan(span);
   }  

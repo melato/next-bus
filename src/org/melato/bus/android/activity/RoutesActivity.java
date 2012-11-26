@@ -27,9 +27,7 @@ import org.melato.bus.model.RouteGroup;
 import android.app.ListActivity;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
@@ -45,7 +43,6 @@ import android.widget.TextView;
 public abstract class RoutesActivity extends ListActivity {
   protected BusActivities activities;
   private Object[] items = new Object[0];
-  private SharedPreferences prefs;
   private ColorScheme colors;
 
   protected abstract Object[] initialRoutes();
@@ -57,7 +54,7 @@ public abstract class RoutesActivity extends ListActivity {
       activities = new BusActivities(this);
       items = initialRoutes();
       setListAdapter(new RoutesAdapter());
-      prefs = PreferenceManager.getDefaultSharedPreferences(this);
+      //SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
       colors = UI.getColorScheme(this);
       //prefs.registerOnSharedPreferenceChangeListener(this);
   }

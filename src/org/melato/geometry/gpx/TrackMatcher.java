@@ -20,7 +20,7 @@ package org.melato.geometry.gpx;
 
 import java.util.List;
 
-import org.melato.gpx.Waypoint;
+import org.melato.gps.PointTime;
 
 
 /**
@@ -32,7 +32,7 @@ import org.melato.gpx.Waypoint;
 public class TrackMatcher {
   private TrackMatchingAlgorithm algorithm = new SequenceTrackMatcher();
 
-  public TrackMatcher(List<Waypoint> trackWaypoints, float targetDistance) {
+  public TrackMatcher(PointTime[] trackWaypoints, float targetDistance) {
     algorithm.setProximityDistance(targetDistance);
     algorithm.setTrack(trackWaypoints);
   }
@@ -41,7 +41,7 @@ public class TrackMatcher {
    * @param route The route, specified as a sequence of waypoints.
    * @param score
    */
-  public Score computeScore(List<Waypoint> route) {
+  public Score computeScore(PointTime[] route) {
     return algorithm.computeScore(route);
   }
 

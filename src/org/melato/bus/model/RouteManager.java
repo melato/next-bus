@@ -2,18 +2,20 @@
  * Copyright (c) 2012, Alex Athanasopoulos.  All Rights Reserved.
  * alex@melato.org
  *-------------------------------------------------------------------------
- * This program is free software: you can redistribute it and/or modify
+ * This file is part of Athens Next Bus
+ *
+ * Athens Next Bus is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * This program is distributed in the hope that it will be useful,
+ * Athens Next Bus is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * along with Athens Next Bus.  If not, see <http://www.gnu.org/licenses/>.
  *-------------------------------------------------------------------------
  */
 package org.melato.bus.model;
@@ -26,12 +28,11 @@ import java.util.List;
 import java.util.Map;
 
 import org.melato.gps.Earth;
-import org.melato.gps.Point;
+import org.melato.gps.Point2D;
 import org.melato.gpx.GPX;
 import org.melato.gpx.Sequence;
 import org.melato.gpx.Waypoint;
 import org.melato.log.Clock;
-import org.melato.log.Log;
 import org.melato.progress.ProgressGenerator;
 import org.melato.util.AbstractCollector;
 
@@ -49,6 +50,7 @@ public class RouteManager {
   private Map<RouteId,Route> routeIndex;
   private RouteId cachedRouteId;
   private Route   cachedRoute;
+  private Stop[]  cachedStops;
   private List<Waypoint> cachedWaypoints;
   private Schedule cachedSchedule;
     
@@ -71,11 +73,10 @@ public class RouteManager {
           for(Route route: allRoutes) {
             routeIndex.put(route.getRouteId(), route);            
           }
-          Log.info(clock);
+          //Log.info(clock);
         }
       }
     }
-    Log.info("allRoutes size=" + allRoutes.size());
     return allRoutes;
   }
   public Map<RouteId,Route> getRouteIndex() {
@@ -104,7 +105,6 @@ public class RouteManager {
     if (allRoutes != null) {
       route = routeIndex.get(routeId);
     } else {
-      Log.info( "RouteManager.loadRoute: " + routeId );
       route = storage.loadRoute(routeId);
     }
     synchronized(this) {
@@ -120,7 +120,6 @@ public class RouteManager {
         return cachedSchedule;
       }
     }
-    Log.info( "RouteManager.loadSchedule: " + routeId );
     Schedule schedule = storage.loadSchedule(routeId);
     synchronized(this) {
       setCachedRouteId(routeId);
@@ -140,9 +139,53 @@ public class RouteManager {
     if ( ! isCached(routeId)) {
       cachedRouteId = routeId;
       cachedRoute = null;
+      cachedStops = null;
       cachedWaypoints = null;    
       cachedSchedule = null;
     }
+  }
+
+  /**
+   * Get the list or stops for the route.
+   * Each stop defines
+   * It defines:
+   *  - lat, lon - The stops coordinates
+   *  - sym - The stop symbol
+   *  - name - The stop label
+   *  - time - The duration from the previous stop (in milliseconds)
+   *  - deviation - The statistical deviation from the stated duration
+   * */
+  public Stop[] getStops(RouteId routeId) {
+    synchronized(this) {
+      if ( isCached(routeId) && cachedStops != null) {
+        return cachedStops;
+      }
+    }
+    Stop[] stops = storage.loadStops(routeId).toArray(new Stop[0]);
+    synchronized(this) {
+      setCachedRouteId(routeId);
+      cachedStops = stops;
+    }
+    return stops;
+  }
+
+  public Stop[] getStops(Route route) {
+    return getStops(route.getRouteId());
+  }
+
+
+  private List<Waypoint> stopsToWaypoints(RouteId routeId, Stop[] stops) {
+    Waypoint[] waypoints = new Waypoint[stops.length];
+    List<String> links = Arrays.asList( new String[] { routeId.toString() }); 
+    for( int i = 0; i < waypoints.length; i++ ){
+      Stop stop = stops[i];
+      Waypoint p = new Waypoint(stop);
+      p.setName(stop.getName());
+      p.setSym(stop.getSymbol());
+      p.setLinks(links);
+      waypoints[i] = p;
+    }
+    return Arrays.asList(waypoints);
   }
   /**
    * Get the list or waypoints for the route.
@@ -158,10 +201,12 @@ public class RouteManager {
         return cachedWaypoints;
       }
     }
-    List<Waypoint> waypoints = storage.loadWaypoints(routeId);
+    Stop[] stops = getStops(routeId);
+    List<Waypoint> waypoints = stopsToWaypoints(routeId, stops);
     synchronized(this) {
-      setCachedRouteId(routeId);
-      cachedWaypoints = waypoints;
+      if ( isCached(routeId) ) {
+        cachedWaypoints = waypoints;
+      }
     }
     return waypoints;
   }
@@ -198,10 +243,10 @@ public class RouteManager {
   static class DistanceFilter extends AbstractCollector<Waypoint> {
     Collection<Waypoint> result;
     
-    private Point center;
+    private Point2D center;
     private float distance;
     
-    public DistanceFilter(List<Waypoint> result, Point center, float distance) {
+    public DistanceFilter(List<Waypoint> result, Point2D center, float distance) {
       super();
       this.result = result;
       this.center = center;
@@ -219,13 +264,13 @@ public class RouteManager {
     }    
   }
   
-  public void iterateNearbyRoutes(Point point, float latitudeDifference,
+  public void iterateNearbyRoutes(Point2D point, float latitudeDifference,
       float longitudeDifference, Collection<RouteId> collector) {
     storage.iterateNearbyRoutes(point, latitudeDifference, longitudeDifference,
         collector);
   }
 
-  public List<Waypoint> findNearbyStops(Point point, float distance) {
+  public List<Waypoint> findNearbyStops(Point2D point, float distance) {
     List<Waypoint> result = new ArrayList<Waypoint>();
     DistanceFilter filter = new DistanceFilter(result, point, distance);
     float latDiff = Earth.latitudeForDistance(distance);
@@ -246,7 +291,7 @@ public class RouteManager {
     iterateAllRouteStops(new RouteStopCallback() {
 
       @Override
-      public void add(RouteId routeId, List<Point> waypoints) {
+      public void add(RouteId routeId, List<Point2D> waypoints) {
       }
       
     });

@@ -22,7 +22,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import org.melato.gps.Point;
+import org.melato.gps.Point2D;
+import org.melato.gps.PointTime;
 import org.melato.gpx.GlobalDistance;
 import org.melato.gpx.Metric;
 import org.melato.gpx.Waypoint;
@@ -41,7 +42,7 @@ public class ProximityFinder {
   private Metric metric = new GlobalDistance();
   private float target = 0;
   private float[] lengths;
-  private Waypoint[] waypoints;
+  private Point2D[] waypoints;
   public void setTargetDistance( float d ) {
     target = d;
   }
@@ -61,7 +62,11 @@ public class ProximityFinder {
     setPath(new Path(waypoints));
   }
 
-  public Waypoint[] getWaypoints() {
+  public void setWaypoints(PointTime[] waypoints) {
+    setPath(new Path(waypoints));
+  }
+
+  public Point2D[] getWaypoints() {
     return waypoints;
   }
 
@@ -177,7 +182,7 @@ public class ProximityFinder {
    * @param index
    * @return
    */
-  private Segment findNearbySegment(Point q, int index) {
+  private Segment findNearbySegment(Point2D q, int index) {
     Segment s = new Segment();
     float minDistance = metric.distance(q, waypoints[index]);
     if ( minDistance > target )
@@ -219,7 +224,7 @@ public class ProximityFinder {
    * @param segment  Determines the bounds of the segment to search. 
    * @param nearby The output indexes for the local minima found.
    */
-  private void findNearby(Point q, Segment segment, Collection<Integer> nearby) {
+  private void findNearby(Point2D q, Segment segment, Collection<Integer> nearby) {
     //System.out.println( "findNearby " + segment );
     if ( segment.isEmpty() )
       return;
@@ -305,7 +310,7 @@ public class ProximityFinder {
    * @param q  The waypoint to query.
    * @param nearby An output collection for the resulting indexes.
    */
-  public void findNearby( Point q, Collection<Integer> nearby ) {
+  public void findNearby( Point2D q, Collection<Integer> nearby ) {
     findNearby(q, new Segment(0, waypoints.length - 1), nearby );
   }
   
@@ -314,7 +319,7 @@ public class ProximityFinder {
    * @param q
    * @return A list of the indexes of the found points.
    */
-  public List<Integer> findNearbyIndexes( Point q ) {
+  public List<Integer> findNearbyIndexes( Point2D q ) {
     List<Integer> nearby = new ArrayList<Integer>();
     findNearby(q, new Segment(0, waypoints.length - 1), nearby );
     return nearby;
@@ -325,7 +330,7 @@ public class ProximityFinder {
    * @param q
    * @return The index of such point, or -1
    */
-  public int findClosestNearby( Point q ) {
+  public int findClosestNearby( Point2D q ) {
     List<Integer> nearby = findNearbyIndexes(q);
     int count = nearby.size();
     if ( count < 0 )

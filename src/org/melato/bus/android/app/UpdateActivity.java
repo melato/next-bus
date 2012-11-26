@@ -28,8 +28,6 @@ import org.melato.bus.android.R;
 import org.melato.bus.android.activity.BusActivities;
 import org.melato.bus.android.activity.RoutesActivity;
 import org.melato.bus.model.Route;
-import org.melato.log.Log;
-import org.melato.log.PLog;
 import org.melato.progress.CanceledException;
 import org.melato.progress.ProgressGenerator;
 import org.melato.update.UpdateFile;
@@ -68,7 +66,6 @@ public class UpdateActivity extends Activity implements Runnable {
   }
   @Override
   protected void onCreate(Bundle savedInstanceState) {
-    Log.info(getClass().getName() + ".onCreate");
     super.onCreate(savedInstanceState);
     if ( ! isConnected(this) ) {
       showMessage(MessageState.ERROR, R.string.need_network);
@@ -85,7 +82,6 @@ public class UpdateActivity extends Activity implements Runnable {
       setTitle(R.string.update_required);
     }
     StringBuilder buf = new StringBuilder();
-    Log.info( "getAvailable" );
     for(UpdateFile f: updateManager.getAvailableUpdates()) {
       if ( f.getNote() != null ) {
         if ( buf.length() > 0 ) {
@@ -108,7 +104,6 @@ public class UpdateActivity extends Activity implements Runnable {
   
   /** Called from the cancel button */
   public void cancel(View view) {
-    PLog.info( "cancel()" );
     Button button = (Button) findViewById(R.id.cancel);
     button.setEnabled(false);
     progress.cancel();    

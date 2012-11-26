@@ -26,12 +26,12 @@ import java.util.Map;
 
 import org.melato.bus.model.RouteId;
 import org.melato.bus.model.RouteStopCallback;
-import org.melato.gps.Point;
+import org.melato.gps.Point2D;
 
 public class RoutePointsCollector implements RouteStopCallback {
   private Map<RouteId,RoutePoints> routes = new HashMap<RouteId,RoutePoints>();
   @Override
-  public void add(RouteId routeId, List<Point> waypoints) {
+  public void add(RouteId routeId, List<Point2D> waypoints) {
     RoutePoints points = RoutePoints.createFromPoints(waypoints);
     routes.put(routeId,points);
   }

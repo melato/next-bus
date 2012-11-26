@@ -21,7 +21,7 @@ package org.melato.geometry.gpx;
 import java.util.List;
 
 import org.melato.geometry.gpx.RouteMatcher.Approach;
-import org.melato.gpx.Waypoint;
+import org.melato.gps.PointTime;
 
 public class SequenceTrackMatcher implements TrackMatchingAlgorithm {
   private float proximityDistance;
@@ -33,7 +33,7 @@ public class SequenceTrackMatcher implements TrackMatchingAlgorithm {
   }
 
   @Override
-  public void setTrack(List<Waypoint> track) {
+  public void setTrack(PointTime[] track) {
     matcher = new RouteMatcher(track, proximityDistance);
   }
 
@@ -42,7 +42,7 @@ public class SequenceTrackMatcher implements TrackMatchingAlgorithm {
    * @param route The route, specified as a sequence of waypoints.
    * @param score
    */
-  public Score computeScore(List<Waypoint> route) {
+  public Score computeScore(PointTime[] route) {
     Score score = new Score();
     List<Approach> approaches = matcher.match(route);
     score.setCount(approaches.size());

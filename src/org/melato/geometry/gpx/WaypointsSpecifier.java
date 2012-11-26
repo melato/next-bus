@@ -19,11 +19,10 @@
 package org.melato.geometry.gpx;
 
 import java.io.IOException;
-import java.util.List;
 
-import org.melato.gpx.Waypoint;
+import org.melato.gps.PointTime;
 
 public interface WaypointsSpecifier {
-  List<Waypoint> loadWaypoints() throws IOException;
+  PointTime[] loadWaypoints() throws IOException;
   String getName();
 }

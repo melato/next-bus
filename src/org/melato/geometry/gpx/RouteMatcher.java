@@ -23,6 +23,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.melato.gps.Earth;
+import org.melato.gps.PointTime;
 import org.melato.gpx.Waypoint;
 import org.melato.gpx.util.Path;
 
@@ -34,6 +35,7 @@ import org.melato.gpx.util.Path;
  *  specified by the track.
  */
 public class RouteMatcher {
+  private Path  track;
   private ProximityFinder proximity;
   private float startSpeed;
   
@@ -65,20 +67,21 @@ public class RouteMatcher {
     this.startSpeed = startSpeed * 1000f / 3600f;
   }
 
-  public RouteMatcher(List<Waypoint> track, float proximityDistance ) {
+  public RouteMatcher(PointTime[] track, float proximityDistance ) {
     this(new Path(track), proximityDistance);
   }
   
   public RouteMatcher(Path track, float proximityDistance ) {
+    this.track = track;
     proximity = new ProximityFinder();
     proximity.setPath(track);
     proximity.setTargetDistance(proximityDistance);
   }
   
-  private int trim(Waypoint[] waypoints, int index, int nextIndex) {
+  private int trim(PointTime[] waypoints, int index, int nextIndex) {
     for( ; index < nextIndex; index++ ) {
-      Waypoint p1 = waypoints[index];
-      Waypoint p2 = waypoints[index+1];
+      PointTime p1 = waypoints[index];
+      PointTime p2 = waypoints[index+1];
       float speed = Earth.distance(p1,  p2) - Waypoint.timeDifference(p1,  p2);
       if ( speed > startSpeed ) {
         return index;
@@ -267,13 +270,13 @@ public class RouteMatcher {
     }
   }
   
-  public List<Approach> match(List<Waypoint> route) {
+  public List<Approach> match(PointTime[] route) {
     List<Approach> list = new ArrayList<Approach>();
     List<Integer> nearby = new ArrayList<Integer>();
-    int routeSize = route.size();
+    int routeSize = route.length;
     for( int i = 0; i < routeSize; i++ ) {
       nearby.clear();
-      proximity.findNearby(route.get(i), nearby);
+      proximity.findNearby(route[i], nearby);
       //System.out.println( route.get(i).getName() + " nearby.size=" + nearby.size());
       int nearbySize = nearby.size();
       for( int j = 0; j < nearbySize; j++ ) {
@@ -282,7 +285,7 @@ public class RouteMatcher {
     }
     filter(list);
     if ( list.size() > 1 ) {
-      int firstIndex = trim(proximity.getWaypoints(), list.get(0).trackIndex, list.get(1).trackIndex);      
+      int firstIndex = trim(track.getWaypoints(), list.get(0).trackIndex, list.get(1).trackIndex);      
       list.get(0).trackIndex = firstIndex;
     }
     return list;

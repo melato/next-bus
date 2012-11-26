@@ -26,9 +26,8 @@ import org.melato.bus.android.Info;
 import org.melato.bus.android.R;
 import org.melato.bus.client.NearbyStop;
 import org.melato.bus.client.WaypointDistance;
-import org.melato.gps.Point;
-import org.melato.log.Clock;
-import org.melato.log.Log;
+import org.melato.gps.Point2D;
+import org.melato.gps.PointTime;
 
 import android.app.ListActivity;
 import android.view.View;
@@ -74,11 +73,9 @@ public class NearbyContext extends LocationContext {
       stops[i].setGroup(group % 2);      
     }
   }
-  void load(Point location) {
-    Clock clock = new Clock("NearbyContext.load()" );
+  void load(Point2D location) {
     stops = Info.nearbyManager(context).getNearby(location);
     colorStops(stops);
-    Log.info(clock);
   }
     
   public NearbyStop getStop(int index) {
@@ -88,25 +85,22 @@ public class NearbyContext extends LocationContext {
   public NearbyContext(ListActivity activity) {
     super(activity);
     this.activity = activity;
-    Point center = IntentHelper.getLocation(activity.getIntent());
-    Log.info( "NearbyContext center=" + center);
+    Point2D center = IntentHelper.getLocation(activity.getIntent());
     if ( center != null) {
-      setLocation(center);
+      setCenter(center);
     } else {
-      Point p = Info.nearbyManager(activity).getLastLocation();
+      Point2D p = Info.nearbyManager(activity).getLastLocation();
       if ( p != null ) {
-        setLocation(p);
+        setCenter(p);
       }
       haveLocation = false;
       setEnabledLocations(true);
     }
   }
 
-  public void setLocation(Point point) {
-    super.setLocation(point);
+  private void setCenter(Point2D point) {
     if ( point == null )
       return;
-    //Log.info( "setLocation point=" + point + " haveLocation=" + haveLocation );
     if ( haveLocation ) {
       WaypointDistance.setDistance(stops, point);
       Arrays.sort(stops);
@@ -114,9 +108,13 @@ public class NearbyContext extends LocationContext {
    } else {
       haveLocation = true;
       load(point);
-      Log.info( "activity: " + activity );
       activity.setListAdapter(adapter = new NearbyAdapter());    
     }
+  }
+  
+  public void setLocation(PointTime point) {
+    super.setLocation(point);
+    setCenter(point);
   }
  
 

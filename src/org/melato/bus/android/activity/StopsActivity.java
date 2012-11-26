@@ -24,7 +24,7 @@ import org.melato.bus.android.Info;
 import org.melato.bus.android.R;
 import org.melato.bus.android.app.HelpActivity;
 import org.melato.bus.model.Route;
-import org.melato.gpx.GPX;
+import org.melato.bus.model.Stop;
 import org.melato.gpx.Waypoint;
 import org.melato.log.Log;
 
@@ -54,17 +54,13 @@ public class StopsActivity extends ListActivity {
   @Override
   public void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
-    Log.info("BusActivities");
     activities = new BusActivities(this);
-    Log.info("StopContext");
     stops = new StopsContext(this);
     Route route = activities.getRoute();
-    Log.info("route: " + route);
     setTitle(route.getFullTitle());
 
-    GPX gpx = Info.routeManager(this).loadGPX(route);
-    Log.info("gpx");
-    stops.setGPX(gpx);
+    Stop[] waypoints = Info.routeManager(this).getStops(route);
+    stops.setStops(waypoints);
   }
   
   @Override
@@ -74,8 +70,8 @@ public class StopsActivity extends ListActivity {
   }
 
   private void showStop(int index) {
-    Waypoint p = stops.getWaypoints().get(index);
-    RouteStop stop = new RouteStop(activities.getRouteId(), p.getSym(), index);
+    Stop p = stops.getStops()[index];
+    RouteStop stop = new RouteStop(activities.getRouteId(), p.getSymbol(), index);
     Intent intent = new Intent(this, StopActivity.class);
     IntentHelper helper = new IntentHelper(intent);
     helper.putRouteStop(stop);

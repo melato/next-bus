@@ -18,7 +18,7 @@
  */
 package org.melato.geometry.gpx;
 
-import org.melato.gps.Point;
+import org.melato.gps.Point2D;
 import org.melato.gpx.GlobalDistance;
 import org.melato.gpx.Metric;
 
@@ -30,7 +30,7 @@ import org.melato.gpx.Metric;
 public class PathLength {
   private Metric metric;
   private double length;
-  private Point last;  
+  private Point2D last;  
   
   public PathLength() {
     this(new GlobalDistance());
@@ -40,7 +40,7 @@ public class PathLength {
     this.metric = metric;
   }
 
-  public void add(Point p) {
+  public void add(Point2D p) {
     if (last != null) {
       float d = metric.distance(last, p);
       length += d;

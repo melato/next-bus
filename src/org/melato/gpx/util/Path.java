@@ -21,7 +21,8 @@ package org.melato.gpx.util;
 import java.util.Arrays;
 import java.util.List;
 
-import org.melato.gps.Point;
+import org.melato.gps.Point2D;
+import org.melato.gps.PointTime;
 import org.melato.gpx.GlobalDistance;
 import org.melato.gpx.Metric;
 import org.melato.gpx.Waypoint;
@@ -34,11 +35,11 @@ import org.melato.gpx.Waypoint;
  */
 public class Path {
   private Metric metric = new GlobalDistance();
-  protected Waypoint[] waypoints;
+  protected PointTime[] waypoints;
   protected float[]   lengths;
   
   public Path() {
-    setWaypoints( new Waypoint[0] );
+    setWaypoints( new PointTime[0] );
   }
   
   public Metric getMetric() {
@@ -47,16 +48,17 @@ public class Path {
 
   public Path(Metric metric) {
     this.metric = metric;
-    setWaypoints( new Waypoint[0] );
+    setWaypoints( new PointTime[0] );
+  }
+  
+  public Path(PointTime[] waypoints) {
+    setWaypoints(waypoints);
   }
   
   public Path(List<Waypoint> waypoints) {
-    setWaypoints(waypoints);
+    setWaypoints(waypoints.toArray(new PointTime[waypoints.size()]));
   }
   
-  public Path(Waypoint[] waypoints) {
-    setWaypoints(waypoints);
-  }
   public int size() {
     return lengths.length;
   }  
@@ -64,14 +66,14 @@ public class Path {
     this.waypoints = path.waypoints;
     this.lengths = path.lengths;
   }
-  public void setWaypoints(Waypoint[] waypoints) {
+  public void setWaypoints(PointTime[] waypoints) {
     this.waypoints = waypoints;
     double distance = 0;
     lengths = new float[waypoints.length];
     if ( lengths.length > 0 ) {
-      Waypoint p0 = waypoints[0];
+      PointTime p0 = waypoints[0];
       for( int i = 1; i < lengths.length; i++ ) {
-        Waypoint p = waypoints[i];
+        PointTime p = waypoints[i];
         distance += metric.distance(p0, p);
         lengths[i] = (float) distance;
         p0 = p;
@@ -80,16 +82,11 @@ public class Path {
   }
   
 
-  public void setWaypoints(List<Waypoint> waypoints) {
-    setWaypoints(waypoints.toArray(new Waypoint[waypoints.size()]));
-  }
-  
-  
-  public Waypoint[] getWaypoints() {
+  public PointTime[] getWaypoints() {
     return waypoints;
   }
   
-  public Waypoint getWaypoint(int index) {
+  public PointTime getWaypoint(int index) {
     return waypoints[index];
   }
 
@@ -130,7 +127,7 @@ public class Path {
    * @param p
    * @return
    */
-  public int findNearestIndex(Point p) {
+  public int findNearestIndex(Point2D p) {
     float minDistance = 0;
     int minIndex = -1;
     for( int i = 0; i < waypoints.length; i++ ) {
@@ -146,7 +143,7 @@ public class Path {
   /**
    * Find the closest index from the sub-path [index1, index2], inclusive
    */
-  public int findNearestIndex(Point point, int index1, int index2) {
+  public int findNearestIndex(Point2D point, int index1, int index2) {
     float minDistance = 0;
     int minIndex = -1;
     for( int index = index1; index <= index2; index++ ) {
