@@ -30,9 +30,16 @@ import java.util.GregorianCalendar;
  * May apply to several days of the week if they all have the same schedule every day. */
 public class DaySchedule {
   public static final int SUNDAY = 1;
-  public static final int MONDAY_FRIDAY = 62;
+  public static final int MONDAY = 2;
+  public static final int TUESDAY = 4;
+  public static final int WEDNESDAY = 8;
+  public static final int THURSDAY = 16;
+  public static final int FRIDAY = 32;
   public static final int SATURDAY = 64;
-  public static final int SATURDAY_SUNDAY = 65;
+  
+  public static final int MONDAY_FRIDAY = (MONDAY | TUESDAY | WEDNESDAY | THURSDAY | FRIDAY);
+  public static final int MONDAY_THURSDAY = (MONDAY | TUESDAY | WEDNESDAY | THURSDAY );
+  public static final int SATURDAY_SUNDAY = SATURDAY | SUNDAY;
   public static final int EVERYDAY = 127;
   /** times are stored as minutes from midnight. */
   private int[] times;

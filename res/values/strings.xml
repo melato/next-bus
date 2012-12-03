@@ -13,9 +13,12 @@
     <string name="menu_all_schedules">All</string>
     <string name="all_schedules">All Schedules</string>
     <string name="days_Su">Sunday</string>
-    <string name="days_M_F">Monday-Friday</string>
+    <string name="days_Mo">Monday</string>
+    <string name="days_Tu">Tuesday</string>
+    <string name="days_We">Wednesday</string>
+    <string name="days_Th">Thursday</string>
+    <string name="days_Fr">Friday</string>
     <string name="days_Sa">Saturday</string>
-    <string name="days_SaSu">Saturday-Sunday</string>
     <string name="days_all">Every Day</string>
     <string name="stops"> Stops</string>
     <string name="stop">Stop</string>

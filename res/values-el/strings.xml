@@ -12,9 +12,12 @@
     <string name="menu_all_schedules">Άλλες Μέρες</string>
     <string name="all_schedules">Όλα τα ωράρια</string>
     <string name="days_Su">Κυριακή</string>
-    <string name="days_M_F">Δευτέρα-Παρασκευή</string>
+    <string name="days_Mo">Δευτέρα</string>
+    <string name="days_Tu">Τρίτη</string>
+    <string name="days_We">Τετάρτη</string>
+    <string name="days_Th">Πέμπτη</string>
+    <string name="days_Fr">Παρασκευή</string>
     <string name="days_Sa">Σάββατο</string>
-    <string name="days_SaSu">Σάββατο-Κυριακή</string>
     <string name="days_all">Κάθε μέρα</string>
     <string name="stops">Στάσεις</string>
     <string name="stop">Στάση</string>

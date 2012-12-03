@@ -176,7 +176,7 @@ public class BusActivities  {
       for( Route route: routes ) {
         mru.add(mru.size(), route);
       }
-    } catch(IOException e) {
+    } catch(Exception e) {
     }
     return mru;
   }

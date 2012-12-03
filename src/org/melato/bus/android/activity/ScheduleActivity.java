@@ -57,31 +57,82 @@ public class ScheduleActivity extends Activity {
   private String  stopName;
   private int     timeOffset;
   
-  public static String getScheduleName(Context context, int days) {
-    int resourceId = 0;
-    switch( days ) {
-      case DaySchedule.SUNDAY:
-        resourceId = R.string.days_Su;
-        break;
-      case DaySchedule.MONDAY_FRIDAY:
-        resourceId = R.string.days_M_F;
-        break;
-      case DaySchedule.SATURDAY:
-        resourceId = R.string.days_Sa;
-        break;
-      case DaySchedule.SATURDAY_SUNDAY:
-        resourceId = R.string.days_SaSu;
-        break;
-      case DaySchedule.EVERYDAY:
-        resourceId = R.string.days_all;
-        break;
-      default:
-        return "";
+  
+  
+  private static int getFirstBit(int bitmap ) {
+    if ( bitmap == 0 )
+      return -1;
+    for( int i = 0; i < 32; i++ ) {
+      int bit = 1 << i;
+      if ( (bitmap & bit) != 0 ) {
+        return i;
+      }
     }
-    return context.getResources().getString(resourceId);
-
-    
+    return -1;
   }
+  private static int getLastBit(int bitmap ) {
+    if ( bitmap == 0 )
+      return -1;
+    for( int i = 31; i >= 0; i-- ) {
+      int bit = 1 << i;
+      if ( (bitmap & bit) != 0 ) {
+        return i;
+      }
+    }
+    return -1;
+  }
+  private static boolean isContiguous( int bitmap, int first, int last ) {
+    for( int i = first; i <= last; i++ ) {
+      int bit = 1 << i;
+      if ( (bitmap & bit) == 0 ) {
+        return false;
+      }
+    }
+    return true;    
+  }
+
+  private static final int[] DAY_RESOURCES = {
+    R.string.days_Su,
+    R.string.days_Mo,
+    R.string.days_Tu,
+    R.string.days_We,
+    R.string.days_Th,
+    R.string.days_Fr,
+    R.string.days_Sa,
+  };
+  public static String getDayName(Context context, int bit) {
+    if ( bit < 7 ) {
+      return context.getResources().getString(DAY_RESOURCES[bit]);      
+    }
+    return "";
+  }
+  public static String getScheduleName(Context context, int days) {
+    if ( days == 0 )
+      return "";
+    int first = getFirstBit(days);
+    int last = getLastBit(days);
+    if ( first == last ) {
+      return getDayName(context, first);      
+    }
+    if ( days == 127 ) {
+      return context.getResources().getString(R.string.days_all);
+    }
+    if ( isContiguous(days, first, last)) {
+      return getDayName(context, first) + "-" + getDayName(context,last);
+    }
+    StringBuilder buf = new StringBuilder();
+    for( int i = first; i <= last; i++ ) {
+      int bit = 1 << i;
+      if ( (days & bit) != 0 ) { 
+        if ( i > first ) {
+          buf.append(",");
+        }
+        buf.append(getDayName(context,i));
+      }
+    }
+    return buf.toString();
+  }
+
   protected String getScheduleName() {
     if ( daySchedule == null )
       return "";
