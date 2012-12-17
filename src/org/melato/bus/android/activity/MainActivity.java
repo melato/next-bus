@@ -20,11 +20,8 @@
  */
 package org.melato.bus.android.activity;
 
-import java.util.List;
-
 import org.melato.bus.android.app.UpdateActivity;
 import org.melato.bus.android.db.SqlRouteStorage;
-import org.melato.bus.model.Route;
 
 import android.app.Activity;
 import android.os.Bundle;
@@ -51,8 +48,7 @@ public class MainActivity extends Activity {
         return;
       }
       activities = new BusActivities(this);
-      List<Route> recent = activities.getRecentRoutes();
-      if ( recent.size() > 0 ) {
+      if ( activities.hasRecentRoutes()) {
         RoutesActivity.showRecent(this);
       } else {
         RoutesActivity.showAll(this);

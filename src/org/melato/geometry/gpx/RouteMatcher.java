@@ -23,11 +23,10 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.melato.gps.Earth;
+import org.melato.gps.Point2D;
 import org.melato.gps.PointTime;
-import org.melato.gpx.Waypoint;
-import org.melato.gpx.util.Path;
 
-/** Matches a track to a route and returns a list of approaches.
+/** Matches a track to one or more routes and returns a list of approaches.
  *  An approach is a pair of (route-index, track-index),
  *  where the distance between a route waypoint and the track is shorter than a threshold
  *  and is at a local minimum.
@@ -82,7 +81,7 @@ public class RouteMatcher {
     for( ; index < nextIndex; index++ ) {
       PointTime p1 = waypoints[index];
       PointTime p2 = waypoints[index+1];
-      float speed = Earth.distance(p1,  p2) - Waypoint.timeDifference(p1,  p2);
+      float speed = Earth.distance(p1,  p2) - PointTime.timeDifference(p1,  p2);
       if ( speed > startSpeed ) {
         return index;
       }
@@ -236,7 +235,7 @@ public class RouteMatcher {
     }
   }
 
-  private static String toString( Approach[] approaches, int start, int end ) {
+  public static String toString( Approach[] approaches, int start, int end ) {
     StringBuilder buf = new StringBuilder();
     buf.append( "[");
     int count = 0;
@@ -270,7 +269,11 @@ public class RouteMatcher {
     }
   }
   
-  public List<Approach> match(PointTime[] route) {
+  /** Matches our track to the given route.
+   * @param route The route, presented as a sequence of points.
+   * @return The list of matched approaches.
+   */
+  public List<Approach> match(Point2D[] route) {
     List<Approach> list = new ArrayList<Approach>();
     List<Integer> nearby = new ArrayList<Integer>();
     int routeSize = route.length;

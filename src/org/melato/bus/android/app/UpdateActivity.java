@@ -20,14 +20,11 @@
  */
 package org.melato.bus.android.app;
 
-import java.util.List;
-
 import org.melato.android.progress.ActivityProgressHandler;
 import org.melato.android.progress.ProgressTitleHandler;
 import org.melato.bus.android.R;
 import org.melato.bus.android.activity.BusActivities;
 import org.melato.bus.android.activity.RoutesActivity;
-import org.melato.bus.model.Route;
 import org.melato.progress.CanceledException;
 import org.melato.progress.ProgressGenerator;
 import org.melato.update.UpdateFile;
@@ -126,8 +123,7 @@ public class UpdateActivity extends Activity implements Runnable {
 
   void startMain() {
     BusActivities activities = new BusActivities(this);
-    List<Route> recent = activities.getRecentRoutes();
-    if ( recent.size() > 0 ) {
+    if ( activities.hasRecentRoutes() ) {
       RoutesActivity.showRecent(this);
     } else {
       RoutesActivity.showAll(this);

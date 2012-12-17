@@ -38,6 +38,7 @@ public class DelegateList<S,T> extends AbstractList<T> {
     this.list = list;
   }
 
+  @SuppressWarnings("unchecked")
   @Override
   public T get(int index) {
     return (T) list.get(index);

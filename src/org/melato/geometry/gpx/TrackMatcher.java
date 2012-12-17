@@ -18,8 +18,6 @@
  */
 package org.melato.geometry.gpx;
 
-import java.util.List;
-
 import org.melato.gps.PointTime;
 
 

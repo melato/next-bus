@@ -28,11 +28,10 @@ import java.util.List;
 import java.util.Map;
 
 import org.melato.gps.Earth;
+import org.melato.gps.GlobalDistance;
+import org.melato.gps.LocalDistance;
+import org.melato.gps.Metric;
 import org.melato.gps.Point2D;
-import org.melato.gpx.GPX;
-import org.melato.gpx.Sequence;
-import org.melato.gpx.Waypoint;
-import org.melato.log.Clock;
 import org.melato.progress.ProgressGenerator;
 import org.melato.util.AbstractCollector;
 
@@ -51,7 +50,6 @@ public class RouteManager {
   private RouteId cachedRouteId;
   private Route   cachedRoute;
   private Stop[]  cachedStops;
-  private List<Waypoint> cachedWaypoints;
   private Schedule cachedSchedule;
     
   public RouteManager(RouteStorage storage) {
@@ -67,13 +65,11 @@ public class RouteManager {
     if ( allRoutes == null ) {
       synchronized( this ) {
         if ( allRoutes == null ) {
-          Clock clock = new Clock("getRoutes");
           allRoutes = compact(storage.loadRoutes());
           routeIndex = new HashMap<RouteId,Route>();
           for(Route route: allRoutes) {
             routeIndex.put(route.getRouteId(), route);            
           }
-          //Log.info(clock);
         }
       }
     }
@@ -140,7 +136,6 @@ public class RouteManager {
       cachedRouteId = routeId;
       cachedRoute = null;
       cachedStops = null;
-      cachedWaypoints = null;    
       cachedSchedule = null;
     }
   }
@@ -174,60 +169,6 @@ public class RouteManager {
   }
 
 
-  private List<Waypoint> stopsToWaypoints(RouteId routeId, Stop[] stops) {
-    Waypoint[] waypoints = new Waypoint[stops.length];
-    List<String> links = Arrays.asList( new String[] { routeId.toString() }); 
-    for( int i = 0; i < waypoints.length; i++ ){
-      Stop stop = stops[i];
-      Waypoint p = new Waypoint(stop);
-      p.setName(stop.getName());
-      p.setSym(stop.getSymbol());
-      p.setLinks(links);
-      waypoints[i] = p;
-    }
-    return Arrays.asList(waypoints);
-  }
-  /**
-   * Get the list or waypoints for the route.
-   * Each waypoint is a route stop.
-   * It defines:
-   *  - lat, lon - The stops coordinates
-   *  - sym - The stop symbol
-   *  - name - The stop label  
-   * */
-  public List<Waypoint> getWaypoints(RouteId routeId) {
-    synchronized(this) {
-      if ( isCached(routeId) && cachedWaypoints != null) {
-        return cachedWaypoints;
-      }
-    }
-    Stop[] stops = getStops(routeId);
-    List<Waypoint> waypoints = stopsToWaypoints(routeId, stops);
-    synchronized(this) {
-      if ( isCached(routeId) ) {
-        cachedWaypoints = waypoints;
-      }
-    }
-    return waypoints;
-  }
-
-  public List<Waypoint> getWaypoints(Route route) {
-    return getWaypoints(route.getRouteId());
-  }
-
-  public GPX loadGPX(RouteId routeId) {
-    List<Waypoint> waypoints = getWaypoints(routeId);
-    GPX gpx = new GPX();
-    org.melato.gpx.Route rte = new org.melato.gpx.Route();
-    rte.path = new Sequence(waypoints);
-    gpx.getRoutes().add(rte);
-    return gpx;      
-  }
-
-  public GPX loadGPX(Route route) {
-    return loadGPX(route.getRouteId());
-  }
-
   public String getUri( Route route ) {
     return storage.getUri(route.getRouteId());
   }
@@ -240,13 +181,13 @@ public class RouteManager {
     return storage.loadMarker(symbol);
   }
 
-  static class DistanceFilter extends AbstractCollector<Waypoint> {
-    Collection<Waypoint> result;
+  static class DistanceFilter extends AbstractCollector<Marker> {
+    Collection<Marker> result;
     
     private Point2D center;
     private float distance;
     
-    public DistanceFilter(List<Waypoint> result, Point2D center, float distance) {
+    public DistanceFilter(List<Marker> result, Point2D center, float distance) {
       super();
       this.result = result;
       this.center = center;
@@ -254,7 +195,7 @@ public class RouteManager {
     }
 
     @Override
-    public boolean add(Waypoint p) {
+    public boolean add(Marker p) {
       if ( Earth.distance(center, p) < distance ) {
         result.add(p);
         size++;
@@ -270,8 +211,8 @@ public class RouteManager {
         collector);
   }
 
-  public List<Waypoint> findNearbyStops(Point2D point, float distance) {
-    List<Waypoint> result = new ArrayList<Waypoint>();
+  public List<Marker> findNearbyStops(Point2D point, float distance) {
+    List<Marker> result = new ArrayList<Marker>();
     DistanceFilter filter = new DistanceFilter(result, point, distance);
     float latDiff = Earth.latitudeForDistance(distance);
     float lonDiff = Earth.longitudeForDistance(distance, point.getLat());
@@ -287,6 +228,27 @@ public class RouteManager {
     storage.iterateAllRouteStops(callback);
   }
 
+  public void iteratePrimaryRouteStops(RouteStopCallback callback) {
+    storage.iteratePrimaryRouteStops(callback);
+  }
+
+  /** Get a center point for the whole route collection. */
+  public Point2D getCenter() {
+    Point2D center = storage.getCenter();
+    if ( center == null ) {
+      center = new Point2D( 37.975086f, 23.735683f); // hardcoded Syntagma Square.
+    }
+    return center;    
+  }
+
+  public Metric getMetric() {
+    Point2D center = getCenter();
+    if ( center != null ) {
+      return new LocalDistance(center);
+    }
+    return new GlobalDistance();
+  }
+  
   public void benchmark() {
     iterateAllRouteStops(new RouteStopCallback() {
 
@@ -295,7 +257,7 @@ public class RouteManager {
       }
       
     });
-  }
+  }   
 
   public RouteStorage getStorage() {
     return storage;

@@ -19,7 +19,6 @@
 package org.melato.geometry.gpx;
 
 import org.melato.gps.PointTime;
-import org.melato.gpx.util.Path;
 
 /**
  * Computes the position of track locations along a fixed path.

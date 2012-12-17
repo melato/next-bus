@@ -22,8 +22,8 @@ package org.melato.bus.client;
 
 import java.util.Comparator;
 
+import org.melato.bus.model.Marker;
 import org.melato.bus.model.Route;
-import org.melato.gpx.Waypoint;
 
 /** Maintains information about a bus stop nearby. */
 public class NearbyStop extends WaypointDistance {
@@ -42,7 +42,7 @@ public class NearbyStop extends WaypointDistance {
     }
     
   }
-  public NearbyStop(Waypoint waypoint, Route route) {
+  public NearbyStop(Marker waypoint, Route route) {
     super(waypoint, 0f);
     this.route = route;
   }

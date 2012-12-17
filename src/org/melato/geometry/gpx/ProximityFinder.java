@@ -22,12 +22,10 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import org.melato.gps.GlobalDistance;
+import org.melato.gps.Metric;
 import org.melato.gps.Point2D;
 import org.melato.gps.PointTime;
-import org.melato.gpx.GlobalDistance;
-import org.melato.gpx.Metric;
-import org.melato.gpx.Waypoint;
-import org.melato.gpx.util.Path;
 
 /**
  * Given a sequence of waypoints S and a target proximity distance D,
@@ -58,10 +56,6 @@ public class ProximityFinder {
     lengths = path.getLengths();
   }
   
-  public void setWaypoints(List<Waypoint> waypoints) {
-    setPath(new Path(waypoints));
-  }
-
   public void setWaypoints(PointTime[] waypoints) {
     setPath(new Path(waypoints));
   }
@@ -78,7 +72,7 @@ public class ProximityFinder {
    * @param i2
    * @return
    */
-  private boolean isNear(Waypoint q, int i1, int i2) {
+  private boolean isNear(Point2D q, int i1, int i2) {
     float d1 = metric.distance(q,  waypoints[i1]);
     if ( d1 <= target )
       return true;
@@ -110,7 +104,7 @@ public class ProximityFinder {
    * @param q
    * @return true if the waypoint is near the sequence, otherwise false.
    */
-  public boolean isNear( Waypoint q ) {
+  public boolean isNear( Point2D q ) {
     /**
      * The algorithm:
      * Do a binary search on the sequence points.

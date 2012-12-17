@@ -24,7 +24,6 @@ import java.util.Collection;
 import java.util.List;
 
 import org.melato.gps.Point2D;
-import org.melato.gpx.Waypoint;
 
 /**
  * Provides low-level database access to routes.
@@ -49,14 +48,16 @@ public interface RouteStorage {
   /** Iterate over all stops that are within a certain latitude and longitude difference from a point.
    * The waypoint's links should contain the relevant route-ids.
    * */
-  void iterateNearbyStops(Point2D point, float latitudeDifference, float longitudeDifference, Collection<Waypoint> collector);
+  void iterateNearbyStops(Point2D point, float latitudeDifference, float longitudeDifference, Collection<Marker> collector);
   
   void iterateAllRouteStops(RouteStopCallback callback);
+  void iteratePrimaryRouteStops(RouteStopCallback callback);
 
   /** Iterate over all routes that are within a certain latitude and longitude difference from a point.
    * The waypoint's links should contain the relevant route-ids.
    * */
   void iterateNearbyRoutes(Point2D point, float latitudeDifference, float longitudeDifference, Collection<RouteId> collector);
+  Point2D getCenter();
   /**
    * Return the original web URL for the route at the route provider's web site.
    * @param route

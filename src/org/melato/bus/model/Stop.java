@@ -63,4 +63,9 @@ public class Stop extends PointTime {
   public void setDeviation(float deviation) {
     this.deviation = deviation;
   }
+  @Override
+  public String toString() {
+    return symbol + ":" + name + " " + super.toString();
+  }
+  
 }

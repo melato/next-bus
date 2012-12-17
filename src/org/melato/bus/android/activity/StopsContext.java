@@ -22,10 +22,10 @@ package org.melato.bus.android.activity;
 
 import org.melato.bus.android.R;
 import org.melato.bus.model.Stop;
+import org.melato.geometry.gpx.Path;
 import org.melato.geometry.gpx.PathTracker;
 import org.melato.gps.Earth;
 import org.melato.gps.PointTime;
-import org.melato.gpx.util.Path;
 
 import android.app.ListActivity;
 import android.view.View;

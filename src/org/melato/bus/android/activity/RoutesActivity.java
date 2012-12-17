@@ -121,27 +121,6 @@ public abstract class RoutesActivity extends ListActivity {
   
   @Override
   public boolean onOptionsItemSelected(MenuItem item) {
-    boolean handled = false;
-
-    switch (item.getItemId()) {
-      case R.id.nearby:
-        startActivity(new Intent(this, NearbyActivity.class));
-        handled = true;
-        break;
-      case R.id.all_routes:
-        showAll(this);
-        handled = true;
-        break;
-      case R.id.recent_routes:
-        showRecent(this);
-        handled = true;
-        break;
-      default:
-        break;
-    }
-    if ( ! handled ) {
-      handled = activities.onOptionsItemSelected(item);
-    }
-    return handled;
+    return activities.onOptionsItemSelected(item);
   } 
  }

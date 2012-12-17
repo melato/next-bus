@@ -31,6 +31,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.melato.bus.model.DaySchedule;
+import org.melato.bus.model.Marker;
 import org.melato.bus.model.MarkerInfo;
 import org.melato.bus.model.Route;
 import org.melato.bus.model.RouteId;
@@ -39,9 +40,6 @@ import org.melato.bus.model.RouteStorage;
 import org.melato.bus.model.Schedule;
 import org.melato.bus.model.Stop;
 import org.melato.gps.Point2D;
-import org.melato.gpx.Waypoint;
-import org.melato.log.Clock;
-import org.melato.log.Log;
 import org.melato.progress.ProgressGenerator;
 import org.melato.util.IntArrays;
 import org.melato.util.VariableSubstitution;
@@ -54,20 +52,40 @@ import android.database.sqlite.SQLiteException;
 public class SqlRouteStorage implements RouteStorage {
   public static final String DATABASE_NAME = "ROUTES.db";
   private String databaseFile;
+  private Map<String,String> properties;
   
-  
-  public String getProperty( String name) {
+  private Map<String,String> loadProperties() {
     SQLiteDatabase db = getDatabase();
-    String sql = "select value from properties where name = '%s'";
-    Cursor cursor = db.rawQuery(String.format(Locale.US, sql, quote(name)), null);
+    String sql = "select name, value from properties";
+    Cursor cursor = db.rawQuery(sql, null);
+    Map<String,String> properties = new HashMap<String,String>();
     try {
       if ( cursor.moveToFirst() ) {
-        return cursor.getString(0);
+        do {
+          properties.put( cursor.getString(0), cursor.getString(1));          
+        } while( cursor.moveToNext());
       }
-      return null;
     } finally {
       cursor.close();
     }
+    return properties;
+  }
+  
+  public String getProperty( String name) {
+    if ( properties == null ) {
+      properties = loadProperties();
+    }
+    return properties.get(name);
+  }
+
+  @Override
+  public Point2D getCenter() {
+    String s_lat = getProperty( "center_lat");
+    String s_lon = getProperty( "center_lat");
+    if ( s_lat != null && s_lon != null ) {
+      return new Point2D( Float.parseFloat(s_lat), Float.parseFloat(s_lon));
+    }
+    return null;
   }
   
   @Override
@@ -308,14 +326,15 @@ public class SqlRouteStorage implements RouteStorage {
     }
   }
 
-  @Override
-  public void iterateAllRouteStops(RouteStopCallback callback) {
-    Clock clock = new Clock();
-    SQLiteDatabase db = getDatabase();
+  private void iterateRouteStops(String where, RouteStopCallback callback) {
+    //Clock clock = new Clock();
     String sql = "select lat, lon, routes._id, routes.name, routes.direction from markers" +
         "\njoin stops on markers._id = stops.marker" +
-        "\njoin routes on routes._id = stops.route" +
+        "\njoin routes on routes._id = stops.route " +
+        where +
         "\norder by routes._id, stops.seq";
+    
+    SQLiteDatabase db = getDatabase();
     Cursor cursor = db.rawQuery( sql, null);
     ProgressGenerator progress = ProgressGenerator.get();
     int count = 0;
@@ -351,8 +370,18 @@ public class SqlRouteStorage implements RouteStorage {
   }
 
   @Override
+  public void iterateAllRouteStops(RouteStopCallback callback) {
+    iterateRouteStops("", callback);
+  }
+
+  @Override
+  public void iteratePrimaryRouteStops(RouteStopCallback callback) {
+    iterateRouteStops("where routes.is_primary = 1", callback);
+  }
+
+  @Override
   public void iterateNearbyStops(Point2D point, float latDiff, float lonDiff,
-      Collection<Waypoint> collector) {
+      Collection<Marker> collector) {
     float lat1 = point.getLat() - latDiff;
     float lat2 = point.getLat() + latDiff;
     float lon1 = point.getLon() - lonDiff;
@@ -366,21 +395,23 @@ public class SqlRouteStorage implements RouteStorage {
     Cursor cursor = db.rawQuery(
         String.format( Locale.US, sql, lat1, lat2, lon1, lon2),
         null);
-    Clock clock = new Clock("sql.iterateNearbyStops");
+    //Clock clock = new Clock("sql.iterateNearbyStops");
     if ( cursor.moveToFirst() ) {
       int lastMarkerId = -1;
-      Waypoint p = null;
+      List<RouteId> routes = new ArrayList<RouteId>();
+      Marker marker = null;
       do {
         int markerId = cursor.getInt(6);
         if ( markerId != lastMarkerId) {
           lastMarkerId = markerId;
-          if ( p != null ) {
-            collector.add(p);
-            p = null;
+          if ( marker != null ) {
+            marker.setRoutes(routes.toArray(new RouteId[0]));
+            collector.add(marker);
+            marker = null;
           }
         }
-        if ( p == null ) {
-          p = new Waypoint(cursor.getFloat(0), cursor.getFloat(1));
+        if ( marker == null ) {
+          marker = new Marker(cursor.getFloat(0), cursor.getFloat(1));
           // can check the filter here.
           /*
           if ( Earth.distance(point,  p) > distance ) {
@@ -388,16 +419,17 @@ public class SqlRouteStorage implements RouteStorage {
             continue;
           } 
           */         
-          p.setSym(cursor.getString(2));
-          p.setName(cursor.getString(3));
-          p.setLinks( new ArrayList<String>() );
+          marker.setSymbol(cursor.getString(2));
+          marker.setName(cursor.getString(3));
+          routes.clear();
         }
         String routeName = cursor.getString(4);
         String direction = cursor.getString(5);
-        p.getLinks().add( new RouteId(routeName, direction).toString());
+        routes.add(new RouteId(routeName, direction));
       } while ( cursor.moveToNext() );
-      if ( p != null ) {
-        collector.add(p);
+      if ( marker != null ) {
+        marker.setRoutes(routes.toArray(new RouteId[0]));
+        collector.add(marker);
       }
     }
     cursor.close();
@@ -420,7 +452,7 @@ public class SqlRouteStorage implements RouteStorage {
     Cursor cursor = db.rawQuery(
         String.format( Locale.US, sql, lat1, lat2, lon1, lon2),
         null);
-    Clock clock = new Clock("sql.iterateNearbyRoutes");
+    //Clock clock = new Clock("sql.iterateNearbyRoutes");
     if ( cursor.moveToFirst() ) {
       do {
         RouteId routeId = new RouteId( cursor.getString(0), cursor.getString(1));

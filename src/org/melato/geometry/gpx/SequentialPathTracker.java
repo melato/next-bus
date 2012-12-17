@@ -18,15 +18,8 @@
  */
 package org.melato.geometry.gpx;
 
-import java.util.List;
-
+import org.melato.gps.Metric;
 import org.melato.gps.PointTime;
-import org.melato.gpx.GlobalDistance;
-import org.melato.gpx.LocalDistance;
-import org.melato.gpx.Metric;
-import org.melato.gpx.Waypoint;
-import org.melato.gpx.util.Path;
-import org.melato.log.Log;
 
 /**
  * PathTracker algorithm that assumes the incoming positions follow the set path.
@@ -39,9 +32,9 @@ import org.melato.log.Log;
  */
 public class SequentialPathTracker implements TrackingAlgorithm {
   private Path path;
-  private Metric metric = new GlobalDistance();
+  private Metric metric;
   
-
+  
   /** The last location */
   private PointTime location;
   
@@ -81,21 +74,11 @@ public class SequentialPathTracker implements TrackingAlgorithm {
     setPath(new Path());
   }
   
-  public SequentialPathTracker(List<Waypoint> waypoints) {
-    setPath(new Path(waypoints));
-  }
-
-  
   @Override
   public void setPath(Path path) {
     clearLocation();
     this.path = path;
-    if ( path.size() > 0 && path.getLength() < 200000) {
-      // for path lengths < 200 Km, use local distance
-      metric = new LocalDistance(path.getWaypoints()[0]);
-    } else {
-      metric = new GlobalDistance();
-    } 
+    this.metric = path.getMetric();
   }
 
   @Override
@@ -131,6 +114,7 @@ public class SequentialPathTracker implements TrackingAlgorithm {
     currentIndex = index;
     currentWaypoint = path.getWaypoints()[currentIndex];      
     currentDistance = metric.distance(location, currentWaypoint);
+    //Log.info( "currentIndex=" + currentIndex + " waypoint=" + currentWaypoint + " distance=" + currentDistance);
   }
   
   
@@ -212,6 +196,7 @@ public class SequentialPathTracker implements TrackingAlgorithm {
       //Log.info( "seq.tracker inPath=" + inPath + " currentIndex=" + currentIndex);
       if ( inPath ) {
         float d = metric.distance(point, currentWaypoint);
+        //Log.info( "distance = " + d + " currentDistance=" + currentDistance );
         if ( d <= currentDistance ) {
           // we seem to be moving towards the current waypoint
           currentDistance = d;
@@ -229,8 +214,8 @@ public class SequentialPathTracker implements TrackingAlgorithm {
               // ok, we're moving closer to the nextWaypoint
               pathPosition = interpolatePosition(path, point, i, i + 1);
               setCurrentPosition(point, i+1);
-              //Log.info( "moved to: " + currentWaypoint );
-              break;
+              //Log.info( "moved to: " + (i+1) + " " + currentWaypoint );
+              return;
             }
           }
           //Log.info( "left path");

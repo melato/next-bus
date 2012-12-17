@@ -18,9 +18,9 @@
  */
 package org.melato.geometry.gpx;
 
+import org.melato.gps.GlobalDistance;
+import org.melato.gps.Metric;
 import org.melato.gps.Point2D;
-import org.melato.gpx.GlobalDistance;
-import org.melato.gpx.Metric;
 
 /**
  * Computes the length of a sequence of waypoints, as each point is added.

@@ -20,12 +20,14 @@
  */
 package org.melato.bus.android.map;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
 import org.melato.bus.android.Info;
 import org.melato.bus.model.RouteId;
 import org.melato.bus.model.RouteManager;
+import org.melato.gps.Point2D;
 
 import android.app.Activity;
 import android.content.Context;
@@ -37,12 +39,34 @@ public class RoutePointManager {
   private static RoutePointManager instance;
   private RouteManager routeManager;
   private Map<RouteId,RoutePoints> map = new HashMap<RouteId,RoutePoints>();
-  private boolean loaded;
+  private boolean isLoading;
+  private boolean allLoaded;
+  /**
+   * A callback to notify the map when data loading by a background thread has completed.
+   * Use to redraw the map with the loaded routes.
+   */
+  private LoadListener loadListener;
 
+  class LoadListener implements Runnable {
+    Activity  activity;
+    Runnable  action;
+    
+    public LoadListener(Activity activity, Runnable action) {
+      super();
+      this.activity = activity;
+      this.action = action;
+    }
+
+    @Override
+    public void run() {
+      activity.runOnUiThread(action);
+    }    
+  }
+  
   private RoutePointManager(Context context) {
     super();
-    routeManager = Info.routeManager(context); 
-    new Thread(new RouteLoader()).start();
+    routeManager = Info.routeManager(context);
+    load(false);
   }
 
   public synchronized static RoutePointManager getInstance(Context context) {
@@ -52,33 +76,25 @@ public class RoutePointManager {
     return instance;
   }
   
-  class RouteLoader implements Runnable {
-    public RouteLoader() {
-      super();
-    }
-
-    @Override
-    public void run() {
-      load();
-    }    
-  }
-
-  private void load() {
+  private void load(boolean all) {
     RoutePointsCollector collector = new RoutePointsCollector();
-    routeManager.iterateAllRouteStops(collector);
+    if (all) {
+      routeManager.iterateAllRouteStops(collector);
+    } else {
+      routeManager.iteratePrimaryRouteStops(collector);
+    }
     synchronized(this) {
       map = collector.getMap();
-      loaded =  true;
-      this.notifyAll();
     }
   }
   
   public boolean isLoaded() {
-    return loaded;
+    return allLoaded;
   }
   
-  public boolean isLoading() {
-    return ! isLoaded();
+  private RoutePoints loadRoute(RouteId routeId) {    
+    Point2D[] stops = routeManager.getStops(routeId);
+    return RoutePoints.createFromPoints(Arrays.asList(stops));
   }
   
   /**
@@ -88,51 +104,62 @@ public class RoutePointManager {
    * @return
    */
   public synchronized RoutePoints getRoutePoints(RouteId routeId) {
-    return map.get(routeId);
+    RoutePoints points = map.get(routeId);
+    if ( points == null && ! isLoading ) {
+      // if the route is not loaded, and we are not already loading all routes, load it immediately.
+      // otherwise return null.  The map will be redrawn later.
+      points = loadRoute(routeId);
+      map.put(routeId, points);
+    }
+    return points;
   }  
 
-  /** Run the specified action when the routes are loaded.
-   * If the routes are not loaded, start a new thread that waits for the loading.
-   * Then run the action on the activity's UI thread.
-   * Otherwise run the action immediately. 
+  /** Run the specified action on the activity's UI thread, when the routes are loaded.
    * @param activity
    * @param action
    */
-  public void runWhenLoaded(Activity activity, Runnable action) {
-    boolean isLoaded = false;
-    synchronized (this) {
-      isLoaded = isLoaded();
+  public void setLoadListener(Activity activity, Runnable action) {
+    loadListener = new LoadListener(activity, action);
+  }
+  
+  private void invokeLoadListener() {
+    if ( loadListener != null ) {
+      loadListener.run();
     }
-    if ( isLoaded ) {
-      action.run();
+  }
+  /**
+   * Load all routes, in the background.
+   * If the routes are not loaded, start a new thread that waits for the loading.
+   * Then call the loadListener.
+   * Otherwise call the loadListener immediately. 
+   * @param activity
+   * @param action
+   */
+  public void loadAll() {
+    if ( isLoading )
+      return;
+    if ( allLoaded ) {
+      invokeLoadListener();
     } else {
-      new Thread( new WaitForLoad(activity, action)).start();
+      new Thread( new RouteLoader()).start();
     }
   }
   
-  class WaitForLoad implements Runnable {
-    Activity  activity;
-    Runnable  action;
-    
-    public WaitForLoad(Activity activity, Runnable action) {
+  class RouteLoader implements Runnable {
+    public RouteLoader() {
       super();
-      this.activity = activity;
-      this.action = action;
     }
 
     @Override
     public void run() {
+      isLoading = true;
       try {
-        RoutePointManager rm = RoutePointManager.this;
-        synchronized(rm) {
-          if ( rm.isLoading() ) {
-            rm.wait();
-          }
-        }
-        activity.runOnUiThread(action);
-      } catch (InterruptedException e) {
-      }        
+        load(true);
+      } finally {
+        isLoading = false;
+        allLoaded = true;
+      }
+      invokeLoadListener();
     }    
-  }
-  
+  }  
 }

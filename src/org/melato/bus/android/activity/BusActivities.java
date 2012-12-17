@@ -31,8 +31,7 @@ import org.melato.bus.android.map.RouteMapActivity;
 import org.melato.bus.model.Route;
 import org.melato.bus.model.RouteId;
 import org.melato.bus.model.RouteManager;
-import org.melato.bus.model.xml.RouteHandler;
-import org.melato.bus.model.xml.RouteWriter;
+import org.melato.bus.model.Stop;
 import org.melato.util.MRU;
 
 import android.app.Activity;
@@ -50,7 +49,7 @@ public class BusActivities  {
   
   private static Class<? extends Activity> defaultView = ScheduleActivity.class;
   
-  MRU<Route> mru;
+  MRU<RecentRoute> mru;
   
   private Context context;
 
@@ -80,9 +79,8 @@ public class BusActivities  {
     return intentHelper.getRoute();
   }
 
-  public void showRoute(Route route, RouteStop stop, Class<? extends Activity> activity) {
-    getRecentRoutes().add(route);
-    saveRecentRoutes();
+  public void showRoute(RouteStop stop, Class<? extends Activity> activity) {
+    addRecent(stop);
     Intent intent = new Intent(context, activity);
     new IntentHelper(intent).putRouteStop(stop);
     context.startActivity(intent);    
@@ -92,14 +90,15 @@ public class BusActivities  {
     if ( stop != null && ! route.getRouteId().equals(stop.getRouteId())) {
       stop = new RouteStop(route.getRouteId());
     }
-    showRoute( route, stop, activity);
+    showRoute(stop, activity);
   }
   
-  public void showRoute(Route route, RouteStop stop) {
-    showRoute(route, stop, defaultView );      
+  public void showRoute(RouteStop stop) {
+    showRoute(stop, defaultView );      
   }
+  
   public void showRoute(Route route) {
-    showRoute(route, new RouteStop(route.getRouteId()));
+    showRoute(new RouteStop(route.getRouteId()));
   }
   
   public void showInBrowser(Route route) {
@@ -107,6 +106,20 @@ public class BusActivities  {
     Intent browserIntent = new Intent(Intent.ACTION_VIEW, uri);
     context.startActivity(browserIntent);   
    }
+
+  public void showNearby() {
+    RouteStop routeStop = intentHelper.getRouteStop();
+    if ( routeStop != null ) {
+      Stop[] stops = getRouteManager().getStops(routeStop.getRouteId());
+      int stopIndex = routeStop.getStopIndex(stops);
+      if ( stopIndex >= 0 ) {
+        Stop stop = stops[stopIndex];
+        NearbyActivity.start(context, stop);
+        return;
+      }
+    }
+    context.startActivity(new Intent(context, NearbyActivity.class));    
+  }
   
   public boolean onOptionsItemSelected(MenuItem item) {
     boolean handled = false;
@@ -116,18 +129,25 @@ public class BusActivities  {
       case R.id.recent_routes:
         RoutesActivity.showRecent(context);
         break;
+      case R.id.nearby:
+        showNearby();
+        break;
       case R.id.all_routes:
         RoutesActivity.showAll(context);
         break;
       case R.id.schedule:
-        defaultView = ScheduleActivity.class;
-        showRoute(route, ScheduleActivity.class);
-        handled = true;
+        if ( route != null ) {
+          defaultView = ScheduleActivity.class;
+          showRoute(route, ScheduleActivity.class);
+          handled = true;
+        }
         break;
       case R.id.stops:
-        defaultView = StopsActivity.class;
-        showRoute(route, StopsActivity.class);
-        handled = true;
+        if ( route != null ) {
+          defaultView = StopsActivity.class;
+          showRoute(route, StopsActivity.class);
+          handled = true;
+        }
         break;
       case R.id.map:
         if ( route != null ) {
@@ -162,33 +182,49 @@ public class BusActivities  {
     return handled;
   } 
 
-  private File recentRoutesFile() {
+  public File recentRoutesFile() {
     File cacheDir = context.getCacheDir();
-    return new File(cacheDir, "recent-routes.xml");
+    return new File(cacheDir, "recent-routes.dat");
   }
-  public MRU<Route> getRecentRoutes() {
-    if ( mru != null ) {
-      return mru;
-    }
-    mru = new MRU<Route>(MRU_SIZE);
-    try {
-      List<Route> routes = RouteHandler.parseRoutes(recentRoutesFile());
-      for( Route route: routes ) {
-        mru.add(mru.size(), route);
+  private void addRecent(RouteStop stop) {
+    RecentRoute route = new RecentRoute(stop, getRouteManager());
+    MRU<RecentRoute> recent = getRecentRoutes();
+    int n = recent.size();
+    RouteId routeId = stop.getRouteId();
+    for( int i = n - 1; i >= 0; i-- ) {
+      RecentRoute s = recent.get(i);
+      if ( routeId.equals( s.getRouteId())) {
+        recent.remove(i);
       }
-    } catch(Exception e) {
+    }
+    mru.add(0, route);
+    saveRecentRoutes();
+  }
+  public MRU<RecentRoute> getRecentRoutes() {
+    if ( mru == null ) {
+      mru = new MRU<RecentRoute>(MRU_SIZE);
+      try {
+        RecentRoute[] routes = RecentRoute.read(recentRoutesFile());
+        for( RecentRoute route: routes ) {
+          mru.add(mru.size(), route);
+        }
+      } catch(Exception e) {
+      }
     }
     return mru;
   }
-  void saveRecentRoutes() {
+  private void saveRecentRoutes() {
     if ( mru == null ) {
       return;
     }
     try {
-      RouteWriter writer = new RouteWriter();
-      writer.writeRoutes(mru, recentRoutesFile());
+      RecentRoute.write(mru.toArray(new RecentRoute[0]), recentRoutesFile());
     } catch( IOException e ) {
       throw new RuntimeException(e);
     }
+  }
+  public boolean hasRecentRoutes() {
+    List<RecentRoute> recent = getRecentRoutes();
+    return recent.size() > 0;    
   }
 }

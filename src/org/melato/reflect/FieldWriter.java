@@ -25,13 +25,11 @@ public class FieldWriter implements PropertyWriter {
   Class<?> cls;
   Field field;
   
-  public FieldWriter(Class<?> cls, String name) {
+  public FieldWriter(Class<?> cls, String name) throws NoSuchFieldException {
     this.cls = cls;
     try {
       field = cls.getField(name);
     } catch (SecurityException e) {
-      throw new RuntimeException( e );
-    } catch (NoSuchFieldException e) {
       throw new RuntimeException( e );
     }    
     

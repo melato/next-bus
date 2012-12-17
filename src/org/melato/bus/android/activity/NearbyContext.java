@@ -65,7 +65,7 @@ public class NearbyContext extends LocationContext {
     int group = 0;
     String groupSymbol = null;
     for( int i = 0; i < stops.length; i++ ) {
-      String symbol = stops[i].getWaypoint().getSym();
+      String symbol = stops[i].getWaypoint().getSymbol();
       if ( ! symbol.equals(groupSymbol)) {
         group++;
         groupSymbol = symbol;

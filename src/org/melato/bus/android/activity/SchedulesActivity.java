@@ -25,7 +25,6 @@ import org.melato.bus.android.app.HelpActivity;
 import org.melato.bus.model.DaySchedule;
 import org.melato.bus.model.Route;
 import org.melato.bus.model.Schedule;
-import org.melato.log.Log;
 
 import android.app.ListActivity;
 import android.content.Intent;

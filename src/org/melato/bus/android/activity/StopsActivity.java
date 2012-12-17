@@ -25,8 +25,6 @@ import org.melato.bus.android.R;
 import org.melato.bus.android.app.HelpActivity;
 import org.melato.bus.model.Route;
 import org.melato.bus.model.Stop;
-import org.melato.gpx.Waypoint;
-import org.melato.log.Log;
 
 import android.app.ListActivity;
 import android.content.Intent;

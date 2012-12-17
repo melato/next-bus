@@ -29,7 +29,6 @@ import org.melato.bus.model.Route;
 import org.melato.bus.model.Stop;
 
 import android.app.ListActivity;
-import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -125,9 +124,7 @@ public class StopActivity extends ListActivity {
    * Start the Schedule activity for the given stop.
    */
   private void showStopSchedule() {
-    Intent intent = new Intent(this, ScheduleActivity.class);
-    new IntentHelper(intent).putRouteStop(routeStop);
-    startActivity(intent);        
+    activities.showRoute(routeStop, ScheduleActivity.class);
   }
   @Override
   public boolean onOptionsItemSelected(MenuItem item) {

@@ -21,9 +21,9 @@ package org.melato.geometry.gpx;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.melato.gps.LocalDistance;
+import org.melato.gps.Metric;
 import org.melato.gps.PointTime;
-import org.melato.gpx.LocalDistance;
-import org.melato.gpx.Metric;
 import org.melato.util.CircularList;
 
 

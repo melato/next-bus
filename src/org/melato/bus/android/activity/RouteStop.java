@@ -31,11 +31,16 @@ public class RouteStop implements Serializable {
   private RouteId routeId;
   private String  stopSymbol;
   private int     stopIndex;
+  
+  
   public RouteStop(RouteId routeId) {
     super();
     this.routeId = routeId;
   }
   
+  public boolean hasStop() {
+    return stopSymbol != null || stopIndex >= 0;
+  }
   /** Get the time from the start of the route.
    * @param waypoints
    * @return time in seconds.
@@ -43,7 +48,7 @@ public class RouteStop implements Serializable {
   public int getTimeFromStart(Stop[] stops) {
     if ( stopIndex == -1 && stopSymbol == null )
       return 0;
-    int index = findStopIndex(stops);
+    int index = getStopIndex(stops);
     int time = 0;
     for( int i = 0; i <= index; i++ ) {
       time += (int) (stops[i].getTime() / 1000);
@@ -51,7 +56,7 @@ public class RouteStop implements Serializable {
     return time;    
   }
   
-  private int findStopIndex(Stop[] stops) {
+  public int getStopIndex(Stop[] stops) {
     if ( stopIndex >= 0 && stopIndex < stops.length )
       return stopIndex;
     int size = stops.length;
@@ -64,7 +69,7 @@ public class RouteStop implements Serializable {
   }
   
   public String getStopName(Stop[] stops) {
-    int index = findStopIndex(stops);
+    int index = getStopIndex(stops);
     if ( index >= 0 )
       return stops[index].getName();
     return null;
@@ -98,11 +103,41 @@ public class RouteStop implements Serializable {
   @Override
   public String toString() {
     String s = String.valueOf(routeId);
-    if ( stopSymbol != null ) {
-      s += " " + stopSymbol;
+    if ( stopSymbol != null || stopIndex != -1) {
+      s += " " + stopSymbol + " (" + stopIndex + ")";
     }
     return s;    
   }
   
-  
+  @Override
+  public int hashCode() {
+    final int prime = 31;
+    int result = 1;
+    result = prime * result + ((routeId == null) ? 0 : routeId.hashCode());
+    result = prime * result
+        + ((stopSymbol == null) ? 0 : stopSymbol.hashCode());
+    return result;
+  }
+
+  @Override
+  public boolean equals(Object obj) {
+    if (this == obj)
+      return true;
+    if (obj == null)
+      return false;
+    if (getClass() != obj.getClass())
+      return false;
+    RouteStop other = (RouteStop) obj;
+    if (routeId == null) {
+      if (other.routeId != null)
+        return false;
+    } else if (!routeId.equals(other.routeId))
+      return false;
+    if (stopSymbol == null) {
+      if (other.stopSymbol != null)
+        return false;
+    } else if (!stopSymbol.equals(other.stopSymbol))
+      return false;
+    return true;
+  }
 }

@@ -32,6 +32,6 @@ public class DelegateIterable<T> implements Iterable<T> {
 
   @Override
   public Iterator<T> iterator() {
-    return new DelegateIterator(iterable.iterator());
+    return new DelegateIterator<T>(iterable.iterator());
   }
 }

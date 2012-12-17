@@ -28,7 +28,12 @@ public class FieldWriterFactory implements PropertyWriterFactory {
 
   @Override
   public PropertyWriter getWriter(String name) {
-    return new FieldWriter(cls, name);
+    try {
+      return new FieldWriter(cls, name);
+    } catch (NoSuchFieldException e) {
+      System.err.println( "Ignoring unknown field: " + cls.getName() + "." + name);
+      return new NullPropertyWriter();
+    }
   }
   
 }

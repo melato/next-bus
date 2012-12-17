@@ -24,25 +24,25 @@ import java.text.DecimalFormat;
 import java.util.Arrays;
 import java.util.List;
 
+import org.melato.bus.model.Marker;
 import org.melato.gps.Earth;
 import org.melato.gps.Point2D;
-import org.melato.gpx.Waypoint;
 
 /** Contains a Waypoint and a distance.
  * The distance may be the route distance of the waypoint from the beginning of a route,
  * or the distance between the waypoint and the current location.
  * */
 public class WaypointDistance implements Comparable<WaypointDistance> {
-  private Waypoint  waypoint;
-  private float      distance;
+  private Marker waypoint;
+  private float distance;
   static DecimalFormat kmFormat = new DecimalFormat( "0.00" );
   
-  public WaypointDistance(Waypoint waypoint, float distance) {
+  public WaypointDistance(Marker waypoint, float distance) {
     this.waypoint = waypoint;
     this.distance = distance;
   }
   
-  public Waypoint getWaypoint() {
+  public Marker getWaypoint() {
     return waypoint;
   }
     
@@ -86,10 +86,10 @@ public class WaypointDistance implements Comparable<WaypointDistance> {
    * @param target
    * @return
    */
-  public static Waypoint[] sort(List<Waypoint> waypoints, Point2D target) {
+  public static Marker[] sort(List<Marker> waypoints, Point2D target) {
     WaypointDistance[] array = createArray(waypoints, target );
     Arrays.sort(array);
-    Waypoint[] result = new Waypoint[array.length];
+    Marker[] result = new Marker[array.length];
     for( int i = 0; i < array.length; i++ ) {
       result[i] = array[i].getWaypoint();
     }
@@ -102,10 +102,10 @@ public class WaypointDistance implements Comparable<WaypointDistance> {
     }
   }  
   
-  public static WaypointDistance[] createArray(List<Waypoint> waypoints, Point2D target) {
+  public static WaypointDistance[] createArray(List<Marker> waypoints, Point2D target) {
     WaypointDistance[] array = new WaypointDistance[waypoints.size()];
     for( int i = 0; i < array.length; i++ ) {
-      Waypoint p = waypoints.get(i); 
+      Marker p = waypoints.get(i); 
       float distance = target != null ? Earth.distance(p, target) : 0;
       array[i] = new WaypointDistance(p, distance);
     }

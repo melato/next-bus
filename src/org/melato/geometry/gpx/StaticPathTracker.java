@@ -18,12 +18,8 @@
  */
 package org.melato.geometry.gpx;
 
-import java.util.List;
-
+import org.melato.gps.Metric;
 import org.melato.gps.PointTime;
-import org.melato.gpx.Metric;
-import org.melato.gpx.Waypoint;
-import org.melato.gpx.util.Path;
 
 /**
  * Stateless path tracking algorithm that does not take into account location history
@@ -49,11 +45,6 @@ public class StaticPathTracker implements TrackingAlgorithm {
     super();
     setPath(new Path());
   }
-  
-  public StaticPathTracker(List<Waypoint> waypoints) {
-    setPath(new Path(waypoints));
-  }
-
   
   @Override
   public void setPath(Path path) {

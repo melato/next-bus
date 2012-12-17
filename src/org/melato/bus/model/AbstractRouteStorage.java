@@ -25,7 +25,6 @@ import java.util.Collections;
 import java.util.List;
 
 import org.melato.gps.Point2D;
-import org.melato.gpx.Waypoint;
 
 /**
  * Provides dummy implementations of non-essential RouteStorage methods.
@@ -47,7 +46,7 @@ public abstract class AbstractRouteStorage implements RouteStorage {
 
   @Override
   public void iterateNearbyStops(Point2D point, float latDiff, float lonDiff,
-      Collection<Waypoint> collector) {
+      Collection<Marker> collector) {
     throw new UnsupportedOperationException();
   }
 
@@ -55,8 +54,13 @@ public abstract class AbstractRouteStorage implements RouteStorage {
   public void iterateAllRouteStops(RouteStopCallback callback) {
     throw new UnsupportedOperationException();
   }
-
   
+  @Override
+  public void iteratePrimaryRouteStops(RouteStopCallback callback) {
+    throw new UnsupportedOperationException();
+  }
+
+
   @Override
   public String getUri(RouteId routeId) {
     return null;
@@ -67,5 +71,11 @@ public abstract class AbstractRouteStorage implements RouteStorage {
   public List<Route> loadPrimaryRoutes() {
     return Collections.emptyList();
   }
-    
+
+
+  @Override
+  public Point2D getCenter() {
+    return null;
+  }
+   
 }

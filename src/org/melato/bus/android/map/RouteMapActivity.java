@@ -21,10 +21,15 @@
 package org.melato.bus.android.map;
 
 import org.melato.android.gpx.map.GMap;
+import org.melato.bus.android.Info;
 import org.melato.bus.android.R;
 import org.melato.bus.android.activity.BusActivities;
+import org.melato.bus.android.activity.IntentHelper;
+import org.melato.bus.android.activity.RouteStop;
 import org.melato.bus.android.app.HelpActivity;
 import org.melato.bus.model.Route;
+import org.melato.bus.model.Stop;
+import org.melato.gps.Point2D;
 
 import android.content.Context;
 import android.location.Location;
@@ -65,30 +70,40 @@ public class RouteMapActivity extends MapActivity {
       activities = new BusActivities(this);
       routesOverlay = new RoutesOverlay(this);
       Route route = activities.getRoute();
+      GeoPoint center = null;
       if ( route != null ) {
         title = route.getFullTitle();
         setTitle(title);
         routesOverlay.addRoute(route.getRouteId());
         routesOverlay.setSelectedRoute(route.getRouteId());
+        IntentHelper intentHelper = new IntentHelper(this);
+        RouteStop routeStop = intentHelper.getRouteStop();
+        Stop[] stops = Info.routeManager(this).getStops(route);
+        int index = routeStop.getStopIndex(stops);
+        if ( index >= 0 ) {
+          routesOverlay.setSelectedStop(stops[index]);
+          center = GMap.geoPoint(stops[index]);
+        } else if ( stops.length > 0 ) {
+          center = GMap.geoPoint(stops[0]);
+        }
       }
-
       setContentView(R.layout.map);
       map = (MapView) findViewById(R.id.mapview);
       map.setBuiltInZoomControls(true);
       
       MapController mapController = map.getController();
       mapController.setZoom(defaultZoom);
-      GeoPoint center = routesOverlay.getCenter();
       if ( center == null ) {
-        center = new GeoPoint( 37975086, 23735683); // hardcoded Syntagma Square.  Should move to the database.
+        Point2D dbCenter = activities.getRouteManager().getCenter();
+        if ( dbCenter != null) {
+          center = GMap.geoPoint(dbCenter);
+        }
       }
       if ( center != null ) {
         mapController.setCenter(center);
       }
       map.getOverlays().add(routesOverlay);
-      setTitle(R.string.loading);
-      RoutePointManager rm = RoutePointManager.getInstance(this);
-      rm.runWhenLoaded(this, new OnRoutesLoaded());
+      RoutePointManager.getInstance(this);
   }
 
   @Override
@@ -103,6 +118,15 @@ public class RouteMapActivity extends MapActivity {
     MenuInflater inflater = getMenuInflater();
     inflater.inflate(R.menu.map_menu, menu);
     HelpActivity.addItem(menu, this, R.string.help_map);
+    if ( activities.getRoute() == null) {
+      int[] ids = new int[] { R.id.schedule, R.id.stops };
+      for( int id: ids ) {
+        MenuItem item = menu.findItem(id);
+        if ( item != null ) {
+          item.setEnabled(false);
+        }
+      }
+    }
     return true;
   }
   
@@ -125,7 +149,8 @@ public class RouteMapActivity extends MapActivity {
     if ( ! isShowingAll ) {
       isShowingAll = true;
       RoutePointManager rm = RoutePointManager.getInstance(this);
-      rm.runWhenLoaded(this, new OnRoutesLoaded());
+      rm.setLoadListener(this, new OnRoutesLoaded());
+      rm.loadAll();
     }
   }
   

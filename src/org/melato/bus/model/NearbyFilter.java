@@ -25,22 +25,21 @@ import java.util.Collection;
 import java.util.Iterator;
 
 import org.melato.gps.Point2D;
-import org.melato.gpx.Waypoint;
 
-public class NearbyFilter extends AbstractCollection<Waypoint> {
-  private Collection<Waypoint> result;
+public class NearbyFilter extends AbstractCollection<Marker> {
+  private Collection<Marker> result;
   private Point2D target;
   private float latDelta;
   private float lonDelta;
   
-  public NearbyFilter(Point2D target, float latDiff, float lonDiff, Collection<Waypoint> result) {
+  public NearbyFilter(Point2D target, float latDiff, float lonDiff, Collection<Marker> result) {
     super();
     this.result = result;
     this.target = target;
     this.latDelta = latDiff; 
     this.lonDelta = lonDiff; 
   }
-  private boolean isNearby(Waypoint p) {
+  private boolean isNearby(Marker p) {
     if ( Math.abs(p.getLat() - target.getLat()) > latDelta ) {
       return false;
     }
@@ -50,7 +49,7 @@ public class NearbyFilter extends AbstractCollection<Waypoint> {
     return true;
   }
   @Override
-  public boolean add(Waypoint p) {
+  public boolean add(Marker p) {
     if ( isNearby(p)) {
       result.add(p);
       return true;        
@@ -59,7 +58,7 @@ public class NearbyFilter extends AbstractCollection<Waypoint> {
   }
 
   @Override
-  public Iterator<Waypoint> iterator() {
+  public Iterator<Marker> iterator() {
     throw new UnsupportedOperationException();
   }
 

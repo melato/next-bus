@@ -57,8 +57,16 @@ public class XMLTag {
 	public String getName() {
 		return qName;
 	}
-	
-	/** Return the XML Attributes of the tag. */
+		
+	public String getUri() {
+    return uri;
+  }
+
+  public String getLocalName() {
+    return localName;
+  }
+
+  /** Return the XML Attributes of the tag. */
 	public Attributes getAttributes() {
 		return attributes;
 	}

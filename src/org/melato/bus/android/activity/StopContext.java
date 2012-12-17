@@ -26,11 +26,11 @@ import org.melato.android.ui.PropertiesDisplay;
 import org.melato.bus.android.R;
 import org.melato.bus.model.Schedule;
 import org.melato.bus.model.Stop;
+import org.melato.geometry.gpx.Path;
 import org.melato.geometry.gpx.PathTracker;
 import org.melato.geometry.gpx.SpeedTracker;
 import org.melato.gps.Earth;
 import org.melato.gps.PointTime;
-import org.melato.gpx.util.Path;
 
 import android.content.Context;
 import android.widget.ArrayAdapter;
@@ -120,7 +120,8 @@ public class StopContext extends LocationContext {
   }
   public void setWaypoints(Stop[] waypoints) {
     this.waypoints = waypoints;
-    this.path = new Path(waypoints);
+    path = new Path(getMetric());
+    path.setWaypoints(waypoints);
     pathTracker = new PathTracker();
     pathTracker.setPath(path);
     speed = new SpeedTracker(pathTracker);
