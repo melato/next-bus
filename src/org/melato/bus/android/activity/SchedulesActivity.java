@@ -25,6 +25,7 @@ import org.melato.bus.android.app.HelpActivity;
 import org.melato.bus.model.DaySchedule;
 import org.melato.bus.model.Route;
 import org.melato.bus.model.Schedule;
+import org.melato.bus.model.ScheduleId;
 
 import android.app.ListActivity;
 import android.content.Intent;
@@ -45,6 +46,7 @@ public class SchedulesActivity extends ListActivity {
   protected BusActivities activities;
   private Schedule schedule;
   private DaySchedule[] schedules;
+  private RouteStop routeStop;
   private Route route;
 
   public SchedulesActivity() {
@@ -57,7 +59,7 @@ public class SchedulesActivity extends ListActivity {
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
       TextView view = (TextView) super.getView(position, convertView, parent);
-      String name = ScheduleActivity.getScheduleName(getContext(), this.getItem(position).getDays());
+      String name = ScheduleActivity.getScheduleName(getContext(), this.getItem(position).getScheduleId());
       view.setText( name );
       return view;
     }
@@ -68,6 +70,8 @@ public class SchedulesActivity extends ListActivity {
   @Override
   public void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
+    IntentHelper helper = new IntentHelper(this);
+    routeStop = helper.getRouteStop();
     activities = new BusActivities(this);
     route = activities.getRoute();
     setTitle( route.getFullTitle() );
@@ -79,10 +83,15 @@ public class SchedulesActivity extends ListActivity {
   @Override
   protected void onListItemClick(ListView l, View v, int position, long id) {
     super.onListItemClick(l, v, position, id);
-    int days = schedules[position].getDays();
+    ScheduleId scheduleId = schedules[position].getScheduleId();
     Intent intent = new Intent(this, ScheduleActivity.class);
-    new IntentHelper(intent).putRoute(route);
-    intent.putExtra(ScheduleActivity.KEY_DAYS, days);
+    IntentHelper helper = new IntentHelper(intent);
+    if ( routeStop != null) {
+      helper.putRouteStop(routeStop);
+    } else {
+      helper.putRoute(route);
+    }
+    intent.putExtra(ScheduleActivity.KEY_SCHEDULE_ID, scheduleId);
     startActivity(intent);        
   }
   

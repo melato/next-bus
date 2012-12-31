@@ -1,0 +1,4 @@
+<?xml version="1.0"?>
+<antlib xmlns:current="ant:current" xmlns:export="antlib:org.export">
+  <typedef name="log" classname="org.melato.ant.LogInit"/>
+</antlib>

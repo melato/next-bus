@@ -26,7 +26,7 @@ import org.xml.sax.SAXException;
  * @date Dec 1, 2007
  */
 public class XMLStringHandler extends XMLNullHandler {
-	private StringBuilder buf;
+	protected StringBuilder buf;
 	private	boolean recursive;
 	private	boolean append;
 	private	int		level;

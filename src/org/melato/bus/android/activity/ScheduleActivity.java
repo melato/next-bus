@@ -27,8 +27,10 @@ import org.melato.bus.android.R;
 import org.melato.bus.android.app.HelpActivity;
 import org.melato.bus.client.TimeOfDay;
 import org.melato.bus.client.TimeOfDayList;
+import org.melato.bus.model.DateId;
 import org.melato.bus.model.DaySchedule;
 import org.melato.bus.model.Schedule;
+import org.melato.bus.model.ScheduleId;
 import org.melato.bus.model.Stop;
 
 import android.app.Activity;
@@ -49,7 +51,7 @@ import android.widget.TextView;
  *
  */
 public class ScheduleActivity extends Activity {
-  public static final String KEY_DAYS = "days";
+  public static final String KEY_SCHEDULE_ID = "scheduleId";
   protected BusActivities activities;
   private Schedule schedule;
   private Date  currentTime = new Date();
@@ -106,9 +108,11 @@ public class ScheduleActivity extends Activity {
     }
     return "";
   }
-  public static String getScheduleName(Context context, int days) {
-    if ( days == 0 )
-      return "";
+  public static String getScheduleName(Context context, ScheduleId scheduleId) {
+    int days = scheduleId.getDays();
+    if ( days == 0 ) {
+      return DateId.toString(scheduleId.getDateId());
+    }
     int first = getFirstBit(days);
     int last = getLastBit(days);
     if ( first == last ) {
@@ -136,7 +140,7 @@ public class ScheduleActivity extends Activity {
   protected String getScheduleName() {
     if ( daySchedule == null )
       return "";
-    return getScheduleName(this, daySchedule.getDays());
+    return getScheduleName(this, daySchedule.getScheduleId());
   }
   
   private void setStopInfo(RouteStop stop) {
@@ -159,15 +163,8 @@ public class ScheduleActivity extends Activity {
         return;
       setStopInfo(routeStop);
       schedule = activities.getRouteManager().getSchedule(routeStop.getRouteId());
-      Integer days = (Integer) getIntent().getSerializableExtra(KEY_DAYS);
-      if ( days != null ) {
-        for( DaySchedule d: schedule.getSchedules() ) {
-          if ( days == d.getDays() ) {
-            this.daySchedule = d;
-            break;
-          }
-        }
-      }
+      ScheduleId scheduleId = (ScheduleId) getIntent().getSerializableExtra(KEY_SCHEDULE_ID);
+      this.daySchedule = schedule.getSchedule(scheduleId);
       if ( daySchedule == null ) {
         daySchedule = schedule.getSchedule(currentTime); 
       }

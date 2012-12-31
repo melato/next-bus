@@ -89,8 +89,12 @@ public class XMLMappingHandler implements XMLElementHandler {
 			throw new IllegalArgumentException( "Empty path component in: " + path );
 		}
 	}
+	
+  public void setPathHandler( XMLElementHandler handler, String ... paths ) {
+    setPathHandler( paths, handler);
+  }
 
-	public XMLElementHandler getHandler(XMLTag tag) {
+  public XMLElementHandler getHandler(XMLTag tag) {
 		XMLElementHandler handler = handlerMap.get( tag.getName() );
 		if ( handler == null ) {
 			if ( ! recursive) {

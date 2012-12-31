@@ -38,6 +38,7 @@ import org.melato.bus.model.RouteId;
 import org.melato.bus.model.RouteStopCallback;
 import org.melato.bus.model.RouteStorage;
 import org.melato.bus.model.Schedule;
+import org.melato.bus.model.ScheduleId;
 import org.melato.bus.model.Stop;
 import org.melato.gps.Point2D;
 import org.melato.progress.ProgressGenerator;
@@ -53,41 +54,72 @@ public class SqlRouteStorage implements RouteStorage {
   public static final String DATABASE_NAME = "ROUTES.db";
   private String databaseFile;
   private Map<String,String> properties;
+  private int version;
+  public static final int VERSION_HOLIDAYS = 2;
+  public static final String PROPERTY_VERSION = "version";
+  public static final String PROPERTY_LAT = "center_lat";
+  public static final String PROPERTY_LON = "center_lon";
+  public static final String PROPERTY_DAY_CHANGE = "day_change";
   
   private Map<String,String> loadProperties() {
     SQLiteDatabase db = getDatabase();
-    String sql = "select name, value from properties";
-    Cursor cursor = db.rawQuery(sql, null);
-    Map<String,String> properties = new HashMap<String,String>();
     try {
-      if ( cursor.moveToFirst() ) {
-        do {
-          properties.put( cursor.getString(0), cursor.getString(1));          
-        } while( cursor.moveToNext());
+      String sql = "select name, value from properties";
+      Cursor cursor = db.rawQuery(sql, null);
+      Map<String,String> properties = new HashMap<String,String>();
+      try {
+        if ( cursor.moveToFirst() ) {
+          do {
+            properties.put( cursor.getString(0), cursor.getString(1));          
+          } while( cursor.moveToNext());
+        }
+        return properties;
+      } finally {
+        cursor.close();
       }
     } finally {
-      cursor.close();
+      db.close();
     }
-    return properties;
   }
   
-  public String getProperty( String name) {
+  public String getProperty( String name, String defaultValue) {
     if ( properties == null ) {
       properties = loadProperties();
     }
-    return properties.get(name);
+    String value = properties.get(name);
+    if ( value == null ) {
+      value = defaultValue;
+    }
+    return value;
+  }
+  
+  public String getProperty( String name) {
+    return getProperty(name, null);
+  }
+  
+  public int getVersion() {
+    if ( version == 0 )
+      version = Integer.parseInt(getProperty(PROPERTY_VERSION, "1"));
+    return version;
   }
 
   @Override
   public Point2D getCenter() {
-    String s_lat = getProperty( "center_lat");
-    String s_lon = getProperty( "center_lat");
+    String s_lat = getProperty(PROPERTY_LAT);
+    String s_lon = getProperty(PROPERTY_LON);
     if ( s_lat != null && s_lon != null ) {
       return new Point2D( Float.parseFloat(s_lat), Float.parseFloat(s_lon));
     }
     return null;
-  }
+  }    
   
+  public int getDayChange() {
+    String time = getProperty(PROPERTY_DAY_CHANGE);
+    if ( time == null )
+      return 4*60;
+    return Integer.parseInt(time);
+  }
+
   @Override
   public String getUri(RouteId routeId) {
     String urlTemplate = getProperty( "route_url");
@@ -196,37 +228,70 @@ public class SqlRouteStorage implements RouteStorage {
   }  
   
   private Schedule loadSchedule(SQLiteDatabase db, RouteId routeId) {
-    String sql = "select days, minutes from schedule_times" +
+    String sql = "select schedules._id, days, minutes from schedule_times" +
         "\njoin schedules on schedules._id = schedule_times.schedule" +
         "\njoin routes on routes._id = schedules.route" +
         "\nwhere " + whereClause(routeId) +
-        "\norder by days, minutes";
+        "\norder by schedules._id, minutes";
     Cursor cursor = db.rawQuery( sql, null);
-    List<DaySchedule> daySchedules = new ArrayList<DaySchedule>(); 
+    List<DaySchedule> daySchedules = new ArrayList<DaySchedule>();
+    Map<Integer,DaySchedule> scheduleIds = new HashMap<Integer,DaySchedule>();
     try {
       if ( cursor.moveToFirst() ) {
+        int lastScheduleId = 0;
         int lastDays = 0;
         List<Integer> times = new ArrayList<Integer>();
         do {
-          int days = cursor.getInt(0);
-          int minutes = cursor.getInt(1);
-          if ( days != lastDays ) {
+          int scheduleId = cursor.getInt(0);
+          int days = cursor.getInt(1);
+          int minutes = cursor.getInt(2);
+          if ( scheduleId != lastScheduleId ) {
             if ( ! times.isEmpty() ) {
-              daySchedules.add( new DaySchedule(IntArrays.toArray(times), lastDays));
+              DaySchedule daySchedule = new DaySchedule(IntArrays.toArray(times), ScheduleId.forWeek(lastDays));
+              scheduleIds.put(lastScheduleId, daySchedule);
+              if ( lastDays != 0 ) {
+                daySchedules.add( daySchedule );
+              }
               times.clear();
             }
+            lastScheduleId = scheduleId;
             lastDays = days;
           }
           times.add(minutes);
         } while ( cursor.moveToNext() );
         if ( ! times.isEmpty() ) {
-          daySchedules.add( new DaySchedule(IntArrays.toArray(times), lastDays));
+          DaySchedule daySchedule = new DaySchedule(IntArrays.toArray(times), ScheduleId.forWeek(lastDays));
+          scheduleIds.put(lastScheduleId, daySchedule);
+          if ( lastDays != 0 ) {
+            daySchedules.add( daySchedule );
+          }
         }
       }
-      return new Schedule(daySchedules.toArray(new DaySchedule[0]));
     } finally {
       cursor.close();
     }    
+    if ( getVersion() >= VERSION_HOLIDAYS ) {
+      sql = "select date_id, schedule from schedule_exceptions" +
+          "\njoin routes on routes._id = schedule_exceptions.route" +
+          "\nwhere " + whereClause(routeId) +
+          "\norder by date_id";
+      cursor = db.rawQuery( sql, null);
+      try {
+        if ( cursor.moveToFirst() ) {
+          do {
+            int dateId = cursor.getInt(0);
+            int scheduleId = cursor.getInt(1);
+            DaySchedule daySchedule = scheduleIds.get(scheduleId);
+            daySchedules.add(new DaySchedule(daySchedule.getTimes(), ScheduleId.forDate(dateId)));
+          } while ( cursor.moveToNext() );
+        }
+      } finally {
+        cursor.close();
+      }
+    }
+    Schedule schedule = new Schedule(daySchedules.toArray(new DaySchedule[0]));
+    schedule.setDayChange(getDayChange());
+    return schedule;
   }
 
   public Schedule loadSchedule(RouteId routeId) {

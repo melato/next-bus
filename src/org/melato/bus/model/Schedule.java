@@ -30,6 +30,8 @@ import java.util.GregorianCalendar;
 public class Schedule {
   private DaySchedule[] schedules;
   private String comment;
+  /** The # of minutes after midnight where the schedule is still considered the previous day's schedule. */
+  private int dayChange;
 
   static DecimalFormat d2Format = new DecimalFormat("00");
   
@@ -58,10 +60,6 @@ public class Schedule {
     return Integer.parseInt(time.substring(0,p)) * 60 + Integer.parseInt(time.substring(p+1));
   }
     
-  /** Create an empty schedule. */
-  public Schedule() {
-  }
-
   public Schedule(DaySchedule[] schedules) {
     super();
     this.schedules = schedules;
@@ -71,9 +69,30 @@ public class Schedule {
     return schedules;
   }
   
-  public DaySchedule getSchedule(Date date) {
-    return DaySchedule.findSchedule(schedules, date);    
+  public DaySchedule getSchedule(ScheduleId id) {
+    if (id == null)
+      return null;
+    for( DaySchedule d: getSchedules() ) {
+      if ( id.equals(d.getScheduleId())) {
+        return d;
+      }
+    }
+    return null;    
   }
+  
+  public DaySchedule getSchedule(Date date) {
+    Calendar cal = new GregorianCalendar();
+    cal.setTime(date);
+    cal.add(Calendar.MINUTE, -dayChange); // shift the day back.
+    int dateId = DateId.dateId(cal);
+    for( DaySchedule daySchedule: schedules) {
+      if (daySchedule.matchesDateId(dateId)) {
+        return daySchedule;
+      }
+    }
+    return DaySchedule.findSchedule(schedules, cal.get(Calendar.DAY_OF_WEEK));
+  }
+  
   /** Get the schedule times for a given day of the week. */
   public int[] getTimes( Date date ) {
     DaySchedule schedule = getSchedule(date);
@@ -84,7 +103,7 @@ public class Schedule {
   }
   
   /** Get the schedule times for a given day of the week. */
-  public int[] getTimes( int dayOfWeek ) {
+  public int[] getTimesForDayOfWeek( int dayOfWeek ) {
     DaySchedule schedule = DaySchedule.findSchedule(schedules, dayOfWeek);
     if ( schedule == null ) {
       return new int[0];
@@ -101,11 +120,12 @@ public class Schedule {
     return hour * 60 + minute;
   }
 
+  /** For debugging. */
   @Override
   public String toString() {
     StringBuilder buf = new StringBuilder("Schedule:");
     for( DaySchedule ds: schedules ) {
-      buf.append( " " + ds.getDays() + "=" + ds.getTimes().length);
+      buf.append( " " + ds.getScheduleId() + "=" + ds.getTimes().length);
     }
     return buf.toString();
   }
@@ -118,5 +138,11 @@ public class Schedule {
     this.comment = comment;
   }
 
-  
+  public int getDayChange() {
+    return dayChange;
+  }
+
+  public void setDayChange(int dayChange) {
+    this.dayChange = dayChange;
+  }  
 }

@@ -43,27 +43,43 @@ public class DaySchedule {
   public static final int EVERYDAY = 127;
   /** times are stored as minutes from midnight. */
   private int[] times;
-  private int   days;  // days is a bitmap, bit 0 = sunday, bit 6 = saturday
+  private ScheduleId scheduleId;
   
   public int[] getTimes() {
     return times;
   }
-
-  public int getDays() {
-    return days;
+  
+  public ScheduleId getScheduleId() {
+    return scheduleId;
   }
 
-  public DaySchedule(int[] times, int days) {
+  public boolean matchesDateId(int dateId) {
+    return scheduleId.getDateId() == dateId;
+  }
+  
+  public boolean matchesDayOfWeek(int dayOfWeek) {
+    int bitmap = 1 << (dayOfWeek-Calendar.SUNDAY);
+    return (scheduleId.getDays() & bitmap) != 0;
+  }
+  
+  public boolean isWeekly() {
+    return scheduleId.getDays() != 0;
+  }
+  public boolean isException() {
+    return scheduleId.getDateId() != 0;
+  }
+  
+  public DaySchedule(int[] times, ScheduleId scheduleId) {
     super();
     Arrays.sort(times);
     this.times = times;
-    this.days = days;
+    this.scheduleId = scheduleId;
   }
   
   public static DaySchedule findSchedule(DaySchedule[] schedules, int dayOfWeek) {
     int bitmap = 1 << (dayOfWeek-Calendar.SUNDAY);
     for( DaySchedule schedule: schedules ) {
-      if ( (schedule.days & bitmap) != 0 ) {
+      if ( (schedule.getScheduleId().getDays() & bitmap) != 0 ) {
         return schedule;
       }
     }

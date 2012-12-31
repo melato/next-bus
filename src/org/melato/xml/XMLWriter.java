@@ -30,6 +30,11 @@ import java.util.Map;
 
 import org.xml.sax.Attributes;
 
+/*
+ * This file contains source code adapted from javax/swing/text/html/HMTLWriter.java
+ * which is licensed under GNU GPL v2 from Oracle.  
+ */
+
 /**
  * This is a writer for XML Documents.
  */
@@ -181,11 +186,12 @@ public class XMLWriter {
     	}
     }
     
+    /* Adapted from javax/swing/text/html/HMTLWriter.java */
+
     /**
      * This method is overriden to map any character entities, such as
      * &lt; to &amp;lt;. <code>super.output</code> will be invoked to
      * write the content.
-     * @since 1.3
      */
     public void text(char[] chars, int start, int length)
 	           {

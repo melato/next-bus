@@ -45,7 +45,7 @@ public class TimeOfDay {
 
   @Override
   public String toString() {
-    return Schedule.formatTime(timeMinutes + offsetSeconds/60);
+    return Schedule.formatTime(timeMinutes%(60*24) + offsetSeconds/60);
     /*
     if ( offsetSeconds == 0 ) {
       return Schedule.formatTime(timeMinutes);
