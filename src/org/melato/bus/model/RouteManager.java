@@ -1,5 +1,5 @@
 /*-------------------------------------------------------------------------
- * Copyright (c) 2012, Alex Athanasopoulos.  All Rights Reserved.
+ * Copyright (c) 2012,2013, Alex Athanasopoulos.  All Rights Reserved.
  * alex@melato.org
  *-------------------------------------------------------------------------
  * This file is part of Athens Next Bus
@@ -23,6 +23,7 @@ package org.melato.bus.model;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -44,6 +45,7 @@ import org.melato.util.AbstractCollector;
 public class RouteManager {
   private RouteStorage storage;
   
+  private List<RouteId> allRouteIds;
   private List<Route> allRoutes;
   private List<Route> primaryRoutes;
   private Map<RouteId,Route> routeIndex;
@@ -75,6 +77,22 @@ public class RouteManager {
     }
     return allRoutes;
   }
+
+  public List<RouteId> getRouteIds() {
+    if ( allRouteIds == null ) {
+      synchronized( this ) {
+        if ( allRouteIds == null ) {
+          if ( allRoutes != null ) {
+            allRouteIds = AbstractRouteStorage.extractRouteIds(allRoutes); 
+          } else {
+            allRouteIds = storage.loadRouteIds();
+          }
+        }
+      }
+    }
+    return allRouteIds;
+  }
+
   public Map<RouteId,Route> getRouteIndex() {
     getRoutes();
     return routeIndex;
@@ -122,12 +140,16 @@ public class RouteManager {
       cachedSchedule = schedule;
     }
     return schedule;
-  }
+  }    
 
   public Schedule getSchedule(Route route) {
     return getSchedule(route.getRouteId());
   }
-
+  
+  public DaySchedule getDaySchedule(Route route, Date date) {
+    return storage.loadDaySchedule(route.getRouteId(), date);
+  }
+  
   private boolean isCached(RouteId routeId) {
     return cachedRouteId != null && cachedRouteId.equals(routeId);
   }
@@ -181,22 +203,26 @@ public class RouteManager {
     return storage.loadMarker(symbol);
   }
 
-  static class DistanceFilter extends AbstractCollector<Marker> {
-    Collection<Marker> result;
+  static class DistanceFilter extends AbstractCollector<RStop> {
+    Collection<RStop> result;
+    Metric metric;
     
     private Point2D center;
     private float distance;
     
-    public DistanceFilter(List<Marker> result, Point2D center, float distance) {
+    public DistanceFilter(List<RStop> result, Point2D center, float distance, Metric metric) {
       super();
       this.result = result;
       this.center = center;
       this.distance = distance;
+      this.metric = metric;
     }
 
     @Override
-    public boolean add(Marker p) {
-      if ( Earth.distance(center, p) < distance ) {
+    public boolean add(RStop p) {
+      float d = metric.distance(center, p.getStop());
+      if ( d < distance ) {
+        p.setDistance(d);
         result.add(p);
         size++;
         return true;
@@ -211,9 +237,15 @@ public class RouteManager {
         collector);
   }
 
-  public List<Marker> findNearbyStops(Point2D point, float distance) {
-    List<Marker> result = new ArrayList<Marker>();
-    DistanceFilter filter = new DistanceFilter(result, point, distance);
+  /**
+   * Find all (route,stop) combinations within a certain radius from a point.
+   * @param point
+   * @param distance
+   * @return
+   */
+  public List<RStop> findNearbyStops(Point2D point, float distance) {
+    List<RStop> result = new ArrayList<RStop>();
+    DistanceFilter filter = new DistanceFilter(result, point, distance, getMetric());
     float latDiff = Earth.latitudeForDistance(distance);
     float lonDiff = Earth.longitudeForDistance(distance, point.getLat());
     storage.iterateNearbyStops(point, latDiff, lonDiff, filter);

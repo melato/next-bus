@@ -1,5 +1,5 @@
 /*-------------------------------------------------------------------------
- * Copyright (c) 2012, Alex Athanasopoulos.  All Rights Reserved.
+ * Copyright (c) 2012,2013, Alex Athanasopoulos.  All Rights Reserved.
  * alex@melato.org
  *-------------------------------------------------------------------------
  * This program is free software: you can redistribute it and/or modify
@@ -19,12 +19,10 @@
 package org.melato.geometry.gpx;
 
 
-
-public class Score implements Comparable<Score> {
+/** A generic score for track matching.  Should be subclassed by each matching algorithm */ 
+public abstract class Score implements Comparable<Score> {
   private Object  id;
-  private int     count;
-  
-  
+    
   /**
    * The id of the score, as passed in the constructor.
    * Used for identification.
@@ -46,20 +44,8 @@ public class Score implements Comparable<Score> {
     this.id = id;
   }
 
-  public int getCount() {
-    return count;
-  }
-
-  public void setCount(int count) {
-    this.count = count;
-  }
-
-  @Override
-  public int compareTo(Score score) {
-    return score.count - count;
-  }
   @Override
   public String toString() {
-    return getId() + " " + count;
+    return String.valueOf(getId());
   }  
 }

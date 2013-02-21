@@ -1,5 +1,5 @@
 /*-------------------------------------------------------------------------
- * Copyright (c) 2012, Alex Athanasopoulos.  All Rights Reserved.
+ * Copyright (c) 2012,2013 Alex Athanasopoulos.  All Rights Reserved.
  * alex@melato.org
  *-------------------------------------------------------------------------
  * This file is part of Athens Next Bus
@@ -23,6 +23,7 @@ package org.melato.bus.android.app;
 import java.io.File;
 import java.util.List;
 
+import org.melato.bus.android.Info;
 import org.melato.bus.android.R;
 import org.melato.bus.android.db.SqlRouteStorage;
 import org.melato.progress.ProgressGenerator;
@@ -53,20 +54,19 @@ public class UpdateManager extends PortableUpdateManager {
         updateZipedFile(f, ROUTES_ENTRY, databaseFile);
         continue;
       }
-      if ( "test".equals(f.getName())) {
-        progress.setText("Test");
-        int n = 100;
-        progress.setLimit(n);
-        for( int i = 0; i < n; i++ ) {
-          try {
-            Thread.sleep(50);
-            progress.setPosition(i);
-          } catch (InterruptedException e) {
-          }
-        }
-        setInstalled(f);
-        continue;
-      }
     }
   }
+
+  @Override
+  public boolean isRequired() {
+    if ( super.isRequired() )
+      return true;
+    if ( ! Info.isValidDatabase(context) ) {
+      forceUpdates();
+      return true;
+    }
+    return false;
+  }
+  
+  
 }

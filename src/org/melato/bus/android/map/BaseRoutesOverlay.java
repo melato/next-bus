@@ -1,5 +1,5 @@
 /*-------------------------------------------------------------------------
- * Copyright (c) 2012, Alex Athanasopoulos.  All Rights Reserved.
+ * Copyright (c) 2012,2013 Alex Athanasopoulos.  All Rights Reserved.
  * alex@melato.org
  *-------------------------------------------------------------------------
  * This file is part of Athens Next Bus
@@ -20,6 +20,9 @@
  */
 package org.melato.bus.android.map;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import org.melato.bus.model.RouteId;
 import org.melato.gps.Point2D;
 
@@ -27,6 +30,8 @@ import com.google.android.maps.MapView;
 import com.google.android.maps.Overlay;
 
 public abstract class BaseRoutesOverlay extends Overlay {
+  /** Routes that always display, besides other routes */
+  protected static Set<RouteId> pinnedRoutes = new HashSet<RouteId>();
 
   public abstract void addRoute(RouteId routeId);
 
@@ -35,5 +40,19 @@ public abstract class BaseRoutesOverlay extends Overlay {
   public abstract void setSelectedStop(Point2D stop);
 
   public abstract void refresh(MapView view);
-
+  
+  public static void pinRoute(RouteId routeId) {
+    pinnedRoutes.add(routeId);
+  }
+  
+  public static void unpinRoute(RouteId routeId) {
+    pinnedRoutes.remove(routeId);
+  }
+    
+  public static boolean isPinned(RouteId routeId) {
+    return pinnedRoutes.contains(routeId); 
+  }
+  public static void unpinAll() {
+    pinnedRoutes.clear();
+  }
 }

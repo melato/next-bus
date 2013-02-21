@@ -1,5 +1,5 @@
 /*-------------------------------------------------------------------------
- * Copyright (c) 2012, Alex Athanasopoulos.  All Rights Reserved.
+ * Copyright (c) 2012,2013, Alex Athanasopoulos.  All Rights Reserved.
  * alex@melato.org
  *-------------------------------------------------------------------------
  * This file is part of Athens Next Bus
@@ -29,11 +29,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.melato.bus.model.Marker;
+import org.melato.bus.model.RStop;
 import org.melato.bus.model.Route;
 import org.melato.bus.model.RouteId;
 import org.melato.bus.model.RouteManager;
 import org.melato.gps.Earth;
+import org.melato.gps.Metric;
 import org.melato.gps.Point2D;
 
 /**
@@ -84,26 +85,30 @@ public class NearbyManager {
     }
   }
       
-  private Marker[] filterDistance(List<Marker> waypoints, Point2D target) {    
-    WaypointDistance[] array = WaypointDistance.createArray(waypoints, target);
+  private RStop[] filterDistance(List<RStop> waypoints, Point2D target) {
+    Metric metric = routeManager.getMetric();
+    RStop[] array = waypoints.toArray(new RStop[0]);
+    for( RStop r: array) {
+      r.setDistance(metric.distance(r.getStop(), target));
+    }
     Arrays.sort(array);
     int size = 0;
     for( ; size < array.length; size++ ) {
       if ( array[size].getDistance() > TARGET_DISTANCE )
         break;
     }
-    Marker[] result = new Marker[size];
+    RStop[] result = new RStop[size];
     for( int i = 0; i < size; i++ ) {
-      result[i] = array[i].getWaypoint();
+      result[i] = array[i];
     }
     return result;
   }
   
-  private List<Marker> readCache(Point2D location) {
+  private List<RStop> readCache(Point2D location) {
     Point2D lastLocation = getLastLocation();
     File file = new File(cacheDir, NEARBY_FILE ); 
     if ( lastLocation != null && Earth.distance(lastLocation, location) < CACHE_DISTANCE ) {
-      Marker[] markers = (Marker[]) Serialization.read(Marker[].class, file);
+      RStop[] markers = (RStop[]) Serialization.read(RStop[].class, file);
       if ( markers != null ) {
         return Arrays.asList(markers);
       } else {
@@ -113,9 +118,9 @@ public class NearbyManager {
     return null;
   }
 
-  private void writeCache(List<Marker> list, Point2D location) {
+  private void writeCache(List<RStop> list, Point2D location) {
     File nearbyFile = new File(cacheDir, NEARBY_FILE );
-    Marker[] markers = list.toArray(new Marker[0]);
+    RStop[] markers = list.toArray(new RStop[0]);
     try {
       Serialization.write( markers, nearbyFile );
       setLastLocation(location);
@@ -123,8 +128,8 @@ public class NearbyManager {
     }        
   }
   
-  public Marker[] getNearbyWaypoints(Point2D location) {
-    List<Marker> list = readCache(location);
+  public RStop[] getNearbyWaypoints(Point2D location) {
+    List<RStop> list = readCache(location);
     if ( list == null ) {
       // not in cache.  filter the global list
       list = routeManager.findNearbyStops(location, TARGET_DISTANCE + CACHE_DISTANCE);
@@ -134,20 +139,20 @@ public class NearbyManager {
   }
     
   public NearbyStop[] getNearby(Point2D location) {
-    Marker[] waypoints = getNearbyWaypoints(location);
+    RStop[] waypoints = getNearbyWaypoints(location);
     List<NearbyStop> nearby = new ArrayList<NearbyStop>();
-    Set<RouteId> links = new HashSet<RouteId>();
+    Set<RouteId> routes = new HashSet<RouteId>();
     Map<RouteId,Route> map = routeManager.getRouteIndex();
-    for( Marker p: waypoints ) {
-      for( RouteId link: p.getRoutes() ) {
-        if ( ! links.contains( link )) {
-          links.add(link);
-          Route route = map.get(link);
-          if ( route != null ) {
-            NearbyStop stop = new NearbyStop(p, route);
-            stop.setDistance(Earth.distance(p,  location));
-            nearby.add(stop);
-          }
+    Metric metric = routeManager.getMetric();
+    for( RStop p: waypoints ) {
+      RouteId routeId = p.getRouteId();
+      if ( ! routes.contains( routeId )) {
+        routes.add(routeId);
+        Route route = map.get(routeId);
+        if ( route != null ) {
+          NearbyStop stop = new NearbyStop(p, route);
+          p.setDistance(metric.distance(p.getStop(),  location));
+          nearby.add(stop);
         }
       }
     }

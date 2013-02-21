@@ -1,5 +1,5 @@
 /*-------------------------------------------------------------------------
- * Copyright (c) 2012, Alex Athanasopoulos.  All Rights Reserved.
+ * Copyright (c) 2012,2013, Alex Athanasopoulos.  All Rights Reserved.
  * alex@melato.org
  *-------------------------------------------------------------------------
  * This file is part of Athens Next Bus
@@ -25,6 +25,8 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 
+import org.melato.util.DateId;
+
 
 /** A schedule maintains departure information for one route and for all days of the week. */
 public class Schedule {
@@ -36,12 +38,22 @@ public class Schedule {
   static DecimalFormat d2Format = new DecimalFormat("00");
   
   /**
-   * format a schedule time
+   * format a schedule time as hh:mm
+   * hh may be larger than 24
    * @param time The time in minutes since midnight.
    * @return
    */
   public static String formatTime(int time) {
     return d2Format.format(time/60) + ":" + d2Format.format(time%60);
+  }
+
+  /**
+   * Same as formatTime, but shift hours to the 0-24 range.
+   * @param time
+   * @return
+   */
+  public static String formatTimeMod24(int time) {
+    return d2Format.format((time/60)%24) + ":" + d2Format.format(time%60);
   }
 
   public static String formatDuration(int seconds) {

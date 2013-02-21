@@ -1,5 +1,5 @@
 /*-------------------------------------------------------------------------
- * Copyright (c) 2012, Alex Athanasopoulos.  All Rights Reserved.
+ * Copyright (c) 2012,2013 Alex Athanasopoulos.  All Rights Reserved.
  * alex@melato.org
  *-------------------------------------------------------------------------
  * This file is part of Athens Next Bus
@@ -23,6 +23,7 @@ package org.melato.bus.android.db;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -31,14 +32,15 @@ import java.util.Map;
 import java.util.Set;
 
 import org.melato.bus.model.DaySchedule;
-import org.melato.bus.model.Marker;
 import org.melato.bus.model.MarkerInfo;
+import org.melato.bus.model.RStop;
 import org.melato.bus.model.Route;
 import org.melato.bus.model.RouteId;
 import org.melato.bus.model.RouteStopCallback;
 import org.melato.bus.model.RouteStorage;
 import org.melato.bus.model.Schedule;
 import org.melato.bus.model.ScheduleId;
+import org.melato.bus.model.ScheduleSummary;
 import org.melato.bus.model.Stop;
 import org.melato.gps.Point2D;
 import org.melato.progress.ProgressGenerator;
@@ -49,6 +51,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
+import android.util.SparseArray;
 
 public class SqlRouteStorage implements RouteStorage {
   public static final String DATABASE_NAME = "ROUTES.db";
@@ -56,29 +59,42 @@ public class SqlRouteStorage implements RouteStorage {
   private Map<String,String> properties;
   private int version;
   public static final int VERSION_HOLIDAYS = 2;
+  public static final int VERSION_TIME_OFFSET = 3;
+  public static final int MIN_VERSION = 3;
   public static final String PROPERTY_VERSION = "version";
+  public static final String PROPERTY_DATE = "build_date";
   public static final String PROPERTY_LAT = "center_lat";
   public static final String PROPERTY_LON = "center_lon";
   public static final String PROPERTY_DAY_CHANGE = "day_change";
   
+  private Map<String,String> loadProperties(SQLiteDatabase db) {
+    String sql = "select name, value from properties";
+    Cursor cursor = db.rawQuery(sql, null);
+    Map<String,String> properties = new HashMap<String,String>();
+    try {
+      if ( cursor.moveToFirst() ) {
+        do {
+          properties.put( cursor.getString(0), cursor.getString(1));          
+        } while( cursor.moveToNext());
+      }
+      return properties;
+    } finally {
+      cursor.close();
+    }
+  }
+  
   private Map<String,String> loadProperties() {
     SQLiteDatabase db = getDatabase();
     try {
-      String sql = "select name, value from properties";
-      Cursor cursor = db.rawQuery(sql, null);
-      Map<String,String> properties = new HashMap<String,String>();
-      try {
-        if ( cursor.moveToFirst() ) {
-          do {
-            properties.put( cursor.getString(0), cursor.getString(1));          
-          } while( cursor.moveToNext());
-        }
-        return properties;
-      } finally {
-        cursor.close();
-      }
+      return loadProperties(db);
     } finally {
       db.close();
+    }
+  }
+  
+  private void ensurePropertiesLoaded(SQLiteDatabase db) {
+    if ( properties == null) {
+      properties = loadProperties(db);
     }
   }
   
@@ -101,6 +117,10 @@ public class SqlRouteStorage implements RouteStorage {
     if ( version == 0 )
       version = Integer.parseInt(getProperty(PROPERTY_VERSION, "1"));
     return version;
+  }
+
+  public String getBuildDate() {
+    return getProperty(PROPERTY_DATE, null);
   }
 
   @Override
@@ -185,6 +205,22 @@ public class SqlRouteStorage implements RouteStorage {
   }
 
   @Override
+  public List<RouteId> loadRouteIds() {
+    List<RouteId> routeIds = new ArrayList<RouteId>();
+    SQLiteDatabase db = getDatabase();
+    String sql = "select routes.name, routes.direction from routes";
+    Cursor cursor = db.rawQuery(sql, null);
+    if ( cursor.moveToFirst() ) {
+      do {
+        routeIds.add(new RouteId(cursor.getString(0), cursor.getString(1)));
+      } while( cursor.moveToNext() );
+    }
+    cursor.close();
+    db.close();
+    return routeIds;
+  }
+  
+  @Override
   public List<Route> loadRoutes() {
     return loadRoutes(null);
   }
@@ -227,6 +263,11 @@ public class SqlRouteStorage implements RouteStorage {
     return loadBasic(cursor);
   }  
   
+  private DaySchedule createDaySchedule(int[] times, ScheduleId scheduleId) {
+    DaySchedule daySchedule = new DaySchedule(times, scheduleId);
+    daySchedule.setDayChange(getDayChange());
+    return daySchedule;
+  }
   private Schedule loadSchedule(SQLiteDatabase db, RouteId routeId) {
     String sql = "select schedules._id, days, minutes from schedule_times" +
         "\njoin schedules on schedules._id = schedule_times.schedule" +
@@ -235,7 +276,7 @@ public class SqlRouteStorage implements RouteStorage {
         "\norder by schedules._id, minutes";
     Cursor cursor = db.rawQuery( sql, null);
     List<DaySchedule> daySchedules = new ArrayList<DaySchedule>();
-    Map<Integer,DaySchedule> scheduleIds = new HashMap<Integer,DaySchedule>();
+    SparseArray<DaySchedule> scheduleIds = new SparseArray<DaySchedule>();
     try {
       if ( cursor.moveToFirst() ) {
         int lastScheduleId = 0;
@@ -247,7 +288,7 @@ public class SqlRouteStorage implements RouteStorage {
           int minutes = cursor.getInt(2);
           if ( scheduleId != lastScheduleId ) {
             if ( ! times.isEmpty() ) {
-              DaySchedule daySchedule = new DaySchedule(IntArrays.toArray(times), ScheduleId.forWeek(lastDays));
+              DaySchedule daySchedule = createDaySchedule(IntArrays.toArray(times), ScheduleId.forWeek(lastDays));
               scheduleIds.put(lastScheduleId, daySchedule);
               if ( lastDays != 0 ) {
                 daySchedules.add( daySchedule );
@@ -260,7 +301,7 @@ public class SqlRouteStorage implements RouteStorage {
           times.add(minutes);
         } while ( cursor.moveToNext() );
         if ( ! times.isEmpty() ) {
-          DaySchedule daySchedule = new DaySchedule(IntArrays.toArray(times), ScheduleId.forWeek(lastDays));
+          DaySchedule daySchedule = createDaySchedule(IntArrays.toArray(times), ScheduleId.forWeek(lastDays));
           scheduleIds.put(lastScheduleId, daySchedule);
           if ( lastDays != 0 ) {
             daySchedules.add( daySchedule );
@@ -282,7 +323,7 @@ public class SqlRouteStorage implements RouteStorage {
             int dateId = cursor.getInt(0);
             int scheduleId = cursor.getInt(1);
             DaySchedule daySchedule = scheduleIds.get(scheduleId);
-            daySchedules.add(new DaySchedule(daySchedule.getTimes(), ScheduleId.forDate(dateId)));
+            daySchedules.add(createDaySchedule(daySchedule.getTimes(), ScheduleId.forDate(dateId)));
           } while ( cursor.moveToNext() );
         }
       } finally {
@@ -294,6 +335,45 @@ public class SqlRouteStorage implements RouteStorage {
     return schedule;
   }
 
+  private ScheduleId[] loadScheduleIds(SQLiteDatabase db, RouteId routeId) {
+    String sql = "select days from schedules" +
+        "\njoin routes on routes._id = schedules.route" +
+        "\nwhere days <> 0 AND " + whereClause(routeId) +
+        "\norder by schedules._id";
+    Cursor cursor = db.rawQuery( sql, null);
+    List<ScheduleId> scheduleIds = new ArrayList<ScheduleId>();
+    try {
+      if ( cursor.moveToFirst() ) {
+        do {
+          int days = cursor.getInt(0);
+          ScheduleId scheduleId = ScheduleId.forWeek(days);
+          scheduleIds.add(scheduleId);
+        } while ( cursor.moveToNext() );
+      }
+    } finally {
+      cursor.close();
+    }    
+    if ( getVersion() >= VERSION_HOLIDAYS ) {
+      sql = "select date_id from schedule_exceptions" +
+          "\njoin routes on routes._id = schedule_exceptions.route" +
+          "\nwhere " + whereClause(routeId) +
+          "\norder by date_id";
+      cursor = db.rawQuery( sql, null);
+      try {
+        if ( cursor.moveToFirst() ) {
+          do {
+            int dateId = cursor.getInt(0);
+            ScheduleId scheduleId = ScheduleId.forDate(dateId);
+            scheduleIds.add(scheduleId);
+          } while ( cursor.moveToNext() );
+        }
+      } finally {
+        cursor.close();
+      }
+    }
+    return scheduleIds.toArray(new ScheduleId[0]);
+  }
+
   public Schedule loadSchedule(RouteId routeId) {
     SQLiteDatabase db = getDatabase();
     try {
@@ -303,6 +383,79 @@ public class SqlRouteStorage implements RouteStorage {
     } finally {
       db.close();
     }
+  }
+  
+  private ScheduleSummary loadScheduleSummary(SQLiteDatabase db, RouteId routeId) {
+    ensurePropertiesLoaded(db);
+    ScheduleId[] scheduleIds = loadScheduleIds(db, routeId);
+    return new ScheduleSummary(scheduleIds, getDayChange());
+  }
+
+  @Override
+  public ScheduleSummary loadScheduleSummary(RouteId routeId) {
+    SQLiteDatabase db = getDatabase();
+    try {
+      return loadScheduleSummary(db, routeId);
+    } finally {
+      db.close();
+    }
+  }
+
+  private DaySchedule loadDaySchedule(SQLiteDatabase db, RouteId routeId, ScheduleId scheduleId) {
+    String sql = null;
+    int days = scheduleId.getDays();
+    if ( days != 0 ) {
+      sql = "select minutes from schedule_times" +
+          "\njoin schedules on schedules._id = schedule_times.schedule" +
+          "\njoin routes on routes._id = schedules.route" +
+          "\nwhere days = " + days + " AND " + whereClause(routeId) +
+          "\norder by minutes";
+    } else {
+      sql = "select minutes from schedule_times" +
+          "\njoin schedules on schedules._id = schedule_times.schedule" +
+          "\njoin schedule_exceptions on schedule_exceptions.schedule = schedule._id" +
+          "\njoin routes on routes._id = schedules.route" +
+          "\nwhere date_id = " + scheduleId.getDateId() + " AND " + whereClause(routeId) +
+          "\norder by minutes";
+    }
+    Cursor cursor = db.rawQuery( sql, null);
+    try {
+      List<Integer> times = new ArrayList<Integer>();
+      if ( cursor.moveToFirst() ) {
+        do {
+          times.add(cursor.getInt(0));
+        } while ( cursor.moveToNext() );
+      }
+      return createDaySchedule(IntArrays.toArray(times), scheduleId);
+    } finally {
+      cursor.close();
+    }
+  }
+  
+  @Override
+  public DaySchedule loadDaySchedule(RouteId routeId, ScheduleId scheduleId) {
+    SQLiteDatabase db = getDatabase();
+    try {
+      return loadDaySchedule(db, routeId, scheduleId);
+    } finally {
+      db.close();
+    }
+  }
+  
+  @Override
+  public DaySchedule loadDaySchedule(RouteId routeId, Date date) {
+    SQLiteDatabase db = getDatabase();
+    try {
+      ScheduleSummary summary = loadScheduleSummary(db, routeId);
+      ScheduleId scheduleId = summary.getScheduleId(date);
+      if ( scheduleId != null) {
+        return loadDaySchedule(db, routeId, scheduleId);
+      }
+      return null;
+    } finally {
+      db.close();
+    }
+    
   }
   
   @Override
@@ -367,7 +520,7 @@ public class SqlRouteStorage implements RouteStorage {
   @Override
   public List<Stop> loadStops(RouteId routeId) {
     SQLiteDatabase db = getDatabase();
-    String sql = "select lat, lon, markers.symbol, markers.name, stops.duration from markers" +
+    String sql = "select lat, lon, markers.symbol, markers.name, stops.time_offset from markers" +
         "\njoin stops on markers._id = stops.marker" +
         "\njoin routes on routes._id = stops.route" +
         "\nwhere " + whereClause(routeId) + 
@@ -446,13 +599,16 @@ public class SqlRouteStorage implements RouteStorage {
 
   @Override
   public void iterateNearbyStops(Point2D point, float latDiff, float lonDiff,
-      Collection<Marker> collector) {
+      Collection<RStop> collector) {
     float lat1 = point.getLat() - latDiff;
     float lat2 = point.getLat() + latDiff;
     float lon1 = point.getLon() - lonDiff;
     float lon2 = point.getLon() + lonDiff;
     SQLiteDatabase db = getDatabase();
-    String sql = "select lat, lon, markers.symbol, markers.name, routes.name, routes.direction, markers._id from markers" +
+    String sql = "select routes.name, routes.direction," +
+        " lat, lon, markers.symbol, markers.name, stops.time_offset, stops.seq" +
+        ", markers._id" +
+        " from markers" +
         "\njoin stops on markers._id = stops.marker" +
         "\njoin routes on routes._id = stops.route" +
         "\nwhere lat > %f and lat < %f and lon > %f and lon < %f" +
@@ -462,44 +618,24 @@ public class SqlRouteStorage implements RouteStorage {
         null);
     //Clock clock = new Clock("sql.iterateNearbyStops");
     if ( cursor.moveToFirst() ) {
-      int lastMarkerId = -1;
-      List<RouteId> routes = new ArrayList<RouteId>();
-      Marker marker = null;
       do {
-        int markerId = cursor.getInt(6);
-        if ( markerId != lastMarkerId) {
-          lastMarkerId = markerId;
-          if ( marker != null ) {
-            marker.setRoutes(routes.toArray(new RouteId[0]));
-            collector.add(marker);
-            marker = null;
-          }
-        }
-        if ( marker == null ) {
-          marker = new Marker(cursor.getFloat(0), cursor.getFloat(1));
-          // can check the filter here.
-          /*
-          if ( Earth.distance(point,  p) > distance ) {
-            p = null;
-            continue;
-          } 
-          */         
-          marker.setSymbol(cursor.getString(2));
-          marker.setName(cursor.getString(3));
-          routes.clear();
-        }
-        String routeName = cursor.getString(4);
-        String direction = cursor.getString(5);
-        routes.add(new RouteId(routeName, direction));
+        int i = 0;
+        RouteId routeId = new RouteId(cursor.getString(i), cursor.getString(i+1));
+        i += 2;
+        Stop stop = new Stop(cursor.getFloat(i), cursor.getFloat(i+1));
+        i += 2;
+        stop.setSymbol(cursor.getString(i++));
+        stop.setName(cursor.getString(i++));
+        stop.setTime(1000L * cursor.getInt(i++));
+        int stopIndex = cursor.getInt(i++);        
+        //int markerId = cursor.getInt(i++);
+        RStop rstop = new RStop(routeId, stop, stopIndex);
+        collector.add(rstop);
       } while ( cursor.moveToNext() );
-      if ( marker != null ) {
-        marker.setRoutes(routes.toArray(new RouteId[0]));
-        collector.add(marker);
-      }
     }
     cursor.close();
     db.close();
-    //Log.info(clock);    
+    //Log.info(clock);
   }
 
   @Override
@@ -585,5 +721,9 @@ public class SqlRouteStorage implements RouteStorage {
     } finally {
       db.close();
     }
+  }
+  
+  public boolean checkVersion() {
+    return getVersion() >= MIN_VERSION;
   }
 }

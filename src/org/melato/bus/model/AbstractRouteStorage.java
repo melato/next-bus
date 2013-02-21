@@ -1,5 +1,5 @@
 /*-------------------------------------------------------------------------
- * Copyright (c) 2012, Alex Athanasopoulos.  All Rights Reserved.
+ * Copyright (c) 2012,2013, Alex Athanasopoulos.  All Rights Reserved.
  * alex@melato.org
  *-------------------------------------------------------------------------
  * This file is part of Athens Next Bus
@@ -20,8 +20,10 @@
  */
 package org.melato.bus.model;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 
 import org.melato.gps.Point2D;
@@ -31,6 +33,22 @@ import org.melato.gps.Point2D;
  * @author Alex Athanasopoulos
  */
 public abstract class AbstractRouteStorage implements RouteStorage {
+
+
+  public static List<RouteId> extractRouteIds(List<Route> routes) {
+    RouteId[] routeIds = new RouteId[routes.size()];
+    for( int i = 0; i < routeIds.length; i++ ) {
+      routeIds[i] = routes.get(i).getRouteId();
+    }
+    return Arrays.asList(routeIds);
+  }
+  
+  @Override
+  public List<RouteId> loadRouteIds() {
+    List<Route> routes = loadRoutes();
+    return extractRouteIds(routes);
+  }
+
 
   @Override
   public MarkerInfo loadMarker(String symbol) {
@@ -46,7 +64,7 @@ public abstract class AbstractRouteStorage implements RouteStorage {
 
   @Override
   public void iterateNearbyStops(Point2D point, float latDiff, float lonDiff,
-      Collection<Marker> collector) {
+      Collection<RStop> collector) {
     throw new UnsupportedOperationException();
   }
 
@@ -77,5 +95,38 @@ public abstract class AbstractRouteStorage implements RouteStorage {
   public Point2D getCenter() {
     return null;
   }
-   
+
+
+  private ScheduleSummary toSummary(Schedule schedule) {
+    DaySchedule[] schedules = schedule.getSchedules();
+    ScheduleId[] scheduleIds = new ScheduleId[schedules.length];
+    for( int i = 0; i < schedules.length; i++ ) {
+      scheduleIds[i] = schedules[i].getScheduleId();
+    }
+    return new ScheduleSummary(scheduleIds, schedule.getDayChange());    
+  }
+  
+  @Override
+  public ScheduleSummary loadScheduleSummary(RouteId routeId) {
+    Schedule schedule = loadSchedule(routeId);
+    return toSummary(schedule);
+  }
+
+
+  @Override
+  public DaySchedule loadDaySchedule(RouteId routeId, ScheduleId scheduleId) {
+    Schedule schedule = loadSchedule(routeId);
+    return schedule.getSchedule(scheduleId);
+  }
+
+  @Override
+  public DaySchedule loadDaySchedule(RouteId routeId, Date date) {
+    Schedule schedule = loadSchedule(routeId);
+    ScheduleSummary summary = toSummary(schedule);
+    ScheduleId scheduleId = summary.getScheduleId(date);
+    if ( scheduleId != null) {
+      return schedule.getSchedule(scheduleId);
+    }
+    return null;
+  }
 }

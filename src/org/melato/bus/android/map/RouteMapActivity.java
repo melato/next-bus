@@ -1,5 +1,5 @@
 /*-------------------------------------------------------------------------
- * Copyright (c) 2012, Alex Athanasopoulos.  All Rights Reserved.
+ * Copyright (c) 2012,2013 Alex Athanasopoulos.  All Rights Reserved.
  * alex@melato.org
  *-------------------------------------------------------------------------
  * This file is part of Athens Next Bus
@@ -28,6 +28,7 @@ import org.melato.bus.android.activity.IntentHelper;
 import org.melato.bus.android.activity.RouteStop;
 import org.melato.bus.android.app.HelpActivity;
 import org.melato.bus.model.Route;
+import org.melato.bus.model.RouteId;
 import org.melato.bus.model.Stop;
 import org.melato.gps.Point2D;
 
@@ -52,6 +53,7 @@ public class RouteMapActivity extends MapActivity {
   private boolean isShowingAll;
   private String title;
   private static int defaultZoom = 15;
+  private Route route;
   
   @Override
   protected boolean isRouteDisplayed() {
@@ -69,7 +71,7 @@ public class RouteMapActivity extends MapActivity {
       super.onCreate(savedInstanceState);
       activities = new BusActivities(this);
       routesOverlay = new RoutesOverlay(this);
-      Route route = activities.getRoute();
+      route = activities.getRoute();
       GeoPoint center = null;
       if ( route != null ) {
         title = route.getFullTitle();
@@ -127,7 +129,23 @@ public class RouteMapActivity extends MapActivity {
         }
       }
     }
+    configurePinMenu(menu.findItem(R.id.pin));
     return true;
+  }
+  
+  private void configurePinMenu(MenuItem pinMenu) {
+    if ( route != null ) {
+      boolean isPinned = BaseRoutesOverlay.isPinned(route.getRouteId());
+      pinMenu.setEnabled(true);
+      if (isPinned ) {
+        pinMenu.setTitle(R.string.unpin_route);
+      } else {
+        pinMenu.setTitle(R.string.pin_route);
+      }
+    } else {
+      pinMenu.setEnabled(false);
+      pinMenu.setTitle(R.string.pin_route);
+    }
   }
   
   class OnRoutesLoaded implements Runnable {
@@ -160,6 +178,24 @@ public class RouteMapActivity extends MapActivity {
     switch(item.getItemId()) {
       case R.id.refresh:
         showAllRoutes();
+        handled = true;
+        break;
+      case R.id.pin:
+        if ( route != null ) {
+          RouteId routeId = route.getRouteId();
+          boolean isPinned = BaseRoutesOverlay.isPinned(routeId);
+          if ( isPinned ) {
+            BaseRoutesOverlay.unpinRoute(routeId);
+          } else {
+            BaseRoutesOverlay.pinRoute(routeId);
+          }
+          configurePinMenu(item);
+          map.invalidate();
+        }
+        handled = true;
+        break;
+      case R.id.unpin_all:
+        BaseRoutesOverlay.unpinAll();
         handled = true;
         break;
     }

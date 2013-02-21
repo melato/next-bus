@@ -1,5 +1,5 @@
 /*-------------------------------------------------------------------------
- * Copyright (c) 2012, Alex Athanasopoulos.  All Rights Reserved.
+ * Copyright (c) 2012,2013, Alex Athanasopoulos.  All Rights Reserved.
  * alex@melato.org
  *-------------------------------------------------------------------------
  * This program is free software: you can redistribute it and/or modify
@@ -21,8 +21,13 @@ package org.melato.android.ui;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.melato.android.util.Invokable;
+
 import android.content.Context;
+import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.TextView;
 
 
 /**
@@ -41,16 +46,27 @@ public class PropertiesDisplay {
 
   public static String formatProperty( String label, Object value ) {
     String s = (value == null) ? "" : value.toString();
-    return label + ": " + s;
+    if ( label != null && label.length() != 0 ) {
+      s = label + ": " + s;
+    }
+    return s;
   }
   
   public String formatProperty( int labelResourceId, Object value ) {
     return formatProperty( context.getResources().getString(labelResourceId), value);
   }
   
-  static class Item {
+  /** An item is a label and a value. */
+  public static class Item {
+    int   id;
     String label;
     Object value;
+    
+    public Item(Context context, int labelResourceId, Object value ) {
+      this.id = labelResourceId;
+      this.label = context.getResources().getString(labelResourceId);
+      this.value = value;
+    }
     public Item(String label, Object value) {
       super();
       this.label = label;
@@ -59,6 +75,9 @@ public class PropertiesDisplay {
     @Override
     public String toString() {
       return formatProperty(label, value);
+    }
+    public int getId() {
+      return id;
     }
     public String getLabel() {
       return label;
@@ -81,7 +100,7 @@ public class PropertiesDisplay {
     items.add( new Item(label, value));
   }
   public void add( int labelResourceId, Object value ) {
-    items.add( new Item(context.getResources().getString(labelResourceId), value));
+    items.add( new Item(context, labelResourceId, value));
   }
   public void addText( String text ) {
     if ( text == null )
@@ -94,11 +113,41 @@ public class PropertiesDisplay {
   }
   
   class ItemAdapter extends ArrayAdapter<Object> {
+    int normalColorId;
+    int linkColorId;
     public ItemAdapter(int viewResourceId) {
       super(context, viewResourceId, items);
+    }
+    
+    public void setNormalColorId(int normalColorId) {
+      this.normalColorId = normalColorId;
+    }
+
+    public void setLinkColorId(int linkColorId) {
+      this.linkColorId = linkColorId;
+    }
+
+    @Override
+    public View getView(int position, View convertView, ViewGroup parent) {
+      TextView textView = (TextView) super.getView(position,convertView,parent);
+      if ( normalColorId != 0 && linkColorId != 0) {
+        Object p = items.get(position);
+        if ( p instanceof Invokable ) {
+          textView.setTextColor(context.getResources().getColor(linkColorId));
+        } else {
+          textView.setTextColor(context.getResources().getColor(normalColorId));
+        }
+      }
+      return textView;
     }
   }
   public ArrayAdapter<Object> createAdapter(int listItemId) {
     return new ItemAdapter(listItemId);
+  }
+  public ArrayAdapter<Object> createAdapter(int listItemId, int normalColorId, int linkColorId) {
+    ItemAdapter adapter = new ItemAdapter(listItemId);
+    adapter.setNormalColorId(normalColorId);
+    adapter.setLinkColorId(linkColorId);
+    return adapter;
   }
 }

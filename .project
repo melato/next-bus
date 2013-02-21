@@ -1,8 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <projectDescription>
-	<name>melato.bus.android</name>
+	<name>bus.android</name>
 	<comment></comment>
 	<projects>
+		<project>melato.geometry</project>
+		<project>melato.gps</project>
+		<project>melato.gpx</project>
+		<project>melato.util</project>
+		<project>melato.xml</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>
@@ -30,4 +35,51 @@
 		<nature>com.android.ide.eclipse.adt.AndroidNature</nature>
 		<nature>org.eclipse.jdt.core.javanature</nature>
 	</natures>
+	<linkedResources>
+		<link>
+			<name>android.gpx</name>
+			<type>2</type>
+			<location>/main/dev/android.gpx/src/main/java</location>
+		</link>
+		<link>
+			<name>bus</name>
+			<type>2</type>
+			<location>/main/dev/bus/src/main/java</location>
+		</link>
+		<link>
+			<name>geometry</name>
+			<type>2</type>
+			<location>/main/dev/geometry/src/main/java</location>
+		</link>
+		<link>
+			<name>gps</name>
+			<type>2</type>
+			<location>/main/dev/gps/src/main/java</location>
+		</link>
+		<link>
+			<name>gpx</name>
+			<type>2</type>
+			<location>/main/dev/gpx/src/main/java</location>
+		</link>
+		<link>
+			<name>melato.android</name>
+			<type>2</type>
+			<location>/main/dev/melato.android/src/main/java</location>
+		</link>
+		<link>
+			<name>melato.progress</name>
+			<type>2</type>
+			<location>/main/dev/melato.progress/src/main/java</location>
+		</link>
+		<link>
+			<name>melato.util</name>
+			<type>2</type>
+			<location>/main/dev/melato.util/src/main/java</location>
+		</link>
+		<link>
+			<name>xml</name>
+			<type>2</type>
+			<location>/main/dev/java/xml/src/main/java</location>
+		</link>
+	</linkedResources>
 </projectDescription>

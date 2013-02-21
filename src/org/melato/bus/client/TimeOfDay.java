@@ -1,5 +1,5 @@
 /*-------------------------------------------------------------------------
- * Copyright (c) 2012, Alex Athanasopoulos.  All Rights Reserved.
+ * Copyright (c) 2012,2013, Alex Athanasopoulos.  All Rights Reserved.
  * alex@melato.org
  *-------------------------------------------------------------------------
  * This file is part of Athens Next Bus
@@ -45,7 +45,7 @@ public class TimeOfDay {
 
   @Override
   public String toString() {
-    return Schedule.formatTime(timeMinutes%(60*24) + offsetSeconds/60);
+    return Schedule.formatTimeMod24(timeMinutes + offsetSeconds/60);
     /*
     if ( offsetSeconds == 0 ) {
       return Schedule.formatTime(timeMinutes);

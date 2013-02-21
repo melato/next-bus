@@ -1,5 +1,5 @@
 /*-------------------------------------------------------------------------
- * Copyright (c) 2012, Alex Athanasopoulos.  All Rights Reserved.
+ * Copyright (c) 2012,2013, Alex Athanasopoulos.  All Rights Reserved.
  * alex@melato.org
  *-------------------------------------------------------------------------
  * This program is free software: you can redistribute it and/or modify
@@ -21,7 +21,6 @@ package org.melato.android.ui;
 import java.util.List;
 
 import android.app.Activity;
-import android.util.Log;
 import android.widget.ArrayAdapter;
 
 /** An array adapter that checks if an item is available.
@@ -38,6 +37,13 @@ public class BackgroundAdapter<T> extends ArrayAdapter<T> {
 
   public BackgroundAdapter(Activity activity, ListLoader loader, int textViewResourceId,
       List<T> objects) {
+    super(activity, textViewResourceId, objects);
+    this.activity = activity;
+    this.loader = loader;
+  }
+  
+  public BackgroundAdapter(Activity activity, ListLoader loader, int textViewResourceId,
+      T[] objects) {
     super(activity, textViewResourceId, objects);
     this.activity = activity;
     this.loader = loader;

@@ -1,5 +1,5 @@
 /*-------------------------------------------------------------------------
- * Copyright (c) 2012, Alex Athanasopoulos.  All Rights Reserved.
+ * Copyright (c) 2012,2013, Alex Athanasopoulos.  All Rights Reserved.
  * alex@melato.org
  *-------------------------------------------------------------------------
  * This program is free software: you can redistribute it and/or modify
@@ -21,6 +21,7 @@ package org.melato.gps;
 import java.io.Serializable;
 import java.util.Date;
 
+/** A point at a certain time. */
 public class PointTime extends Point2D implements Serializable {
   private static final long serialVersionUID = 1L;
   public long   time;
@@ -38,7 +39,7 @@ public class PointTime extends Point2D implements Serializable {
     return new Date(time);
   }
 
-  /** Return the time difference between two points, in seconds. */
+  /** Return the time difference between two points (p2-p1), in seconds. */
   public static float timeDifference(PointTime p1, PointTime p2) {
     return ((float) (p2.time - p1.time)) / 1000;
   }

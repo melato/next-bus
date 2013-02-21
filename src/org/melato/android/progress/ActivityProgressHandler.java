@@ -1,5 +1,5 @@
 /*-------------------------------------------------------------------------
- * Copyright (c) 2012, Alex Athanasopoulos.  All Rights Reserved.
+ * Copyright (c) 2012,2013, Alex Athanasopoulos.  All Rights Reserved.
  * alex@melato.org
  *-------------------------------------------------------------------------
  * This program is free software: you can redistribute it and/or modify
@@ -59,6 +59,8 @@ public abstract class ActivityProgressHandler implements ProgressHandler {
   }
 
   protected abstract void updateUI();
+  
+  public void end() {}
   
   private void update() {
     if ( busy )

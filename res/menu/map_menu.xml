@@ -6,6 +6,12 @@
     <item android:id="@+id/schedule"
           android:icon="@drawable/schedule"                  
           android:title="@string/schedule" />
+    <item android:id="@+id/pin"
+          android:icon="@drawable/pin"                  
+          android:title="@string/pin_route"/>
+    <item android:id="@+id/unpin_all"
+          android:icon="@drawable/unpin_all"                  
+          android:title="@string/unpin_all" />
     <item android:id="@+id/refresh"
           android:icon="@drawable/reload"                  
           android:title="@string/refresh" />

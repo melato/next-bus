@@ -1,5 +1,5 @@
 /*-------------------------------------------------------------------------
- * Copyright (c) 2012, Alex Athanasopoulos.  All Rights Reserved.
+ * Copyright (c) 2012,2013, Alex Athanasopoulos.  All Rights Reserved.
  * alex@melato.org
  *-------------------------------------------------------------------------
  * This program is free software: you can redistribute it and/or modify
@@ -18,7 +18,7 @@
  */
 package org.melato.gps;
 
-
+/** A 3-dimensional geographical point in time with 2-dimensional speed. */
 public class GpsPoint extends PointTime {
   private static final long serialVersionUID = 1L;
   /** GPX uses the term elevation, rather than altitude. */

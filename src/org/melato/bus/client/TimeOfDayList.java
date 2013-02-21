@@ -1,5 +1,5 @@
 /*-------------------------------------------------------------------------
- * Copyright (c) 2012, Alex Athanasopoulos.  All Rights Reserved.
+ * Copyright (c) 2012,2013, Alex Athanasopoulos.  All Rights Reserved.
  * alex@melato.org
  *-------------------------------------------------------------------------
  * This file is part of Athens Next Bus
@@ -21,7 +21,6 @@
 package org.melato.bus.client;
 
 import java.util.AbstractList;
-import java.util.Arrays;
 import java.util.Date;
 
 import org.melato.bus.model.DaySchedule;
@@ -29,25 +28,23 @@ import org.melato.bus.model.Schedule;
 
 /** A list of times for displaying the schedule. */
 public class TimeOfDayList extends AbstractList<TimeOfDay> {
+  DaySchedule daySchedule;
   private int[] times;
   /** The time difference from the start to the desired stop, in seconds. */ 
   private int   timeOffset;
   private Date  currentTime;
 
-  public TimeOfDayList(int[] times, Date currentTime) {
-    this.times = times;
-    this.currentTime = currentTime;
-  }
-  
   public void setTimeOffset(int timeOffset) {
     this.timeOffset = timeOffset;
   }
 
   public TimeOfDayList(Schedule schedule, Date currentTime) {
-    this(schedule.getTimes(currentTime), currentTime);
+    this(schedule.getSchedule(currentTime), currentTime);
   }
   public TimeOfDayList(DaySchedule schedule, Date currentTime) {
-    this(schedule.getTimes(), currentTime);
+    this.daySchedule = schedule;
+    this.times = schedule.getTimes();
+    this.currentTime = currentTime;
   }
   @Override
   public TimeOfDay get(int location) {
@@ -65,21 +62,6 @@ public class TimeOfDayList extends AbstractList<TimeOfDay> {
   
   public int getDefaultPosition() {
     Date date = new Date(currentTime.getTime() - timeOffset * 1000L );
-    int time = Schedule.getTime(date);
-    int pos = Arrays.binarySearch(times, time);
-    if ( pos >= 0 )
-      return pos;
-    pos = - (pos + 1);
-    if ( pos == 0 )
-      return pos;
-    if ( pos == times.length )
-      return times.length - 1;
-    if ( times[pos] - time < time - times[pos-1] ) {
-      return pos;
-    } else {
-      return pos - 1;
-    }
+    return daySchedule.getClosestIndex(date);
   }
 }
-
-

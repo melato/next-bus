@@ -1,5 +1,5 @@
 /*-------------------------------------------------------------------------
- * Copyright (c) 2012, Alex Athanasopoulos.  All Rights Reserved.
+ * Copyright (c) 2012,2013 Alex Athanasopoulos.  All Rights Reserved.
  * alex@melato.org
  *-------------------------------------------------------------------------
  * This file is part of Athens Next Bus
@@ -27,11 +27,11 @@ import org.melato.bus.android.R;
 import org.melato.bus.android.app.HelpActivity;
 import org.melato.bus.client.TimeOfDay;
 import org.melato.bus.client.TimeOfDayList;
-import org.melato.bus.model.DateId;
 import org.melato.bus.model.DaySchedule;
 import org.melato.bus.model.Schedule;
 import org.melato.bus.model.ScheduleId;
 import org.melato.bus.model.Stop;
+import org.melato.util.DateId;
 
 import android.app.Activity;
 import android.content.Context;

@@ -1,5 +1,5 @@
 /*-------------------------------------------------------------------------
- * Copyright (c) 2012, Alex Athanasopoulos.  All Rights Reserved.
+ * Copyright (c) 2012,2013, Alex Athanasopoulos.  All Rights Reserved.
  * alex@melato.org
  *-------------------------------------------------------------------------
  * This program is free software: you can redistribute it and/or modify
@@ -219,5 +219,17 @@ public class MultiScoreTrackMatcher implements TrackMatchingAlgorithm {
         s.getDirectionChanges(),
         s.getDominantDirection(),
     };      
+  }
+
+  @Override
+  public boolean isMinimal(Score score) {
+    MultiScore s = (MultiScore)score;
+    return s.getNearCount() == 0;
+  }
+  @Override
+  public boolean areClose(Score score1, Score score2) {
+    MultiScore s1 = (MultiScore) score1;
+    MultiScore s2 = (MultiScore) score2;
+    return Math.abs(s1.getNearCount() - s2.getNearCount()) <= 1;
   }
 }

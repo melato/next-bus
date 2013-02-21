@@ -1,5 +1,5 @@
 /*-------------------------------------------------------------------------
- * Copyright (c) 2012, Alex Athanasopoulos.  All Rights Reserved.
+ * Copyright (c) 2012,2013, Alex Athanasopoulos.  All Rights Reserved.
  * alex@melato.org
  *-------------------------------------------------------------------------
  * This program is free software: you can redistribute it and/or modify
@@ -38,6 +38,7 @@ public class ProgressTitleHandler extends ActivityProgressHandler {
   }
   
   /** Restore the activity's original title. */
+  @Override
   public void end() {
     activity.setProgressBarVisibility(false);
     activity.setProgress(10000);

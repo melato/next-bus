@@ -1,5 +1,5 @@
 /*-------------------------------------------------------------------------
- * Copyright (c) 2012, Alex Athanasopoulos.  All Rights Reserved.
+ * Copyright (c) 2012,2013, Alex Athanasopoulos.  All Rights Reserved.
  * alex@melato.org
  *-------------------------------------------------------------------------
  * This program is free software: you can redistribute it and/or modify
@@ -89,17 +89,19 @@ public class CircularList<T> extends AbstractList<T> {
     for( int i = 0; i < size; i++ ) {
       this.data[i] = data[(start+i)%data.length];
     }
-    start = 0;
+    this.start = 0;
     end = size;
   }
   
   @Override
   public void add(int index, T e) {
-    int length = data.length;
-    if ( length == size && autoresize ) {
+    if ( data.length == size && autoresize ) {
       resize();
     }
+    int length = data.length;
+    //System.out.println( "start=" + start + " end=" + end + " index=" + index);
     if ( index > size / 2 + 1 ) {
+      //System.out.println( "shift right" );
       // shift the right part to the right
       for( int j = size - 1; j >= index; j-- ) {
         // index is > 0, so j - 1 is >= 0
@@ -112,6 +114,7 @@ public class CircularList<T> extends AbstractList<T> {
         size++;
       }
     } else {
+      //System.out.println( "shift left" );
       // shift the left part to the left
       for( int j = 0; j < index; j++ ) {
         data[(start + j - 1 + length) % length] = data[(start + j) % length];
@@ -124,6 +127,7 @@ public class CircularList<T> extends AbstractList<T> {
       }      
     }
     data[(start + index) % length] = e;
+    //System.out.println( "start=" + start + " end=" + end + " 0=" + get(0));
   }
 
   @Override

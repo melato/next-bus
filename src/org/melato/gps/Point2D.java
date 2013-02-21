@@ -1,5 +1,5 @@
 /*-------------------------------------------------------------------------
- * Copyright (c) 2012, Alex Athanasopoulos.  All Rights Reserved.
+ * Copyright (c) 2012,2013, Alex Athanasopoulos.  All Rights Reserved.
  * alex@melato.org
  *-------------------------------------------------------------------------
  * This program is free software: you can redistribute it and/or modify
@@ -20,6 +20,7 @@ package org.melato.gps;
 
 import java.io.Serializable;
 
+/** A 2-dimensional geographical point with latitude and longitude. */
 public class Point2D implements Serializable {
   private static final long serialVersionUID = 1L;
   public float  lat;

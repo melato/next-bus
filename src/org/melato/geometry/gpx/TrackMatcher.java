@@ -1,5 +1,5 @@
 /*-------------------------------------------------------------------------
- * Copyright (c) 2012, Alex Athanasopoulos.  All Rights Reserved.
+ * Copyright (c) 2012,2013, Alex Athanasopoulos.  All Rights Reserved.
  * alex@melato.org
  *-------------------------------------------------------------------------
  * This program is free software: you can redistribute it and/or modify
@@ -28,7 +28,7 @@ import org.melato.gps.PointTime;
  *
  */
 public class TrackMatcher {
-  private TrackMatchingAlgorithm algorithm = new SequenceTrackMatcher();
+  private TrackMatchingAlgorithm algorithm = new SequencePointTrackMatcher();
 
   public TrackMatcher(PointTime[] trackWaypoints, float targetDistance) {
     algorithm.setProximityDistance(targetDistance);

@@ -1,5 +1,5 @@
 /*-------------------------------------------------------------------------
- * Copyright (c) 2012, Alex Athanasopoulos.  All Rights Reserved.
+ * Copyright (c) 2012,2013 Alex Athanasopoulos.  All Rights Reserved.
  * alex@melato.org
  *-------------------------------------------------------------------------
  * This file is part of Athens Next Bus
@@ -21,19 +21,16 @@
 package org.melato.bus.android.activity;
 
 import org.melato.bus.android.app.UpdateActivity;
-import org.melato.bus.android.db.SqlRouteStorage;
 
 import android.app.Activity;
 import android.os.Bundle;
 
+/** The main activity checks for updates and launches the next activity. */
 public class MainActivity extends Activity {
   protected BusActivities activities;
   
   private boolean checkUpdates() {
     if ( ! UpdateActivity.checkUpdates(this) ) {
-      return false;
-    }
-    if ( ! SqlRouteStorage.databaseFile(this).exists()) {
       return false;
     }
     return true;

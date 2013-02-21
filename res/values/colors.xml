@@ -13,5 +13,6 @@
     <color name="group2_text">#000000</color>
     <color name="stop_background">#8af4c3</color>
     <color name="stop_text">#000000</color>
-    
+    <color name="stop_link">#b13a26</color>
+    <color name="pinned_route">#999a53</color>
 </resources>

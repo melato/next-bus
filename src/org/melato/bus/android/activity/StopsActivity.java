@@ -1,5 +1,5 @@
 /*-------------------------------------------------------------------------
- * Copyright (c) 2012, Alex Athanasopoulos.  All Rights Reserved.
+ * Copyright (c) 2012,2013 Alex Athanasopoulos.  All Rights Reserved.
  * alex@melato.org
  *-------------------------------------------------------------------------
  * This file is part of Athens Next Bus
@@ -20,7 +20,6 @@
  */
 package org.melato.bus.android.activity;
 
-import org.melato.bus.android.Info;
 import org.melato.bus.android.R;
 import org.melato.bus.android.app.HelpActivity;
 import org.melato.bus.model.Route;
@@ -56,9 +55,10 @@ public class StopsActivity extends ListActivity {
     stops = new StopsContext(this);
     Route route = activities.getRoute();
     setTitle(route.getFullTitle());
-
-    Stop[] waypoints = Info.routeManager(this).getStops(route);
-    stops.setStops(waypoints);
+    stops.setRoute(route);
+    IntentHelper helper = new IntentHelper(this);
+    RouteStop routeStop = helper.getRouteStop();
+    stops.setStop(routeStop);
   }
   
   @Override

@@ -1,5 +1,5 @@
 /*-------------------------------------------------------------------------
- * Copyright (c) 2012, Alex Athanasopoulos.  All Rights Reserved.
+ * Copyright (c) 2012,2013, Alex Athanasopoulos.  All Rights Reserved.
  * alex@melato.org
  *-------------------------------------------------------------------------
  * This program is free software: you can redistribute it and/or modify
@@ -19,6 +19,7 @@
 package org.melato.xml;
 
 import org.xml.sax.Attributes;
+import org.xml.sax.XMLReader;
 import org.xml.sax.ext.Attributes2Impl;
 
 /** Encapsulates the information of the starting tag of an XML Element.

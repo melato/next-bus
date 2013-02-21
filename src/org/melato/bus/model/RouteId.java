@@ -1,5 +1,5 @@
 /*-------------------------------------------------------------------------
- * Copyright (c) 2012, Alex Athanasopoulos.  All Rights Reserved.
+ * Copyright (c) 2012,2013, Alex Athanasopoulos.  All Rights Reserved.
  * alex@melato.org
  *-------------------------------------------------------------------------
  * This file is part of Athens Next Bus
@@ -28,7 +28,7 @@ import java.io.Serializable;
  * @author Alex Athanasopoulos
  *
  */
-public class RouteId implements Serializable {
+public class RouteId implements Serializable, Comparable<RouteId> {
   private static final long serialVersionUID = 1L;
   /** The internal name, e.g. 301b */
   private String  name;
@@ -95,4 +95,12 @@ public class RouteId implements Serializable {
       return false;
     return true;
   }
+  @Override
+  public int compareTo(RouteId o) {
+    int d = AlphanumericComparator.INSTANCE.compare(name, o.name);
+    if ( d != 0 )
+      return d;
+    return AlphanumericComparator.INSTANCE.compare(getDirection(), o.getDirection());
+  }
+  
 }

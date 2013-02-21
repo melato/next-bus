@@ -44,24 +44,26 @@ The average speed of the bus.
 The latitude and longitude of the stop, as published by OASA.
 </string>   
 
-<string name="help_about"><b>To Επόμενο Λεωφορείο</b>\nCopyright &#169; 2012\nAlex Athanasopoulos\nalex@melato.org
-\nhttp://metakinisi.melato.org
-\n\n<center><b>Credits</b></center>
-The route maps and timetables are provided by OASA and are available to the public from www.oasa.gr.
-\n\nMost icons are from the bctango icon collection, by Bosky Cinek (http://boskastrona.ovh.org).  License: Creative Commons attribution share-alike
+<string name="help_about">&lt;b>To Επόμενο Λεωφορείο&lt;/b>&lt;br/>Copyright &#169; 2012,2013 &lt;br/>Alex Athanasopoulos&lt;br/>alex@melato.org
+&lt;br/>http://metakinisi.melato.org
+&lt;br/>Version: %1$s
+&lt;br/>Database Version: %2$s
+&lt;br/>&lt;br/>&lt;b>Credits&lt;/b>
+&lt;br/>The route maps and timetables are provided by OASA and are available to the public from www.oasa.gr.
+&lt;br/>&lt;br/>Most icons are from the bctango icon collection, by Bosky Cinek (http://boskastrona.ovh.org).  License: Creative Commons attribution share-alike
 (http://creativecommons.org/licenses/by-sa/2.5/).
-\n\n<b>Errors</b>
-\n\nContact OASA to fix errors in its timetables and contact me to fix bugs in the application.
-\n
+&lt;br/>&lt;br/>&lt;b>Errors&lt;/b>
+&lt;br/>Contact OASA to fix errors in its timetables and contact me to fix bugs in the application.
+&lt;br/>
 If you notice a mistake in a route timetable (e.g. the scheduled departure time shown by the application
 does not match the time posted at the start bus stop):
-\n
-1. Check www.oasa.gr to see if the error is in their data.\n
-2. If so, contact OASA directly (by phone or email) and ask them to correct it.\n
+&lt;br/>
+1. Check www.oasa.gr to see if the error is in their data.&lt;br/>
+2. If so, contact OASA directly (by phone or email) and ask them to correct it.&lt;br/>
 3. If this application does not match the OASA website,
 please contact me so I can fix the bug or update the application with the latest information from OASA.
 </string>    
-<string name="eula"><b>Athens Next Bus</b> Copyright &#169; 2012 Alex Athanasopoulos, alex@melato.org.\n\n
+<string name="eula"><b>Athens Next Bus</b> Copyright &#169; 2012,2013 Alex Athanasopoulos, alex@melato.org.\n\n
 The application is provided as is, without any warranty about its fitness for any use or the accuracy of the information it provides.\n\n
 The application uses data that are published by the Athens Urban Transport Organisation S.A. (OASA) at its website (http://www.oasa.gr) and are subject to the following terms of use (translated by the application author):\n\n
 <b>OASA Terms of Use</b>\n\n

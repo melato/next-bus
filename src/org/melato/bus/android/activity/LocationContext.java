@@ -1,5 +1,5 @@
 /*-------------------------------------------------------------------------
- * Copyright (c) 2012, Alex Athanasopoulos.  All Rights Reserved.
+ * Copyright (c) 2012,2013 Alex Athanasopoulos.  All Rights Reserved.
  * alex@melato.org
  *-------------------------------------------------------------------------
  * This file is part of Athens Next Bus
@@ -20,18 +20,12 @@
  */
 package org.melato.bus.android.activity;
 
-import org.melato.android.location.Locations;
 import org.melato.bus.android.Info;
-import org.melato.gps.Metric;
+import org.melato.bus.client.TrackHistory;
 import org.melato.gps.PointTime;
+import org.melato.gps.PointTimeListener;
 
 import android.content.Context;
-import android.content.SharedPreferences;
-import android.location.Location;
-import android.location.LocationListener;
-import android.location.LocationManager;
-import android.os.Bundle;
-import android.preference.PreferenceManager;
 
 /**
  * A location listener that attaches itself to an activity and maintains a current location.
@@ -40,72 +34,29 @@ import android.preference.PreferenceManager;
  * to remove the listener from the LocationManager.
  * @author Alex Athanasopoulos
  */
-public class LocationContext implements LocationListener {
+public class LocationContext implements PointTimeListener {
   protected Context context;
-  private PointTime   location;
-  private boolean enabledLocations;
-  private Metric metric;
+  protected TrackHistory history;
 
   public LocationContext(Context context) {
     super();
     this.context = context;
+    history = Info.trackHistory(context);
   }
-  
-  public Metric getMetric() {
-    if ( metric == null ) {
-      metric = Info.routeManager(context).getMetric();
-    }
-    return metric;    
+ 
+  public void start() {
+    history.addLocationListener(this);
   }
-  
-  public void setEnabledLocations(boolean enabled) {
-    if ( enabledLocations == enabled )
-      return;
-    LocationManager locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
-    //PlaybackManager locationManager = PlaybackManager.getInstance(context);
-    if ( enabled ) {
-      this.enabledLocations = true;
-      SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-      // The preferences dialog seems to be putting in strings instead of integers
-      long timeInterval = Integer.parseInt(prefs.getString(Pref.GPS_TIME, "1")) * 1000L;
-      float minDistance = Float.parseFloat(prefs.getString(Pref.GPS_DISTANCE, "5"));
-      locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, timeInterval, minDistance, this);
-      Location location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-      if ( location == null )
-        location = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
-      onLocationChanged(location);
-    } else {
-      this.enabledLocations = false;
-      locationManager.removeUpdates(this);      
-    }
-  }
-  
   /** remove location updates. */
   public void close() {
-    setEnabledLocations(false);
+    history.removeLocationListener(this);
   }
 
-  public void setLocation(PointTime point) {
-    if ( point == null )
-      return;
-    location = point;
-  }
-    
   public PointTime getLocation() {
-    return location;
+    return history.getLocation();
   }
   
   @Override
-  public void onLocationChanged(Location loc) {
-    setLocation(Locations.location2Point(loc));
-  }
-  @Override
-  public void onProviderDisabled(String provider) {
-  }
-  @Override
-  public void onProviderEnabled(String provider) {
-  }
-  @Override
-  public void onStatusChanged(String provider, int status, Bundle extras) {
+  public void setLocation(PointTime point) {
   }
 }

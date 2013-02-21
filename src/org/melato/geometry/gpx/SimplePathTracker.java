@@ -1,5 +1,5 @@
 /*-------------------------------------------------------------------------
- * Copyright (c) 2012, Alex Athanasopoulos.  All Rights Reserved.
+ * Copyright (c) 2012,2013, Alex Athanasopoulos.  All Rights Reserved.
  * alex@melato.org
  *-------------------------------------------------------------------------
  * This program is free software: you can redistribute it and/or modify
@@ -19,6 +19,7 @@
 package org.melato.geometry.gpx;
 
 import org.melato.gps.Metric;
+import org.melato.gps.Point2D;
 import org.melato.gps.PointTime;
 
 /**
@@ -110,9 +111,9 @@ public class SimplePathTracker implements TrackingAlgorithm {
       return Float.NaN;
     PointTime p = location;
     int[] neighbor = find2Neighbors(p);
-    PointTime[] waypoints = path.getWaypoints();
-    PointTime s1 = waypoints[neighbor[0]];
-    PointTime s2 = waypoints[neighbor[1]];
+    Point2D[] waypoints = path.getWaypoints();
+    Point2D s1 = waypoints[neighbor[0]];
+    Point2D s2 = waypoints[neighbor[1]];
     float p1 = path.getLength(neighbor[0]);
     float p2 = path.getLength(neighbor[1]);
     float s = p2 - p1;

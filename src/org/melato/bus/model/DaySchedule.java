@@ -1,5 +1,5 @@
 /*-------------------------------------------------------------------------
- * Copyright (c) 2012, Alex Athanasopoulos.  All Rights Reserved.
+ * Copyright (c) 2012,2013, Alex Athanasopoulos.  All Rights Reserved.
  * alex@melato.org
  *-------------------------------------------------------------------------
  * This file is part of Athens Next Bus
@@ -44,6 +44,9 @@ public class DaySchedule {
   /** times are stored as minutes from midnight. */
   private int[] times;
   private ScheduleId scheduleId;
+  /** Same as Schedule.dayChange */
+  private int dayChange;
+
   
   public int[] getTimes() {
     return times;
@@ -54,12 +57,11 @@ public class DaySchedule {
   }
 
   public boolean matchesDateId(int dateId) {
-    return scheduleId.getDateId() == dateId;
+    return scheduleId.matchesDateId(dateId);
   }
   
   public boolean matchesDayOfWeek(int dayOfWeek) {
-    int bitmap = 1 << (dayOfWeek-Calendar.SUNDAY);
-    return (scheduleId.getDays() & bitmap) != 0;
+    return scheduleId.matchesDayOfWeek(dayOfWeek);
   }
   
   public boolean isWeekly() {
@@ -89,5 +91,33 @@ public class DaySchedule {
     Calendar cal = new GregorianCalendar();
     cal.setTime(date);
     return findSchedule(schedules, cal.get(Calendar.DAY_OF_WEEK));
+  }
+  
+  public int getClosestIndex(Date date) {
+    int time = Schedule.getTime(date);
+    if ( time < dayChange ) {
+      time += 24 * 60;
+    }
+    int pos = Arrays.binarySearch(times, time);
+    if ( pos >= 0 )
+      return pos;
+    pos = - (pos + 1);
+    if ( pos == 0 )
+      return pos;
+    if ( pos == times.length )
+      return times.length - 1;
+    if ( times[pos] - time < time - times[pos-1] ) {
+      return pos;
+    } else {
+      return pos - 1;
+    }
+  }
+
+  public int getDayChange() {
+    return dayChange;
+  }
+
+  public void setDayChange(int dayChange) {
+    this.dayChange = dayChange;
   }
 }

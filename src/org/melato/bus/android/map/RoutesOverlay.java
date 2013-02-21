@@ -1,5 +1,5 @@
 /*-------------------------------------------------------------------------
- * Copyright (c) 2012, Alex Athanasopoulos.  All Rights Reserved.
+ * Copyright (c) 2012,2013 Alex Athanasopoulos.  All Rights Reserved.
  * alex@melato.org
  *-------------------------------------------------------------------------
  * This file is part of Athens Next Bus
@@ -27,6 +27,7 @@ import java.util.Map;
 
 import org.melato.android.gpx.map.GMap;
 import org.melato.bus.android.Info;
+import org.melato.bus.android.R;
 import org.melato.bus.android.activity.NearbyActivity;
 import org.melato.bus.android.activity.UI;
 import org.melato.bus.model.Route;
@@ -70,10 +71,12 @@ public class RoutesOverlay extends BaseRoutesOverlay {
   /** The primary routes, which are always displayed. */
   private List<Route> primaryRoutes;
   private Map<RouteId,Route> routeIndex;
+  private Context context;
 
 	public RoutesOverlay(Context context) {
     super();
     routeManager = Info.routeManager(context);
+    this.context = context;
     routeIndex = routeManager.getRouteIndex();
     primaryRoutes = routeManager.getPrimaryRoutes();
   }
@@ -87,7 +90,6 @@ public class RoutesOverlay extends BaseRoutesOverlay {
   public void setSelectedRoute(RouteId routeId) {
     selectedRoute = routeId;
   }
-  
   
 	@Override
   public void setSelectedStop(Point2D point) {
@@ -198,6 +200,14 @@ public class RoutesOverlay extends BaseRoutesOverlay {
     for( Route route: primaryRoutes ) {
       paint.setColor(UI.routeColor(route.getColor()));      
       RoutePoints points = routePointManager.getRoutePoints(route.getRouteId());
+      if ( points != null ) {
+        drawPath(canvas, paint, projection, points);
+      }
+    }
+    // paint all pinned routes
+    for( RouteId routeId: pinnedRoutes ) {
+      paint.setColor(context.getResources().getColor(R.color.pinned_route));
+      RoutePoints points = routePointManager.getRoutePoints(routeId);
       if ( points != null ) {
         drawPath(canvas, paint, projection, points);
       }

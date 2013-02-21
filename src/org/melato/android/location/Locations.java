@@ -1,5 +1,5 @@
 /*-------------------------------------------------------------------------
- * Copyright (c) 2012, Alex Athanasopoulos.  All Rights Reserved.
+ * Copyright (c) 2012,2013, Alex Athanasopoulos.  All Rights Reserved.
  * alex@melato.org
  *-------------------------------------------------------------------------
  * This program is free software: you can redistribute it and/or modify
@@ -18,18 +18,19 @@
  */
 package org.melato.android.location;
 
-import java.util.Date;
-
 import org.melato.gps.GpsPoint;
+import org.melato.gps.Point2D;
 
+import android.content.Intent;
 import android.location.Location;
+import android.net.Uri;
 
 public class Locations {
   public static GpsPoint location2Point(Location loc) {
     if ( loc == null )
       return null;
     GpsPoint p = new GpsPoint( (float) loc.getLatitude(), (float) loc.getLongitude());
-    p.setTime(new Date(loc.getTime()));
+    p.setTime(loc.getTime());
     if ( loc.hasSpeed() ) {
       p.setSpeed(loc.getSpeed());
     }
@@ -37,5 +38,22 @@ public class Locations {
       p.setElevation((float)loc.getAltitude());
     }
     return p;
+  }
+  public static Point2D getGeoUriPoint(Intent intent) {
+    Uri uri = intent.getData();
+    if ( uri == null )
+      return null;
+    String scheme = uri.getScheme();
+    if ( ! "geo".equals(scheme)) {
+      return null;
+    }
+    String value = uri.getSchemeSpecificPart();
+    String[] fields = value.split(",");
+    if ( fields.length == 2 ) {
+      float lat = Float.parseFloat(fields[0]);
+      float lon = Float.parseFloat(fields[1]);
+      return new Point2D(lat,lon);
+    }
+    return null;
   }
 }

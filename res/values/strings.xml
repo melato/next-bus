@@ -10,7 +10,7 @@
     <string name="recent_routes">Recent Routes</string>
     <string name="nearby_routes">Nearby Routes</string>
     <string name="schedule">Schedule</string>
-    <string name="menu_all_schedules">All</string>
+    <string name="menu_all_schedules">Other Days</string>
     <string name="all_schedules">All Schedules</string>
     <string name="days_Su">Sunday</string>
     <string name="days_Mo">Monday</string>
@@ -31,6 +31,7 @@
     <string name="browse">Web</string>
     <string name="oasa">www.oasa.gr</string>
     <string name="straight_distance">Straight Distance</string>
+    <string name="bearing">Direction</string>
     <string name="route_distance">Route Distance</string>
     <string name="position_from_start">Distance from Start (%s)</string>
     <string name="position_from_end">Distance from End (%s)</string>
@@ -41,6 +42,9 @@
     <string name="empty"></string>
     <string name="help">Help</string>
     <string name="refresh">Refresh</string>
+    <string name="pin_route">Pin</string>
+    <string name="unpin_route">Unpin</string>
+    <string name="unpin_all">Unpin All</string>
     <string name="loading">Loading &#8230;</string>
     <string name="ok">Ok</string>
     <string name="terms_of_use">Terms of Use</string>

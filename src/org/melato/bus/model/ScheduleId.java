@@ -1,5 +1,5 @@
 /*-------------------------------------------------------------------------
- * Copyright (c) 2012, Alex Athanasopoulos.  All Rights Reserved.
+ * Copyright (c) 2012,2013, Alex Athanasopoulos.  All Rights Reserved.
  * alex@melato.org
  *-------------------------------------------------------------------------
  * This file is part of Athens Next Bus
@@ -21,6 +21,7 @@
 package org.melato.bus.model;
 
 import java.io.Serializable;
+import java.util.Calendar;
 
 
 /** A schedule maintains departure information for one route and for all days of the week. */
@@ -91,5 +92,14 @@ public class ScheduleId implements Comparable<ScheduleId>, Serializable {
     if (days != other.days)
       return false;
     return true;
+  }
+  
+  public boolean matchesDateId(int dateId) {
+    return this.dateId == dateId;
+  }
+  
+  public boolean matchesDayOfWeek(int dayOfWeek) {
+    int bitmap = 1 << (dayOfWeek-Calendar.SUNDAY);
+    return (days & bitmap) != 0;
   }
 }

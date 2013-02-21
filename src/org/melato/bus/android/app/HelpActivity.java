@@ -1,5 +1,5 @@
 /*-------------------------------------------------------------------------
- * Copyright (c) 2012, Alex Athanasopoulos.  All Rights Reserved.
+ * Copyright (c) 2012,2013 Alex Athanasopoulos.  All Rights Reserved.
  * alex@melato.org
  *-------------------------------------------------------------------------
  * This file is part of Athens Next Bus
@@ -20,12 +20,17 @@
  */
 package org.melato.bus.android.app;
 
+import org.melato.bus.android.Info;
 import org.melato.bus.android.R;
+import org.melato.bus.android.db.SqlRouteStorage;
 
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager.NameNotFoundException;
 import android.os.Bundle;
+import android.text.Html;
 import android.text.method.ScrollingMovementMethod;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -37,11 +42,31 @@ public class HelpActivity extends Activity {
   public static final String KEY_ID = "help_id";
   public static final String KEY_TITLE = "help_title";
   public static final String KEY_MENU = "help_menu";
+  public static final String KEY_FORMAT = "help_format";
   private boolean hasMenu = true;
+  private boolean hasSubstitutions = false;
   
   protected void setHelpText(TextView view) {
     int helpId = getIntent().getIntExtra(KEY_ID, R.string.help_default);
-    view.setText(helpId);
+    if ( hasSubstitutions ) {
+      String appVersion = "?";
+      PackageInfo packageInfo;
+      try {
+        packageInfo = getPackageManager().getPackageInfo(getPackageName(), 0);
+        appVersion = packageInfo.versionName;
+      } catch (NameNotFoundException e) {
+        throw new RuntimeException(e);
+      }
+      SqlRouteStorage routeDB = (SqlRouteStorage) Info.routeManager(this).getStorage();
+      String databaseDate = routeDB.getBuildDate();
+      if ( databaseDate == null) {
+        databaseDate = "?";
+      }
+      String text = String.format(getString(helpId), appVersion, databaseDate);
+      view.setText(Html.fromHtml(text));
+    } else {
+      view.setText(helpId);
+    }
   }
   
   @Override
@@ -51,6 +76,7 @@ public class HelpActivity extends Activity {
     int titleId = getIntent().getIntExtra(KEY_TITLE, R.string.help);
     setTitle(titleId);
     hasMenu = getIntent().getBooleanExtra(KEY_MENU, true);
+    hasSubstitutions = getIntent().getBooleanExtra(KEY_FORMAT, false);
     TextView helpView = (TextView) findViewById(R.id.help);
     setHelpText(helpView);
     helpView.setMovementMethod(new ScrollingMovementMethod());    
@@ -61,14 +87,19 @@ public class HelpActivity extends Activity {
   }
   public static void showHelp(Context context, int helpId, int titleId) {
     showHelp(context, helpId, titleId, true);
-  }
-  
+  }  
   public static void showHelp(Context context, int helpId, int titleId, boolean useMenu) {
+    showHelp(context, helpId, titleId, useMenu, false);
+  }
+  public static void showHelp(Context context, int helpId, int titleId, boolean useMenu, boolean hasSubstitutions) {
     Intent intent = new Intent(context, HelpActivity.class);
     intent.putExtra(KEY_ID, helpId);
     intent.putExtra(KEY_TITLE, titleId);
     if ( ! useMenu )
       intent.putExtra(KEY_MENU, false);
+    if ( hasSubstitutions ) {
+      intent.putExtra(KEY_FORMAT, true);
+    }
     context.startActivity(intent);
   }
   static class HelpListener implements OnMenuItemClickListener {
@@ -105,7 +136,7 @@ public class HelpActivity extends Activity {
   public boolean onOptionsItemSelected(MenuItem item) {
     switch( item.getItemId() ) {
       case R.id.about:
-        HelpActivity.showHelp(this, R.string.help_about, R.string.about, false);
+        HelpActivity.showHelp(this, R.string.help_about, R.string.about, false, true);
         //startActivity( new Intent(this, AboutActivity.class));
         break;
       case R.id.terms:

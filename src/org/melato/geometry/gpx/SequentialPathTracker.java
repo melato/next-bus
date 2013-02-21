@@ -1,5 +1,5 @@
 /*-------------------------------------------------------------------------
- * Copyright (c) 2012, Alex Athanasopoulos.  All Rights Reserved.
+ * Copyright (c) 2012,2013, Alex Athanasopoulos.  All Rights Reserved.
  * alex@melato.org
  *-------------------------------------------------------------------------
  * This program is free software: you can redistribute it and/or modify
@@ -19,6 +19,7 @@
 package org.melato.geometry.gpx;
 
 import org.melato.gps.Metric;
+import org.melato.gps.Point2D;
 import org.melato.gps.PointTime;
 
 /**
@@ -51,7 +52,7 @@ public class SequentialPathTracker implements TrackingAlgorithm {
   private int   currentIndex = -1;
 
   /** The waypoint at the current index */
-  private PointTime currentWaypoint;
+  private Point2D currentWaypoint;
   
   /** The distance from location to currentWaypoint */
   private float currentDistance;
@@ -207,7 +208,7 @@ public class SequentialPathTracker implements TrackingAlgorithm {
           // we seem to be moving away from current waypoint
           // check if we're approaching one of the following waypoints
           for( int i = currentIndex; i + 1 < path.size(); i++ ) {
-            PointTime nextWaypoint = path.getWaypoints()[i+1];
+            Point2D nextWaypoint = path.getWaypoints()[i+1];
             float dNext = metric.distance(point, nextWaypoint);
             float dLocationNext = metric.distance(location, nextWaypoint);
             if ( dNext < dLocationNext ) {
@@ -266,7 +267,7 @@ public class SequentialPathTracker implements TrackingAlgorithm {
   private boolean isApproaching(PointTime previous, PointTime current, int index1, int index2) {
     for( int index = index1; index <= index2; index++ ) {
       if ( 0 <= index && index < path.size() ) {
-        PointTime p = path.getWaypoint(index);
+        Point2D p = path.getWaypoint(index);
         if ( metric.distance(current, p) < metric.distance(previous, p) )
           return true;
       }

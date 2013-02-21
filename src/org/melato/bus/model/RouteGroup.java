@@ -1,5 +1,5 @@
 /*-------------------------------------------------------------------------
- * Copyright (c) 2012, Alex Athanasopoulos.  All Rights Reserved.
+ * Copyright (c) 2012,2013, Alex Athanasopoulos.  All Rights Reserved.
  * alex@melato.org
  *-------------------------------------------------------------------------
  * This file is part of Athens Next Bus
@@ -36,6 +36,7 @@ public class RouteGroup {
   private void setRoutes(Route[] routes) {
     this.routes = routes;
     this.title = routes[0].getLabel() + " " + routes[0].getTitle();
+    this.title = title.toUpperCase();  // just in case.  make sure search is case insensitive.
   }
   public RouteGroup(Route[] routes) {
     setRoutes(routes);

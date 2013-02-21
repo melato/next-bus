@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="update_url">http://transit.v2.melato.org.s3-website-us-east-1.amazonaws.com/updates.xml</string>
+</resources>

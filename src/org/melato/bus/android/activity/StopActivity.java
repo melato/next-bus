@@ -1,5 +1,5 @@
 /*-------------------------------------------------------------------------
- * Copyright (c) 2012, Alex Athanasopoulos.  All Rights Reserved.
+ * Copyright (c) 2012,2013 Alex Athanasopoulos.  All Rights Reserved.
  * alex@melato.org
  *-------------------------------------------------------------------------
  * This file is part of Athens Next Bus
@@ -21,6 +21,7 @@
 package org.melato.bus.android.activity;
 
 import org.melato.android.ui.PropertiesDisplay;
+import org.melato.android.util.Invokable;
 import org.melato.bus.android.Info;
 import org.melato.bus.android.R;
 import org.melato.bus.android.app.HelpActivity;
@@ -34,6 +35,8 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
 
 /**
@@ -41,7 +44,8 @@ import android.widget.ListView;
  * @author Alex Athanasopoulos
  *
  */
-public class StopActivity extends ListActivity {
+public class StopActivity extends ListActivity implements OnItemClickListener
+ {
   private StopContext stop;
   private PropertiesDisplay properties;
   private BusActivities activities;
@@ -62,8 +66,9 @@ public class StopActivity extends ListActivity {
     if ( routeStop == null || routeStop.getStopSymbol() == null) {
       return;
     }
+    Route route = activities.getRoute();
+    stop.setRoute(route);
     Stop[] waypoints = Info.routeManager(this).getStops(routeStop.getRouteId());
-    stop.setWaypoints(waypoints);
     
     MarkerInfo markerInfo = Info.routeManager(this).loadMarker(routeStop.getStopSymbol());
     int index = routeStop.getStopIndex();
@@ -71,16 +76,11 @@ public class StopActivity extends ListActivity {
       index = findWaypointIndex(waypoints, markerInfo.getStop());
     }
     stop.setMarkerIndex(index);
-    Route route = Info.routeManager(this).getRoute(routeStop.getRouteId());
+    stop.addProperties();
     setTitle(route.getLabel() + " " + stop.getMarker().getName());
    
-    /*
-    properties.add(getResources().getString(R.string.routes));
-    for( Route r: markerInfo.getRoutes() ) {
-      properties.add( r );
-    }
-    */
     setListAdapter(stop.createAdapter(R.layout.stop_item));
+    getListView().setOnItemClickListener(this);
   }
   
   @Override
@@ -144,6 +144,14 @@ public class StopActivity extends ListActivity {
     if ( handled )
       return true;
     return activities.onOptionsItemSelected(item);
-  }  
+  }
   
+  @Override
+  public void onItemClick(AdapterView<?> parent, View view, int position,
+      long id) {
+    Object value = properties.getItem(position);
+    if ( value instanceof Invokable) {
+      ((Invokable)value).invoke(this);
+    }
+  }
 }

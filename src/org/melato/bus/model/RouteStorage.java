@@ -1,5 +1,5 @@
 /*-------------------------------------------------------------------------
- * Copyright (c) 2012, Alex Athanasopoulos.  All Rights Reserved.
+ * Copyright (c) 2012,2013, Alex Athanasopoulos.  All Rights Reserved.
  * alex@melato.org
  *-------------------------------------------------------------------------
  * This file is part of Athens Next Bus
@@ -21,6 +21,7 @@
 package org.melato.bus.model;
 
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 
 import org.melato.gps.Point2D;
@@ -31,6 +32,9 @@ import org.melato.gps.Point2D;
  *
  */
 public interface RouteStorage {
+  /** Load a list of all route Ids. */
+  List<RouteId> loadRouteIds();
+
   /** Load a list of all routes. */
   List<Route> loadRoutes();
 
@@ -41,6 +45,13 @@ public interface RouteStorage {
   Route loadRoute(RouteId routeId);
   /** Load a route's schedule (for all days of the week) */
   Schedule loadSchedule(RouteId routeId);
+  
+  ScheduleSummary loadScheduleSummary(RouteId routeId);
+  
+  DaySchedule loadDaySchedule(RouteId routeId, ScheduleId scheduleId);
+  
+  DaySchedule loadDaySchedule(RouteId routeId, Date date);
+  
   /** Load a route's stops. */
   List<Stop> loadStops(RouteId routeId);
   /** Load information about a single stop. */
@@ -48,7 +59,7 @@ public interface RouteStorage {
   /** Iterate over all stops that are within a certain latitude and longitude difference from a point.
    * The waypoint's links should contain the relevant route-ids.
    * */
-  void iterateNearbyStops(Point2D point, float latitudeDifference, float longitudeDifference, Collection<Marker> collector);
+  void iterateNearbyStops(Point2D point, float latitudeDifference, float longitudeDifference, Collection<RStop> collector);
   
   void iterateAllRouteStops(RouteStopCallback callback);
   void iteratePrimaryRouteStops(RouteStopCallback callback);

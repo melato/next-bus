@@ -1,5 +1,5 @@
 /*-------------------------------------------------------------------------
- * Copyright (c) 2012, Alex Athanasopoulos.  All Rights Reserved.
+ * Copyright (c) 2012,2013 Alex Athanasopoulos.  All Rights Reserved.
  * alex@melato.org
  *-------------------------------------------------------------------------
  * This file is part of Athens Next Bus
@@ -20,11 +20,13 @@
  */
 package org.melato.bus.android.app;
 
+import org.melato.android.AndroidLogger;
 import org.melato.android.progress.ActivityProgressHandler;
 import org.melato.android.progress.ProgressTitleHandler;
 import org.melato.bus.android.R;
 import org.melato.bus.android.activity.BusActivities;
 import org.melato.bus.android.activity.RoutesActivity;
+import org.melato.log.Log;
 import org.melato.progress.CanceledException;
 import org.melato.progress.ProgressGenerator;
 import org.melato.update.UpdateFile;
@@ -37,14 +39,16 @@ import android.content.SharedPreferences.Editor;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.NetworkInfo.State;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.text.method.ScrollingMovementMethod;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
-public class UpdateActivity extends Activity implements Runnable {
+public class UpdateActivity extends Activity {
   public static final String ACCEPTED_TERMS = "accepted_terms";
   private UpdateManager updateManager;
   private ActivityProgressHandler progress;
@@ -54,10 +58,9 @@ public class UpdateActivity extends Activity implements Runnable {
   };
   private MessageState state;
 
-  private void showMessage(MessageState state, int messageId) {
+  private void showMessage(int messageId) {
     setContentView(R.layout.message);
     TextView noteView = (TextView) findViewById(R.id.note);
-    this.state = state;
     noteView.setText(messageId);
     noteView.setMovementMethod(new ScrollingMovementMethod());    
   }
@@ -65,12 +68,14 @@ public class UpdateActivity extends Activity implements Runnable {
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     if ( ! isConnected(this) ) {
-      showMessage(MessageState.ERROR, R.string.need_network);
+      this.state = MessageState.ERROR;
+      showMessage(R.string.need_network);
       return;
     }
     if ( ! hasAcceptedTerms(this)) {
+      this.state = MessageState.TERMS;
       setTitle(R.string.terms_of_use);
-      showMessage(MessageState.TERMS, R.string.eula);
+      showMessage(R.string.eula);
       return;
     }
     progress = new ProgressTitleHandler(this);
@@ -96,7 +101,7 @@ public class UpdateActivity extends Activity implements Runnable {
   public void update(View view) {
     Button button = (Button) findViewById(R.id.update);
     button.setEnabled(false);
-    new Thread(this).start();
+    new UpdateTask().execute();
   }
   
   /** Called from the cancel button */
@@ -130,30 +135,40 @@ public class UpdateActivity extends Activity implements Runnable {
     }
   }
   
-  void startUpdate() {
-    
-  }
-  @Override
-  public void run() {
-    if ( progress != null ) {
-      ProgressGenerator.setHandler(progress);
-    }
-    try {
-      updateManager.update(updateManager.getAvailableUpdates());
-      runOnUiThread(new Runnable() {
-
-        @Override
-        public void run() {
-          startMain();
-        }
-        
-      });
-      
-    } catch( CanceledException e ) {      
-    }
-    finish();
+  void startUpdate() {   
   }
   
+  class UpdateTask extends AsyncTask<Void,Integer,Boolean> {
+    private Exception exception;
+
+    @Override
+    protected Boolean doInBackground(Void... params) {
+      if ( progress != null ) {
+        ProgressGenerator.setHandler(progress);
+      }
+      try {
+        updateManager.update(updateManager.getAvailableUpdates());
+        return true;
+      } catch( CanceledException e ) {
+      } catch( Exception e ) {
+        exception = e;
+      }
+      return false;
+    }
+
+    @Override
+    protected void onPostExecute(Boolean result) {
+      super.onPostExecute(result);
+      if ( result ) {
+        startMain();
+      } else if ( exception != null) {
+        Toast toast = Toast.makeText(UpdateActivity.this, exception.getMessage(), Toast.LENGTH_SHORT);
+        toast.show();        
+      }
+      finish();
+    }
+    
+  }
   
   @Override
   protected void onDestroy() {
@@ -178,15 +193,37 @@ public class UpdateActivity extends Activity implements Runnable {
    * Otherwise it checks in the ui thread.
    * @author Alex Athanasopoulos
    */
-  static class UpdatesChecker implements Runnable {
+  static class UpdatesChecker extends AsyncTask<Void,Integer,Boolean>{
     UpdateManager updateManager;
-    Activity activity;
+    Context context;
     
     public UpdatesChecker(Activity activity) {
-      this.activity = activity;
+      this.context = activity.getApplication();
       updateManager = new UpdateManager(activity);
     }
-    
+
+    /*
+    * Return true if the update activity should start.
+    */
+    @Override
+    protected Boolean doInBackground(Void... params) {
+      return ! updateManager.getAvailableUpdates().isEmpty();
+      
+    }
+
+    @Override
+    protected void onPostExecute(Boolean result) {
+      super.onPostExecute(result);
+      if ( result ) {
+        startUpdateActivity();
+      }
+    }
+
+    private void startUpdateActivity() {
+      Intent intent = new Intent(context, UpdateActivity.class);
+      intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+      context.startActivity(intent);
+    }
     /** Check for updates, if necessary.
      * Return true if the calling activity can continue.
      * Return false if the calling activity should exit and let the update activity take over.
@@ -194,27 +231,15 @@ public class UpdateActivity extends Activity implements Runnable {
      */
     public boolean checkUpdates() {
       if ( updateManager.isRequired() ) {
+        Log.info("update required");
         // assume that we have not data.  We have to update or die.
-        activity.startActivity(new Intent(activity, UpdateActivity.class));
+        startUpdateActivity();
         return false;
+      } else if ( isConnected(context) ) {
+        execute();
+        return true;
       } else {
-        if ( isConnected(activity) ) {
-          if ( updateManager.needsRefresh() ) {
-            // refresh in the background
-            new Thread(this).start();
-          }
-          else {
-            // check here
-            run();
-          }
-        }
-      }
-      return true;
-    }
-    
-    public void run() {
-      if ( ! updateManager.getAvailableUpdates().isEmpty() ) {
-        activity.startActivity(new Intent(activity, UpdateActivity.class));
+        return true;
       }
     }
   }
@@ -224,6 +249,7 @@ public class UpdateActivity extends Activity implements Runnable {
    * false if it should do nothing and let the UpdateActivity take over.
    **/
   public static boolean checkUpdates(Activity activity) {
+    Log.setLogger(new AndroidLogger(activity));
     UpdatesChecker checker = new UpdatesChecker(activity);
     return checker.checkUpdates();
   }

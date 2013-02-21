@@ -1,35 +1,46 @@
 <?xml version="1.0" encoding="utf-8"?>
-<PreferenceScreen
-   xmlns:android="http://schemas.android.com/apk/res/android"
-   android:title="@string/pref_title">
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="match_parent"
+    android:title="@string/pref_title" >
 
     <PreferenceCategory
-        android:title="@string/pref_gps">
+        android:layout_width="match_parent"
+        android:title="@string/pref_gps" >
+
         <EditTextPreference
-           android:key="gps_seconds"
-           android:title="@string/pref_gps_time"
-           android:summary="@string/pref_gps_time_desc"
-           android:defaultValue="1"
-           android:inputType="number"
-           android:singleLine="true" />
+            android:defaultValue="1"
+            android:inputType="number"
+            android:key="gps_seconds"
+            android:singleLine="true"
+            android:summary="@string/pref_gps_time_desc"
+            android:title="@string/pref_gps_time" />
+
         <EditTextPreference
-           android:key="gps_distance"
-           android:title="@string/pref_gps_distance"
-           android:summary="@string/pref_gps_distance_desc"
-           android:defaultValue="5"
-           android:inputType="number"
-           android:singleLine="true" />
-        </PreferenceCategory>
-    <!-- 
-    -->
-     <PreferenceCategory
-        android:title="@string/appearance">
-         <ListPreference
-            android:key="route_colors"
-            android:title="@string/route_colors"
-            android:summary="Summary"
+            android:defaultValue="5"
+            android:inputType="number"
+            android:key="gps_distance"
+            android:singleLine="true"
+            android:summary="@string/pref_gps_distance_desc"
+            android:title="@string/pref_gps_distance" />
+    </PreferenceCategory>
+<!--   -->
+
+    <PreferenceCategory android:title="@string/appearance" >
+
+        <ListPreference
+            android:defaultValue="original"
             android:entries="@array/route_colors"
             android:entryValues="@array/route_colors_values"
-            android:defaultValue="original" />
-        </PreferenceCategory>
+            android:key="route_colors"
+            android:summary="Summary"
+            android:title="@string/route_colors" />
+
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:key="nearby_times"
+            android:summary="@string/pref_nearby_times_desc"
+            android:title="@string/pref_nearby_times" />
+    </PreferenceCategory>
+
 </PreferenceScreen>

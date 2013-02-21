@@ -1,5 +1,5 @@
 /*-------------------------------------------------------------------------
- * Copyright (c) 2012, Alex Athanasopoulos.  All Rights Reserved.
+ * Copyright (c) 2012,2013, Alex Athanasopoulos.  All Rights Reserved.
  * alex@melato.org
  *-------------------------------------------------------------------------
  * This file is part of Athens Next Bus
@@ -26,30 +26,31 @@ import java.util.Iterator;
 
 import org.melato.gps.Point2D;
 
-public class NearbyFilter extends AbstractCollection<Marker> {
-  private Collection<Marker> result;
+public class NearbyFilter extends AbstractCollection<RStop> {
+  private Collection<RStop> result;
   private Point2D target;
   private float latDelta;
   private float lonDelta;
   
-  public NearbyFilter(Point2D target, float latDiff, float lonDiff, Collection<Marker> result) {
+  public NearbyFilter(Point2D target, float latDiff, float lonDiff, Collection<RStop> result) {
     super();
     this.result = result;
     this.target = target;
     this.latDelta = latDiff; 
     this.lonDelta = lonDiff; 
   }
-  private boolean isNearby(Marker p) {
-    if ( Math.abs(p.getLat() - target.getLat()) > latDelta ) {
+  private boolean isNearby(RStop p) {
+    Stop stop = p.getStop();
+    if ( Math.abs(stop.getLat() - target.getLat()) > latDelta ) {
       return false;
     }
-    if ( Math.abs(p.getLon() - target.getLon()) > lonDelta ) {
+    if ( Math.abs(stop.getLon() - target.getLon()) > lonDelta ) {
       return false;
     }
     return true;
   }
   @Override
-  public boolean add(Marker p) {
+  public boolean add(RStop p) {
     if ( isNearby(p)) {
       result.add(p);
       return true;        
@@ -58,7 +59,7 @@ public class NearbyFilter extends AbstractCollection<Marker> {
   }
 
   @Override
-  public Iterator<Marker> iterator() {
+  public Iterator<RStop> iterator() {
     throw new UnsupportedOperationException();
   }
 

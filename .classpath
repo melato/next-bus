@@ -1,16 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="src" path="gpx"/>
+	<classpathentry kind="src" path="android.gpx"/>
+	<classpathentry kind="src" path="xml"/>
+	<classpathentry kind="src" path="melato.util"/>
+	<classpathentry kind="src" path="melato.progress"/>
+	<classpathentry kind="src" path="gps"/>
+	<classpathentry kind="src" path="geometry"/>
+	<classpathentry kind="src" path="melato.android"/>
+	<classpathentry kind="src" path="bus"/>
 	<classpathentry kind="src" path="gen"/>
 	<classpathentry kind="con" path="com.android.ide.eclipse.adt.ANDROID_FRAMEWORK"/>
 	<classpathentry kind="con" path="com.android.ide.eclipse.adt.LIBRARIES"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/melato.gpx"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/melato.xml"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/melato.bus"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/melato.util"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/melato.progress"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/melato.geometry"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/melato.android"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/melato.gps"/>
 	<classpathentry kind="output" path="bin/classes"/>
 </classpath>

@@ -1,5 +1,5 @@
 /*-------------------------------------------------------------------------
- * Copyright (c) 2012, Alex Athanasopoulos.  All Rights Reserved.
+ * Copyright (c) 2012,2013 Alex Athanasopoulos.  All Rights Reserved.
  * alex@melato.org
  *-------------------------------------------------------------------------
  * This file is part of Athens Next Bus
@@ -50,8 +50,8 @@ public class RouteStop implements Serializable {
       return 0;
     int index = getStopIndex(stops);
     int time = 0;
-    for( int i = 0; i <= index; i++ ) {
-      time += (int) (stops[i].getTime() / 1000);
+    if ( index >= 0 ) {
+      time = (int) (stops[index].getTime() / 1000);
     }
     return time;    
   }

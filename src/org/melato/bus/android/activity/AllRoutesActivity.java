@@ -1,5 +1,5 @@
 /*-------------------------------------------------------------------------
- * Copyright (c) 2012, Alex Athanasopoulos.  All Rights Reserved.
+ * Copyright (c) 2012,2013 Alex Athanasopoulos.  All Rights Reserved.
  * alex@melato.org
  *-------------------------------------------------------------------------
  * This file is part of Athens Next Bus
@@ -25,7 +25,6 @@ import java.util.List;
 import org.melato.bus.android.R;
 import org.melato.bus.android.app.HelpActivity;
 import org.melato.bus.model.RouteGroup;
-import org.melato.log.Log;
 
 import android.os.Bundle;
 import android.text.Editable;
@@ -91,8 +90,9 @@ public class AllRoutesActivity extends RoutesActivity {
     if ( text == null ) {
       return -1;
     }
+    text = text.toUpperCase();
     for( int i = 0; i < all_groups.length; i++ ) {
-      if ( all_groups[i].toString().startsWith(text)) {
+      if ( all_groups[i].getTitle().startsWith(text)) {
         return i;
       }      
     }

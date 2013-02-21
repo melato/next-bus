@@ -1,5 +1,5 @@
 /*-------------------------------------------------------------------------
- * Copyright (c) 2012, Alex Athanasopoulos.  All Rights Reserved.
+ * Copyright (c) 2012,2013, Alex Athanasopoulos.  All Rights Reserved.
  * alex@melato.org
  *-------------------------------------------------------------------------
  * This program is free software: you can redistribute it and/or modify
@@ -23,7 +23,6 @@ import java.util.Arrays;
 import org.melato.gps.GlobalDistance;
 import org.melato.gps.Metric;
 import org.melato.gps.Point2D;
-import org.melato.gps.PointTime;
 
 /**
  * Represents a path consisting of a sequence of waypoints.
@@ -33,11 +32,11 @@ import org.melato.gps.PointTime;
  */
 public class Path {
   private Metric metric = new GlobalDistance();
-  protected PointTime[] waypoints;
+  protected Point2D[] waypoints;
   protected float[]   lengths;
   
   public Path() {
-    setWaypoints( new PointTime[0] );
+    setWaypoints( new Point2D[0] );
   }
   
   public Metric getMetric() {
@@ -46,10 +45,10 @@ public class Path {
 
   public Path(Metric metric) {
     this.metric = metric;
-    setWaypoints( new PointTime[0] );
+    setWaypoints( new Point2D[0] );
   }
   
-  public Path(PointTime[] waypoints) {
+  public Path(Point2D[] waypoints) {
     setWaypoints(waypoints);
   }
   
@@ -60,14 +59,14 @@ public class Path {
     this.waypoints = path.waypoints;
     this.lengths = path.lengths;
   }
-  public void setWaypoints(PointTime[] waypoints) {
+  public void setWaypoints(Point2D[] waypoints) {
     this.waypoints = waypoints;
     double distance = 0;
     lengths = new float[waypoints.length];
     if ( lengths.length > 0 ) {
-      PointTime p0 = waypoints[0];
+      Point2D p0 = waypoints[0];
       for( int i = 1; i < lengths.length; i++ ) {
-        PointTime p = waypoints[i];
+        Point2D p = waypoints[i];
         distance += metric.distance(p0, p);
         lengths[i] = (float) distance;
         p0 = p;
@@ -76,11 +75,11 @@ public class Path {
   }
   
 
-  public PointTime[] getWaypoints() {
+  public Point2D[] getWaypoints() {
     return waypoints;
   }
   
-  public PointTime getWaypoint(int index) {
+  public Point2D getWaypoint(int index) {
     return waypoints[index];
   }
 

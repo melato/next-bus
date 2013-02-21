@@ -1,5 +1,5 @@
 /*-------------------------------------------------------------------------
- * Copyright (c) 2012, Alex Athanasopoulos.  All Rights Reserved.
+ * Copyright (c) 2012,2013 Alex Athanasopoulos.  All Rights Reserved.
  * alex@melato.org
  *-------------------------------------------------------------------------
  * This file is part of Athens Next Bus
@@ -35,6 +35,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ListView;
 
+/** Displays lines near a location. */
 public class NearbyActivity extends ListActivity {
   private BusActivities activities;
   private NearbyContext nearby;
@@ -60,7 +61,7 @@ public class NearbyActivity extends ListActivity {
   protected void onListItemClick(ListView l, View v, int position, long id) {
     super.onListItemClick(l, v, position, id);
     NearbyStop p = nearby.getStop(position);
-    RouteStop stop = new RouteStop(p.getRoute().getRouteId(), p.getWaypoint().getSymbol(), -1);
+    RouteStop stop = new RouteStop(p.getRoute().getRouteId(), p.getRStop().getStop().getSymbol(), -1);
     activities.showRoute(stop);
  }
 

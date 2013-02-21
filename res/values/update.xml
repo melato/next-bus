@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="update_url">http://x1Sx0kDqz7qJUUZb63kR.melato.org/updates.xml</string>
     <string name="update">Update</string>
     <string name="update_comment"></string>
     <string name="available_updates">Available Updates</string>

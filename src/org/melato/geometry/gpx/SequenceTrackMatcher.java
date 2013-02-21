@@ -1,5 +1,5 @@
 /*-------------------------------------------------------------------------
- * Copyright (c) 2012, Alex Athanasopoulos.  All Rights Reserved.
+ * Copyright (c) 2012,2013, Alex Athanasopoulos.  All Rights Reserved.
  * alex@melato.org
  *-------------------------------------------------------------------------
  * This program is free software: you can redistribute it and/or modify
@@ -21,8 +21,10 @@ package org.melato.geometry.gpx;
 import java.util.List;
 
 import org.melato.geometry.gpx.RouteMatcher.Approach;
+import org.melato.geometry.gpx.SequencePointTrackMatcher.SequenceScore;
 import org.melato.gps.PointTime;
 
+/** A track matcher that matches the track stops to the route and returns the number of matched stops. */
 public class SequenceTrackMatcher implements TrackMatchingAlgorithm {
   private float proximityDistance;
   private RouteMatcher matcher;
@@ -37,13 +39,41 @@ public class SequenceTrackMatcher implements TrackMatchingAlgorithm {
     matcher = new RouteMatcher(track, proximityDistance);
   }
 
+  /** A score that has an integer count.  Higher count is better. */ 
+  public class SimpleScore extends Score {
+    private int     count;
+    public SimpleScore() {
+    }
+
+    public SimpleScore(Object id) {
+      super(id);
+    }
+
+    public int getCount() {
+      return count;
+    }
+
+    public void setCount(int count) {
+      this.count = count;
+    }
+
+    @Override
+    public int compareTo(Score score) {
+      SimpleScore s = (SimpleScore)score;
+      return s.count - count;
+    }
+    @Override
+    public String toString() {
+      return getId() + " " + count;
+    }  
+  }
   
   /** Compute the score for a route.
    * @param route The route, specified as a sequence of waypoints.
    * @param score
    */
   public Score computeScore(PointTime[] route) {
-    Score score = new Score();
+    SimpleScore score = new SimpleScore();
     List<Approach> approaches = matcher.match(route);
     score.setCount(approaches.size());
     return score;
@@ -58,8 +88,22 @@ public class SequenceTrackMatcher implements TrackMatchingAlgorithm {
   /** Get the score components as an array (corresponding to the field names).  Use for debugging. */
   @Override
   public Object[] getFields(Score score) {
+    SimpleScore s = (SimpleScore) score;
     return new Object[] {
-        score.getId(),
-        score.getCount()};
+        s.getId(),
+        s.getCount()};
+  }
+  
+  @Override
+  public boolean isMinimal(Score score) {
+    SimpleScore s = (SimpleScore) score;
+    return s.getCount() == 0;
+  }
+  
+  @Override
+  public boolean areClose(Score score1, Score score2) {
+    SimpleScore s1 = (SimpleScore) score1;
+    SimpleScore s2 = (SimpleScore) score2;
+    return Math.abs(s1.getCount() - s2.getCount()) <= 1;
   }
 }

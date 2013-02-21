@@ -1,5 +1,5 @@
 /*-------------------------------------------------------------------------
- * Copyright (c) 2012, Alex Athanasopoulos.  All Rights Reserved.
+ * Copyright (c) 2012,2013, Alex Athanasopoulos.  All Rights Reserved.
  * alex@melato.org
  *-------------------------------------------------------------------------
  * This file is part of Athens Next Bus
@@ -24,34 +24,46 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 
-public class DateId {
-  public static void setCalendar(int dateId, Calendar cal) {
-    cal.set(Calendar.YEAR, getYear(dateId));
-    cal.set(Calendar.MONTH, getMonth(dateId)-1);
-    cal.set(Calendar.DAY_OF_MONTH, getDay(dateId));
+import org.melato.util.DateId;
+
+
+/** Contains information for choosing the right schedule. */
+public class ScheduleSummary {
+  private ScheduleId[] scheduleIds;
+  /** The # of minutes after midnight where the schedule is still considered the previous day's schedule. */
+  private int dayChange;
+
+
+  public ScheduleSummary(ScheduleId[] scheduleIds, int dayChange) {
+    super();
+    this.scheduleIds = scheduleIds;
+    this.dayChange = dayChange;
   }
-  public static int dateId(int year, int month, int day) {
-    return year * 10000 + month * 100 + day;
-    
+
+  public ScheduleId[] getScheduleIds() {
+    return scheduleIds;
   }
-  public static int dateId(Calendar cal) {
-    return dateId(cal.get(Calendar.YEAR), cal.get(Calendar.MONTH)+1, cal.get(Calendar.DAY_OF_MONTH));
-  }
-  public static int dateId(Date date) {
+  
+  public ScheduleId getScheduleId(Date date) {
     Calendar cal = new GregorianCalendar();
     cal.setTime(date);
-    return dateId(cal);
+    cal.add(Calendar.MINUTE, -dayChange); // shift the day back.
+    int dateId = DateId.dateId(cal);
+    for( ScheduleId scheduleId: scheduleIds) {
+      if (scheduleId.matchesDateId(dateId)) {
+        return scheduleId;
+      }
+    }
+    int dayOfWeek = cal.get(Calendar.DAY_OF_WEEK);
+    for( ScheduleId scheduleId: scheduleIds) {
+      if (scheduleId.matchesDayOfWeek(dayOfWeek)) {
+        return scheduleId;
+      }
+    }
+    return null;
   }
-  public static int getYear(int dateId) {
-    return dateId / 10000;
-  }
-  public static int getMonth(int dateId) {
-    return ((dateId % 10000) / 100); 
-  }
-  public static int getDay(int dateId) {
-    return dateId % 100;
-  }
-  public static String toString(int dateId) {
-    return getYear(dateId) + "-" + getMonth(dateId) + "-" + getDay(dateId);
+  
+  public int getDayChange() {
+    return dayChange;
   }
 }
