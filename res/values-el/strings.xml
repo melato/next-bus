@@ -2,7 +2,7 @@
 <resources>
     <string name="app_name">Το Επόμενο Λεωφορείο</string>
     <string name="about">Σχετικά</string>
-    <string name="main">Λωφορεία</string>
+    <string name="main">Λεωφορεία</string>
     <string name="menu_all_routes">Όλες</string>
     <string name="menu_recent_routes">Πρόσφατες</string>
     <string name="menu_nearby_routes">Κοντινές</string>

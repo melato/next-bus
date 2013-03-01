@@ -16,34 +16,44 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *-------------------------------------------------------------------------
  */
-package org.melato.android.util;
+package org.melato.gps;
 
-import org.melato.gps.Point2D;
-
-import android.content.Context;
-import android.content.Intent;
-import android.net.Uri;
-
-// Taken from nosmoke.android
-public class LocationField implements Invokable {
-  protected String label;
-  protected Point2D point;
+/** A 3-dimensional geographical point in time. */
+public class Point4D extends PointTime {
+  private static final long serialVersionUID = 1L;
+  /** GPX uses the term elevation, rather than altitude. */
+  public float elevation = Float.NaN;
   
-  public LocationField(String label, Point2D point) {
-    super();
-    this.label = label;
-    this.point = point;
+  public float getElevation() {
+    return elevation;
+  }
+  public void setElevation(float elevation) {
+    this.elevation = elevation;
+  }
+  
+  public void setAltitude(float elevation) {
+    setElevation(elevation);
+  }
+  
+  public float getAltitude() {
+    return getElevation();
+  }
+  
+  public Point4D() {    
+  }
+  public Point4D(float lat, float lon) {
+    super(lat, lon);
+  }
+  public Point4D(Point2D p) {
+    super(p);
+  }
+  public Point4D(PointTime p) {
+    super(p);
+  }
+  
+  public Point4D(Point4D p) {
+    super(p);
+    elevation = p.elevation;
   }
 
-  @Override
-  public String toString() {
-    return label + ": " + point.toString();
-  }
-
-  @Override
-  public void invoke(Context context) {
-    Uri uri = Uri.parse("geo:" + point.getLat() + "," + point.getLon() + "?z=15");
-    Intent intent = new Intent(Intent.ACTION_VIEW, uri);
-    context.startActivity(intent);
-  }    
 }

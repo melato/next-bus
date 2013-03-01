@@ -48,11 +48,18 @@ public class Locations {
       return null;
     }
     String value = uri.getSchemeSpecificPart();
+    int q = value.indexOf('?');
+    if ( q >= 0 ) {
+      value = value.substring(0, q);
+    }
     String[] fields = value.split(",");
     if ( fields.length == 2 ) {
-      float lat = Float.parseFloat(fields[0]);
-      float lon = Float.parseFloat(fields[1]);
-      return new Point2D(lat,lon);
+      try {
+        float lat = Float.parseFloat(fields[0]);
+        float lon = Float.parseFloat(fields[1]);
+        return new Point2D(lat,lon);
+      } catch(NumberFormatException e) {        
+      }
     }
     return null;
   }

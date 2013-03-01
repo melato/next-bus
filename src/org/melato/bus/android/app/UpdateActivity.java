@@ -23,6 +23,7 @@ package org.melato.bus.android.app;
 import org.melato.android.AndroidLogger;
 import org.melato.android.progress.ActivityProgressHandler;
 import org.melato.android.progress.ProgressTitleHandler;
+import org.melato.bus.android.Info;
 import org.melato.bus.android.R;
 import org.melato.bus.android.activity.BusActivities;
 import org.melato.bus.android.activity.RoutesActivity;
@@ -148,6 +149,7 @@ public class UpdateActivity extends Activity {
       }
       try {
         updateManager.update(updateManager.getAvailableUpdates());
+        Info.reload();
         return true;
       } catch( CanceledException e ) {
       } catch( Exception e ) {

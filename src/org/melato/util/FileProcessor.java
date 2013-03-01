@@ -16,34 +16,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *-------------------------------------------------------------------------
  */
-package org.melato.android.util;
+package org.melato.util;
 
-import org.melato.gps.Point2D;
+import java.io.File;
+import java.io.IOException;
 
-import android.content.Context;
-import android.content.Intent;
-import android.net.Uri;
+/** Interface for processing files.  Used by FileTask. */
+public interface FileProcessor {
+	void processFile( File file ) throws IOException; 
 
-// Taken from nosmoke.android
-public class LocationField implements Invokable {
-  protected String label;
-  protected Point2D point;
-  
-  public LocationField(String label, Point2D point) {
-    super();
-    this.label = label;
-    this.point = point;
-  }
-
-  @Override
-  public String toString() {
-    return label + ": " + point.toString();
-  }
-
-  @Override
-  public void invoke(Context context) {
-    Uri uri = Uri.parse("geo:" + point.getLat() + "," + point.getLon() + "?z=15");
-    Intent intent = new Intent(Intent.ACTION_VIEW, uri);
-    context.startActivity(intent);
-  }    
 }

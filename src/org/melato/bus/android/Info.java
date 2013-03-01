@@ -78,7 +78,7 @@ public class Info {
     File cacheDir = context.getCacheDir();
     return new NearbyManager(routeManager(context), cacheDir); 
   }
-  /** Uncacne any database data, in order to use a newly downloaded database. */
+  /** Uncache any database data, in order to use a newly downloaded database. */
   public static void reload() {
     routeManager = null;
     trackHistory = null;

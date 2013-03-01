@@ -21,6 +21,7 @@ package org.melato.android.ui;
 import java.util.List;
 
 import android.app.Activity;
+import android.os.AsyncTask;
 import android.widget.ArrayAdapter;
 
 /** An array adapter that checks if an item is available.
@@ -49,31 +50,22 @@ public class BackgroundAdapter<T> extends ArrayAdapter<T> {
     this.loader = loader;
   }
   
-  class RefreshRunnable implements Runnable {
+  class BackgroundLoadTask extends AsyncTask<Integer,Void,Void>{
     @Override
-    public void run() {
-      //Log.i("melato.org", "refresh");
+    protected Void doInBackground(Integer... params) {
+      loader.load(params[0]);
+      synchronized(BackgroundAdapter.this) {
+        isLoading = false;
+      }
+      return null;
+    }
+  
+    @Override
+    protected void onPostExecute(Void result) {
       notifyDataSetChanged();      
     }    
   }
 
-  class BackgroundLoad implements Runnable {
-    int position;
-    
-    public BackgroundLoad(int position) {
-      this.position = position;
-    }
-
-    @Override
-    public void run() {
-      loader.load(position);
-      synchronized(BackgroundAdapter.this) {
-        isLoading = false;
-      }
-      activity.runOnUiThread(new RefreshRunnable());
-    }
-    
-  }
   @Override
   public T getItem(int position) {
     if ( ! loader.isLoaded(position)) {
@@ -81,7 +73,7 @@ public class BackgroundAdapter<T> extends ArrayAdapter<T> {
       synchronized(this) {
         if ( ! isLoading ) {
           isLoading = true;
-          new Thread(new BackgroundLoad(position)).start();
+          new BackgroundLoadTask().execute(position);
         }
       }
     }

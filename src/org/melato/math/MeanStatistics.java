@@ -16,34 +16,32 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *-------------------------------------------------------------------------
  */
-package org.melato.android.util;
+package org.melato.math;
 
-import org.melato.gps.Point2D;
-
-import android.content.Context;
-import android.content.Intent;
-import android.net.Uri;
-
-// Taken from nosmoke.android
-public class LocationField implements Invokable {
-  protected String label;
-  protected Point2D point;
-  
-  public LocationField(String label, Point2D point) {
-    super();
-    this.label = label;
-    this.point = point;
+public class MeanStatistics {
+  double  sx;
+  double  sxx;
+  int     n;
+  public void add(float x) {
+    sx += x;
+    sxx += x * x;
+    n++;
   }
-
-  @Override
-  public String toString() {
-    return label + ": " + point.toString();
+  public int size() {
+    return n;
   }
-
-  @Override
-  public void invoke(Context context) {
-    Uri uri = Uri.parse("geo:" + point.getLat() + "," + point.getLon() + "?z=15");
-    Intent intent = new Intent(Intent.ACTION_VIEW, uri);
-    context.startActivity(intent);
-  }    
+  public float mean() {
+    return (float) (sx/n);
+  }
+  public float variance() {
+    return (float) ((n*sxx-sx*sx)/(n*n));
+  }
+  public float standardDeviation() {
+    return (float) Math.sqrt( variance() * n/(n-1));
+  }
+  public void mergeWith(MeanStatistics m) {
+    sx += m.sx;
+    sxx += m.sxx;
+    n += m.n;
+  }
 }

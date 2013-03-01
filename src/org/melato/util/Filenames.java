@@ -16,34 +16,26 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *-------------------------------------------------------------------------
  */
-package org.melato.android.util;
+package org.melato.util;
 
-import org.melato.gps.Point2D;
+import java.io.File;
 
-import android.content.Context;
-import android.content.Intent;
-import android.net.Uri;
-
-// Taken from nosmoke.android
-public class LocationField implements Invokable {
-  protected String label;
-  protected Point2D point;
-  
-  public LocationField(String label, Point2D point) {
-    super();
-    this.label = label;
-    this.point = point;
+public class Filenames {
+	public static String getExtension( File file ) {
+		String name = file.getName();
+		int dot = name.indexOf( '.' );
+		return dot >= 0 ? name.substring( dot + 1 ) : null;
+	}
+  public static String getBasename( String name ) {
+    int dot = name.indexOf( '.' );
+    return dot >= 0 ? name.substring( 0, dot ) : name;
   }
+	public static String getBasename( File file ) {
+	  return getBasename(file.getName());
+	}
+	public static File replaceExtension( File file, String newExtension ) {
+		String name = getBasename( file ) + "." + newExtension;
+		return new File( file.getParentFile(), name );
+	}
 
-  @Override
-  public String toString() {
-    return label + ": " + point.toString();
-  }
-
-  @Override
-  public void invoke(Context context) {
-    Uri uri = Uri.parse("geo:" + point.getLat() + "," + point.getLon() + "?z=15");
-    Intent intent = new Intent(Intent.ACTION_VIEW, uri);
-    context.startActivity(intent);
-  }    
 }

@@ -18,6 +18,7 @@
  */
 package org.melato.xml;
 
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -54,7 +55,7 @@ public class XMLWriter {
     private char[] tempChars;
 
     public XMLWriter( File file ) throws IOException {
-    	this( new OutputStreamWriter( new FileOutputStream( file ), UTF8 ));
+    	this( new BufferedWriter(new OutputStreamWriter( new FileOutputStream( file ), UTF8 )));
     }
     
     public XMLWriter(Writer writer ) {
