@@ -9,4 +9,7 @@
     <item android:id="@+id/schedule"
           android:icon="@drawable/schedule"                  
           android:title="@string/schedule" />
+    <item android:id="@+id/fast_gps"
+          android:icon="@drawable/fast_gps"                  
+          android:title="@string/fast_gps" />
 </menu>

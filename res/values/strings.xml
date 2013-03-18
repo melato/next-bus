@@ -10,6 +10,10 @@
     <string name="recent_routes">Recent Routes</string>
     <string name="nearby_routes">Nearby Routes</string>
     <string name="schedule">Schedule</string>
+    <string name="fast_gps">Fast GPS</string>
+    <string name="gps_speed">GPS Updates</string>
+    <string name="gps_fast">Fast</string>
+    <string name="gps_normal">Normal</string>
     <string name="menu_all_schedules">Other Days</string>
     <string name="all_schedules">All Schedules</string>
     <string name="days_Su">Sunday</string>
@@ -29,7 +33,6 @@
     <string name="bikeETA">ETA by bike</string>
     <string name="map">Map</string>
     <string name="browse">Web</string>
-    <string name="oasa">www.oasa.gr</string>
     <string name="straight_distance">Straight Distance</string>
     <string name="bearing">Direction</string>
     <string name="route_distance">Route Distance</string>

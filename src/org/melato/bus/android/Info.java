@@ -20,23 +20,30 @@
  */
 package org.melato.bus.android;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.melato.android.AndroidLogger;
 import org.melato.bus.android.db.SqlRouteStorage;
 import org.melato.bus.android.map.RoutePointManager;
 import org.melato.bus.client.NearbyManager;
-import org.melato.bus.client.TrackHistory;
+import org.melato.bus.model.Agency;
+import org.melato.bus.model.RouteId;
 import org.melato.bus.model.RouteManager;
 import org.melato.log.Log;
 
 import android.content.Context;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 
 /** Provides access to global (static) objects. */
 public class Info {
   public static final float MARK_PROXIMITY = 200f;
   private static RouteManager routeManager;
-  private static TrackHistory trackHistory;
+  private static AndroidTrackHistory trackHistory;
+  private static Map<String,Drawable.ConstantState> agencyIcons = new HashMap<String,Drawable.ConstantState>();
   
   public static RouteManager routeManager(Context context) {
     if ( routeManager == null ) {
@@ -62,7 +69,7 @@ public class Info {
     return false;
   }
   
-  public static TrackHistory trackHistory(Context context) {
+  public static AndroidTrackHistory trackHistory(Context context) {
     if ( trackHistory == null ) {
       synchronized(Info.class) {
         if ( trackHistory == null ) {
@@ -83,5 +90,27 @@ public class Info {
     routeManager = null;
     trackHistory = null;
     RoutePointManager.reload();
+  }
+  
+  public static synchronized Drawable getAgencyIcon(Context context, Agency agency) {
+    String agencyName = agency.getName();
+    Drawable.ConstantState state = agencyIcons.get(agencyName);
+    if ( state == null && ! agencyIcons.containsKey(agencyName)) {
+      byte[] icon = agency.getIcon();
+      if ( icon != null) {
+        Drawable drawable = new BitmapDrawable(context.getResources(), new ByteArrayInputStream(icon));
+        state = drawable.getConstantState();
+      }    
+      agencyIcons.put(agencyName, state);
+    }
+    if ( state != null) {
+      return state.newDrawable(context.getResources());
+    } else {
+      return null;
+    }
+  }
+  public static synchronized Drawable getAgencyIcon(Context context, RouteId routeId) {
+    Agency agency = Info.routeManager(context).getAgency(routeId);
+    return getAgencyIcon(context, agency);
   }
 }

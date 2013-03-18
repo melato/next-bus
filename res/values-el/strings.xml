@@ -9,6 +9,10 @@
     <string name="all_routes">Όλες οι Γραμμές</string>
     <string name="recent_routes">Πρόσφατες Γραμμές</string>
     <string name="schedule">Ωράριο</string>
+    <string name="fast_gps">Γρήγορο GPS</string>
+    <string name="gps_speed">Συχνότητα GPS</string>
+    <string name="gps_fast">Γρήγορο</string>
+    <string name="gps_normal">Κανονικό</string>
     <string name="menu_all_schedules">Άλλες Μέρες</string>
     <string name="all_schedules">Όλα τα ωράρια</string>
     <string name="days_Su">Κυριακή</string>
@@ -29,7 +33,6 @@
     <string name="nearby_routes">Κοντινές Γραμμές</string>
     <string name="map">Χάρτης</string>
     <string name="browse">Ιστοσελίδα</string>
-    <string name="oasa">www.oasa.gr</string>
     <string name="straight_distance">Ευθεία Απόσταση</string>
     <string name="bearing">Κατεύθυνση</string>
     <string name="route_distance">Απόσταση Διαδρομής</string>

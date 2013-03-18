@@ -75,4 +75,10 @@ public interface RouteStorage {
    * @return
    */
   String getUri(RouteId route);
+
+  /** Load a list of all agencies. */
+  List<Agency> loadAgencies();
+  
+  /** Retrieve the name of the agency for the specified route. */
+  String loadAgencyName(RouteId route);
 }

@@ -39,6 +39,8 @@ public class Locations {
     }
     return p;
   }
+  /** Parse a geo uri of the form:  "geo:{lat},{lon}?..."
+   * */
   public static Point2D getGeoUriPoint(Intent intent) {
     Uri uri = intent.getData();
     if ( uri == null )

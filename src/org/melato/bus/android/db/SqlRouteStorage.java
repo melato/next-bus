@@ -31,6 +31,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
+import org.melato.bus.model.Agency;
 import org.melato.bus.model.DaySchedule;
 import org.melato.bus.model.MarkerInfo;
 import org.melato.bus.model.RStop;
@@ -60,7 +61,7 @@ public class SqlRouteStorage implements RouteStorage {
   private int version;
   public static final int VERSION_HOLIDAYS = 2;
   public static final int VERSION_TIME_OFFSET = 3;
-  public static final int MIN_VERSION = 3;
+  public static final int MIN_VERSION = 4;
   public static final String PROPERTY_VERSION = "version";
   public static final String PROPERTY_DATE = "build_date";
   public static final String PROPERTY_LAT = "center_lat";
@@ -413,7 +414,7 @@ public class SqlRouteStorage implements RouteStorage {
     } else {
       sql = "select minutes from schedule_times" +
           "\njoin schedules on schedules._id = schedule_times.schedule" +
-          "\njoin schedule_exceptions on schedule_exceptions.schedule = schedule._id" +
+          "\njoin schedule_exceptions on schedule_exceptions.schedule = schedules._id" +
           "\njoin routes on routes._id = schedules.route" +
           "\nwhere date_id = " + scheduleId.getDateId() + " AND " + whereClause(routeId) +
           "\norder by minutes";
@@ -725,5 +726,53 @@ public class SqlRouteStorage implements RouteStorage {
   
   public boolean checkVersion() {
     return getVersion() >= MIN_VERSION;
+  }
+
+  @Override
+  public List<Agency> loadAgencies() {
+    String sql = "select name, label, url, route_url, icon from agencies";
+    List<Agency> agencies = new ArrayList<Agency>();
+    SQLiteDatabase db = getDatabase();
+    try {
+      Cursor cursor = db.rawQuery(sql, null);
+      try {
+        if ( cursor.moveToFirst() ) {
+          do {
+            Agency agency = new Agency();        
+            agency.setName( cursor.getString(0));
+            agency.setLabel( cursor.getString(1));
+            agency.setUrl( cursor.getString(2));
+            agency.setRouteUrl( cursor.getString(3));
+            agency.setIcon(cursor.getBlob(4));
+            agencies.add(agency);
+          } while( cursor.moveToNext() );
+        }
+      } finally {
+        cursor.close();
+      }
+    } finally {
+      db.close();
+    }
+    return agencies;
+  }
+
+  @Override
+  public String loadAgencyName(RouteId routeId) {
+    String sql = "select agencies.name from agencies join routes on routes.agency = agencies._id" +
+        " where " + whereClause(routeId);
+    SQLiteDatabase db = getDatabase();
+    try {
+      Cursor cursor = db.rawQuery( sql, null);
+      try {
+        if ( cursor.moveToFirst() ) {
+          return cursor.getString(0);
+        }
+      } finally {
+        cursor.close();
+      }
+    } finally {
+      db.close();
+    }
+    return null;
   }
 }

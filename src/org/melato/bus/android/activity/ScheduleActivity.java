@@ -27,6 +27,7 @@ import org.melato.bus.android.R;
 import org.melato.bus.android.app.HelpActivity;
 import org.melato.bus.client.TimeOfDay;
 import org.melato.bus.client.TimeOfDayList;
+import org.melato.bus.model.Agency;
 import org.melato.bus.model.DaySchedule;
 import org.melato.bus.model.Schedule;
 import org.melato.bus.model.ScheduleId;
@@ -35,6 +36,7 @@ import org.melato.util.DateId;
 
 import android.app.Activity;
 import android.content.Context;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -245,6 +247,15 @@ public class ScheduleActivity extends Activity {
   {
      MenuInflater inflater = getMenuInflater();
      inflater.inflate(R.menu.schedule_menu, menu);
+     Agency agency = Info.routeManager(this).getAgency(activities.getRouteId());     
+     Drawable drawable = Info.getAgencyIcon(this, agency);
+     MenuItem browse = menu.findItem(R.id.browse);
+     if (drawable != null) {
+       browse.setIcon(drawable);
+     }
+     if ( agency.getLabel() != null) {
+       browse.setTitle(agency.getLabel());
+     }
      HelpActivity.addItem(menu, this, R.string.help_schedule);
      return true;
   }

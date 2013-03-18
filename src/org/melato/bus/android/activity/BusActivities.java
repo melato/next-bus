@@ -176,6 +176,9 @@ public class BusActivities  {
         showRoute(route, SchedulesActivity.class);
         handled = true;
         break;
+      case R.id.fast_gps:
+        Info.trackHistory(context).setFast();
+        break;
       default:
         break;
     }

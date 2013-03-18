@@ -13,6 +13,6 @@
           android:icon="@drawable/schedules"                  
           android:title="@string/menu_all_schedules" />
     <item android:id="@+id/browse"
-          android:icon="@drawable/oasa"                  
-          android:title="@string/oasa" />
+          android:icon="@drawable/browser"                  
+          android:title="@string/browse" />
 </menu>

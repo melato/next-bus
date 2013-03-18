@@ -21,6 +21,7 @@ package org.melato.android.ui;
 import java.util.List;
 
 import android.app.Activity;
+import android.content.Context;
 import android.os.AsyncTask;
 import android.widget.ArrayAdapter;
 
@@ -33,21 +34,42 @@ import android.widget.ArrayAdapter;
  */
 public class BackgroundAdapter<T> extends ArrayAdapter<T> {
   private ListLoader loader;
-  private Activity activity;
   private boolean isLoading;
 
-  public BackgroundAdapter(Activity activity, ListLoader loader, int textViewResourceId,
+  
+  public BackgroundAdapter(Context context, int resource,
+      int textViewResourceId, List<T> objects) {
+    super(context, resource, textViewResourceId, objects);
+  }
+
+  public BackgroundAdapter(Context context, int resource,
+      int textViewResourceId, T[] objects) {
+    super(context, resource, textViewResourceId, objects);
+  }
+
+  public BackgroundAdapter(Context context, int textViewResourceId,
       List<T> objects) {
-    super(activity, textViewResourceId, objects);
-    this.activity = activity;
-    this.loader = loader;
+    super(context, textViewResourceId, objects);
+  }
+
+  public BackgroundAdapter(Context context, int textViewResourceId, T[] objects) {
+    super(context, textViewResourceId, objects);
   }
   
-  public BackgroundAdapter(Activity activity, ListLoader loader, int textViewResourceId,
-      T[] objects) {
-    super(activity, textViewResourceId, objects);
-    this.activity = activity;
+  public void setLoader(ListLoader loader) {
     this.loader = loader;
+  }
+
+  public BackgroundAdapter(Context context, ListLoader loader, int textViewResourceId,
+      List<T> objects) {
+    super(context, textViewResourceId, objects);
+    setLoader(loader);
+  }
+  
+  public BackgroundAdapter(Context context, ListLoader loader, int textViewResourceId,
+      T[] objects) {
+    super(context, textViewResourceId, objects);
+    setLoader(loader);
   }
   
   class BackgroundLoadTask extends AsyncTask<Integer,Void,Void>{

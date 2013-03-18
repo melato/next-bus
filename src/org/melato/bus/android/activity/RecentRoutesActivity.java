@@ -20,6 +20,7 @@
  */
 package org.melato.bus.android.activity;
 
+import org.melato.bus.android.Info;
 import org.melato.bus.android.R;
 import org.melato.bus.android.app.HelpActivity;
 import org.melato.bus.model.Route;
@@ -63,6 +64,7 @@ public class RecentRoutesActivity extends ListActivity {
       super.onCreate(savedInstanceState);
       activities = new BusActivities(this);
       items = RecentRoute.read(activities.recentRoutesFile());
+      items = RecentRoute.filter(Info.routeManager(this), items);
       setListAdapter(new RecentRoutesAdapter());
       //SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
       colors = UI.getColorScheme(this);

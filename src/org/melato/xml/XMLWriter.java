@@ -102,6 +102,18 @@ public class XMLWriter {
     	tagClose();
     }
     
+  public static String quote(char c) {
+    switch(c) {
+      case '"':
+        return "&quote;";
+      case '&':
+        return "&amp;";
+      case '<':
+        return "&lt;";
+      default:
+        throw new IllegalArgumentException("cannot quote: " + c );
+    }
+  }
   /**
    * Output a tag attribute.
    * To use, open the tag with tagOpen(tag, false);
@@ -121,8 +133,10 @@ public class XMLWriter {
 			char c = cc[i];
 			switch( c ) {
 			case '"':
+      case '<':
+      case '&':
 				writer.write( cc, start, i - start );
-				writer.write( "&quote;" );
+				writer.write( quote(c));
 				start = i + 1;
 				break;
 			default:

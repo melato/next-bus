@@ -39,21 +39,48 @@ import android.preference.PreferenceManager;
  */
 public class AndroidTrackHistory extends TrackHistory implements LocationListener {
   private Context context;
+  static public int FAST_DURATION = 60000;
+  GpsInterval normalInterval = new GpsInterval(3, 20);
+  GpsInterval fastInterval = new GpsInterval(1, 5);
+  boolean isFast;
+  long  fastStartTime;
+  
+  static class GpsInterval {
+    int seconds;
+    int meters;
+    public GpsInterval(int seconds, int meters) {
+      super();
+      this.seconds = seconds;
+      this.meters = meters;
+    }    
+  }
   
   public AndroidTrackHistory(Context context) {
     super(Info.routeManager(context));
     this.context = context.getApplicationContext();
   }
   
+  void setGpsInterval(LocationManager locationManager, GpsInterval interval) {
+    locationManager.removeUpdates(this);      
+    locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, interval.seconds * 1000L, interval.meters, this);
+  }
+
+  public void setFast() {
+    LocationManager locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
+    setGpsInterval(locationManager, fastInterval);
+    isFast = true;
+    fastStartTime = System.currentTimeMillis();
+  }
+  
+  public boolean isFast() {
+    return isFast;
+  }
+
   protected void enableUpdates(boolean enabled) {
     LocationManager locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
     //PlaybackManager locationManager = PlaybackManager.getInstance(context);
     if ( enabled ) {
-      SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-      // The preferences dialog seems to be putting in strings instead of integers
-      long timeInterval = Integer.parseInt(prefs.getString(Pref.GPS_TIME, "1")) * 1000L;
-      float minDistance = Float.parseFloat(prefs.getString(Pref.GPS_DISTANCE, "5"));
-      locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, timeInterval, minDistance, this);
+      setGpsInterval(locationManager, normalInterval);
       Location location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
       if ( location == null )
         location = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
@@ -65,6 +92,13 @@ public class AndroidTrackHistory extends TrackHistory implements LocationListene
   
   @Override
   public void onLocationChanged(Location loc) {
+    if ( isFast && System.currentTimeMillis() - fastStartTime > FAST_DURATION) {
+      LocationManager locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
+      setGpsInterval(locationManager, normalInterval);
+      isFast = false;
+      fastStartTime = System.currentTimeMillis();
+    }
+    
     PointTime p = null;
     if (loc != null) {
       p = new PointTime( (float) loc.getLatitude(), (float) loc.getLongitude());

@@ -25,6 +25,7 @@ import java.util.Date;
 import org.melato.android.ui.PropertiesDisplay;
 import org.melato.android.util.LatitudeField;
 import org.melato.android.util.LongitudeField;
+import org.melato.bus.android.Info;
 import org.melato.bus.android.R;
 import org.melato.bus.client.Formatting;
 import org.melato.bus.client.TrackContext;
@@ -203,6 +204,15 @@ public class StopContext extends LocationContext {
     }
   }
 
+  class GpsMode {
+    public String toString() {
+      String label = context.getResources().getString(R.string.gps_speed);
+      int resourceId = Info.trackHistory(context).isFast() ? R.string.gps_fast : R.string.gps_normal;
+      String value = context.getResources().getString(resourceId);
+      return PropertiesDisplay.formatProperty(label, value);
+    }
+  }
+
   class Speed60 {
     public String toString() {
       String label = context.getResources().getString(R.string.speed);
@@ -269,6 +279,7 @@ public class StopContext extends LocationContext {
   public void addProperties() {
     properties.add(new StraightDistance());
     properties.add(new Bearing());
+    properties.add(new GpsMode());
     properties.add(new RouteDistance());
     properties.add(new DistanceFromStart());
     properties.add(new TimeFromStart());

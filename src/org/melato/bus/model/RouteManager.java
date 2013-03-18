@@ -35,6 +35,7 @@ import org.melato.gps.Metric;
 import org.melato.gps.Point2D;
 import org.melato.progress.ProgressGenerator;
 import org.melato.util.AbstractCollector;
+import org.melato.util.VariableSubstitution;
 
 /**
  * Provides read-access to routes, backed by a pluggable route database (RouteStorage).
@@ -48,6 +49,7 @@ public class RouteManager {
   private List<RouteId> allRouteIds;
   private List<Route> allRoutes;
   private List<Route> primaryRoutes;
+  private Agency[] allAgencies;
   private Map<RouteId,Route> routeIndex;
   private RouteId cachedRouteId;
   private Route   cachedRoute;
@@ -192,8 +194,22 @@ public class RouteManager {
 
 
   public String getUri( Route route ) {
-    return storage.getUri(route.getRouteId());
+    return getUri(route.getRouteId());
   }
+  
+  public String getUri(RouteId routeId) {
+    Agency agency = getAgency(routeId);
+    String urlTemplate = agency.getRouteUrl();
+    if ( urlTemplate != null ) {
+      VariableSubstitution sub = new VariableSubstitution(VariableSubstitution.ANT_PATTERN);
+      Map<String,String> vars = new HashMap<String,String>();
+      vars.put( "name", routeId.getName());
+      vars.put( "direction", routeId.getDirection());
+      return sub.substitute(urlTemplate, vars);
+    }
+    return null;
+  }
+  
   /**
    * Load marker information, which includes all routes that go through the given stop.
    * @param symbol
@@ -293,5 +309,28 @@ public class RouteManager {
 
   public RouteStorage getStorage() {
     return storage;
+  }  
+
+  public Agency[] getAgencies() {
+    if ( allAgencies == null ) {
+      synchronized( this ) {
+        if ( allAgencies == null ) {
+          allAgencies = storage.loadAgencies().toArray(new Agency[0]);
+        }
+      }
+    }
+    return allAgencies;
+  }
+  
+  public Agency getAgency(String name) {
+    for( Agency agency: getAgencies() ) {
+      if ( agency.getName().equals(name)) {
+        return agency;
+      }
+    }
+    return null;
+  }
+  public Agency getAgency(RouteId routeId) {
+    return getAgency(storage.loadAgencyName(routeId));
   }  
 }

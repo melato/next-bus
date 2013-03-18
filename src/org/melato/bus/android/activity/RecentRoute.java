@@ -30,6 +30,8 @@ import org.melato.bus.model.RouteId;
 import org.melato.bus.model.RouteManager;
 import org.melato.bus.model.Stop;
 
+import android.util.Log;
+
 public class RecentRoute implements Serializable {
   private static final long serialVersionUID = 1L;
   private RouteStop routeStop;
@@ -65,13 +67,36 @@ public class RecentRoute implements Serializable {
     } else {
       return route.getFullTitle();
     }
-  }  
+  }
   public static RecentRoute[] read(File file) {
     RecentRoute[] routes = (RecentRoute[]) Serialization.read(RecentRoute[].class, file);
     if ( routes == null ) {
       routes = new RecentRoute[0];
     }
     return routes;
+  }
+  public static RecentRoute[] filter(RouteManager routeManager, RecentRoute[] routes ) {
+    int n = 0;
+    for( int i = 0; i < routes.length; i++ ) {
+      Route route = routes[i].route;
+      if (route != null) {
+        route = routeManager.getRoute(route.getRouteId());
+        routes[i].route = route;
+      }
+      if ( route != null) {
+        n++;
+      }
+    }
+    if ( n == routes.length )
+      return routes;
+    RecentRoute[] filteredRoutes = new RecentRoute[n];
+    n = 0;
+    for( int i = 0; i < routes.length; i++ ) {
+      if ( routes[i].route != null) {
+        filteredRoutes[n++] = routes[i];
+      }
+    }
+    return filteredRoutes;
   }
   
   public static void write(RecentRoute[] routes, File file) throws IOException {

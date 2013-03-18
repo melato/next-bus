@@ -76,4 +76,22 @@ public class Streams {
       in.close();
     }
   }
+  
+  public static byte[] copyToBinary(InputStream stream) throws IOException {
+    try {
+      ByteArrayOutputStream out = new ByteArrayOutputStream();
+      byte[] buf = new byte[1024];
+      for(;;) {
+        int n = stream.read(buf);
+        if ( n > 0 ) {
+          out.write(buf, 0, n);
+        } else {
+          break;
+        }
+      }
+      return out.toByteArray();
+    } finally {
+      stream.close();
+    }
+  }
 }

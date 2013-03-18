@@ -4,28 +4,6 @@
     android:layout_height="match_parent"
     android:title="@string/pref_title" >
 
-    <PreferenceCategory
-        android:layout_width="match_parent"
-        android:title="@string/pref_gps" >
-
-        <EditTextPreference
-            android:defaultValue="1"
-            android:inputType="number"
-            android:key="gps_seconds"
-            android:singleLine="true"
-            android:summary="@string/pref_gps_time_desc"
-            android:title="@string/pref_gps_time" />
-
-        <EditTextPreference
-            android:defaultValue="5"
-            android:inputType="number"
-            android:key="gps_distance"
-            android:singleLine="true"
-            android:summary="@string/pref_gps_distance_desc"
-            android:title="@string/pref_gps_distance" />
-    </PreferenceCategory>
-<!--   -->
-
     <PreferenceCategory android:title="@string/appearance" >
 
         <ListPreference
