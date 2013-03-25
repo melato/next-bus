@@ -98,14 +98,16 @@ public class DaySchedule {
     if ( time < dayChange ) {
       time += 24 * 60;
     }
+    if ( times.length == 0 )
+      return -1;
     int pos = Arrays.binarySearch(times, time);
     if ( pos >= 0 )
       return pos;
     pos = - (pos + 1);
-    if ( pos == 0 )
-      return pos;
     if ( pos == times.length )
       return times.length - 1;
+    if ( pos == 0 )
+      return pos;
     if ( times[pos] - time < time - times[pos-1] ) {
       return pos;
     } else {

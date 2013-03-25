@@ -324,7 +324,13 @@ public class SqlRouteStorage implements RouteStorage {
             int dateId = cursor.getInt(0);
             int scheduleId = cursor.getInt(1);
             DaySchedule daySchedule = scheduleIds.get(scheduleId);
-            daySchedules.add(createDaySchedule(daySchedule.getTimes(), ScheduleId.forDate(dateId)));
+            int[] times = null;
+            if ( daySchedule != null) {
+              times = daySchedule.getTimes();
+            } else {
+              times = new int[0];
+            }
+            daySchedules.add(createDaySchedule(times, ScheduleId.forDate(dateId)));
           } while ( cursor.moveToNext() );
         }
       } finally {
