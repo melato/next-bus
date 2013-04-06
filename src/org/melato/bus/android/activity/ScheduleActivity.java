@@ -21,14 +21,18 @@
 package org.melato.bus.android.activity;
 
 import java.util.Date;
+import java.util.List;
 
 import org.melato.bus.android.Info;
 import org.melato.bus.android.R;
+import org.melato.bus.android.activity.ExceptionActivity.ExceptionSpecifier;
 import org.melato.bus.android.app.HelpActivity;
 import org.melato.bus.client.TimeOfDay;
 import org.melato.bus.client.TimeOfDayList;
 import org.melato.bus.model.Agency;
 import org.melato.bus.model.DaySchedule;
+import org.melato.bus.model.RouteException;
+import org.melato.bus.model.RouteId;
 import org.melato.bus.model.Schedule;
 import org.melato.bus.model.ScheduleId;
 import org.melato.bus.model.Stop;
@@ -43,6 +47,8 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -52,7 +58,7 @@ import android.widget.TextView;
  * @author Alex Athanasopoulos
  *
  */
-public class ScheduleActivity extends Activity {
+public class ScheduleActivity extends Activity implements OnItemClickListener {
   public static final String KEY_SCHEDULE_ID = "scheduleId";
   protected BusActivities activities;
   private Schedule schedule;
@@ -60,8 +66,7 @@ public class ScheduleActivity extends Activity {
   private DaySchedule daySchedule;
   private String  stopName;
   private int     timeOffset;
-  
-  
+  private ScheduleAdapter scheduleAdapter;
   
   private static int getFirstBit(int bitmap ) {
     if ( bitmap == 0 )
@@ -110,11 +115,7 @@ public class ScheduleActivity extends Activity {
     }
     return "";
   }
-  public static String getScheduleName(Context context, ScheduleId scheduleId) {
-    int days = scheduleId.getDays();
-    if ( days == 0 ) {
-      return DateId.toString(scheduleId.getDateId());
-    }
+  public static String getDaysName(Context context, int days) {    
     int first = getFirstBit(days);
     int last = getLastBit(days);
     if ( first == last ) {
@@ -137,6 +138,14 @@ public class ScheduleActivity extends Activity {
       }
     }
     return buf.toString();
+  }
+  
+  public static String getScheduleName(Context context, ScheduleId scheduleId) {
+    int days = scheduleId.getDays();
+    if ( days == 0 ) {
+      return DateId.toString(scheduleId.getDateId());
+    }
+    return getDaysName(context, days);
   }
 
   protected String getScheduleName() {
@@ -168,7 +177,10 @@ public class ScheduleActivity extends Activity {
       ScheduleId scheduleId = (ScheduleId) getIntent().getSerializableExtra(KEY_SCHEDULE_ID);
       this.daySchedule = schedule.getSchedule(scheduleId);
       if ( daySchedule == null ) {
-        daySchedule = schedule.getSchedule(currentTime); 
+        daySchedule = schedule.getSchedule(currentTime);
+        if ( daySchedule != null ) {
+          scheduleId = daySchedule.getScheduleId();
+        }
       }
       setContentView(R.layout.schedule);
       ListView listView = (ListView) findViewById(R.id.listView);
@@ -190,8 +202,11 @@ public class ScheduleActivity extends Activity {
       if ( daySchedule != null ) {
         TimeOfDayList times = new TimeOfDayList(daySchedule,currentTime);
         times.setTimeOffset(timeOffset);
-        ScheduleAdapter scheduleAdapter = new ScheduleAdapter(times);
+        List<RouteException> exceptions = schedule.getExceptions(daySchedule.getScheduleId());
+        times.setExceptions(exceptions);
+        scheduleAdapter = new ScheduleAdapter(times);
         listView.setAdapter(scheduleAdapter);
+        listView.setOnItemClickListener(this);
         int pos = times.getDefaultPosition();
         if ( pos >= 0 ) {
           if ( pos > 0 )
@@ -230,6 +245,9 @@ public class ScheduleActivity extends Activity {
         
       }
     }
+    boolean hasException(int position) {
+      return times.hasException(position);
+    }
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
       TextView view = (TextView) super.getView(position, convertView, parent);
@@ -264,5 +282,15 @@ public class ScheduleActivity extends Activity {
   public boolean onOptionsItemSelected(MenuItem item) {
     return activities.onOptionsItemSelected(item);
   }
-  
- }
+  @Override
+  public void onItemClick(AdapterView<?> parent, View view, int position,
+      long id) {
+    if ( scheduleAdapter.hasException(position)) {
+      RouteId routeId = activities.getRouteId();
+      ScheduleId scheduleId = daySchedule.getScheduleId();
+      int time = daySchedule.getTimes()[position];
+      ExceptionSpecifier exc = new ExceptionSpecifier(routeId, scheduleId, time);
+      ExceptionActivity.showExceptions(this, exc);
+    }
+  }
+}

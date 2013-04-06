@@ -33,6 +33,8 @@ public class Route implements Cloneable, Serializable, Comparable<Route> {
   private static final long serialVersionUID = 1L;
 
   private RouteId routeId;
+  /** The internal agency name */
+  private String  agencyName;
   
   /** The label that the user sees, e.g. "301B"
    * The label is usually name in uppercase.
@@ -58,6 +60,14 @@ public class Route implements Cloneable, Serializable, Comparable<Route> {
     }
   }
   
+  public String getAgencyName() {
+    return agencyName;
+  }
+
+  public void setAgencyName(String agencyName) {
+    this.agencyName = agencyName;
+  }
+
   public String getLabel() {
     return label;
   }

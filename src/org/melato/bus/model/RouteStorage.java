@@ -81,4 +81,6 @@ public interface RouteStorage {
   
   /** Retrieve the name of the agency for the specified route. */
   String loadAgencyName(RouteId route);
+  
+  String getDefaultAgencyName();
 }

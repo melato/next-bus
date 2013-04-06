@@ -6,6 +6,8 @@
     <string name="menu_all_routes">Όλες</string>
     <string name="menu_recent_routes">Πρόσφατες</string>
     <string name="menu_nearby_routes">Κοντινές</string>
+    <string name="menu_agencies">Φορείς</string>
+    <string name="agencies">Συγκοινωνιακοί Φορείς</string>
     <string name="all_routes">Όλες οι Γραμμές</string>
     <string name="recent_routes">Πρόσφατες Γραμμές</string>
     <string name="schedule">Ωράριο</string>
@@ -15,6 +17,7 @@
     <string name="gps_normal">Κανονικό</string>
     <string name="menu_all_schedules">Άλλες Μέρες</string>
     <string name="all_schedules">Όλα τα ωράρια</string>
+    <string name="exceptions">Εξαιρέσεις</string>
     <string name="days_Su">Κυριακή</string>
     <string name="days_Mo">Δευτέρα</string>
     <string name="days_Tu">Τρίτη</string>

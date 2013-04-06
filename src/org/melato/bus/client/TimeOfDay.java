@@ -29,11 +29,15 @@ import org.melato.bus.model.Schedule;
 public class TimeOfDay {
   /** A time in minutes. */
   private int timeMinutes;
+  private boolean exception;
   
   /** An offset in seconds. */
   private int offsetSeconds; 
-  
-  
+    
+  public void setException(boolean exception) {
+    this.exception = exception;
+  }
+
   public TimeOfDay(int minutes) {
     this.timeMinutes = minutes;
   }
@@ -45,7 +49,11 @@ public class TimeOfDay {
 
   @Override
   public String toString() {
-    return Schedule.formatTimeMod24(timeMinutes + offsetSeconds/60);
+    String s = Schedule.formatTimeMod24(timeMinutes + offsetSeconds/60);
+    if ( exception ) {
+      s += " * ";
+    }
+    return s;
     /*
     if ( offsetSeconds == 0 ) {
       return Schedule.formatTime(timeMinutes);

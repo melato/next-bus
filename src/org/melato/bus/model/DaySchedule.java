@@ -51,7 +51,13 @@ public class DaySchedule {
   public int[] getTimes() {
     return times;
   }
-  
+
+  public void setTimes(int[] times) {
+    this.times = times;
+  }
+
+
+
   public ScheduleId getScheduleId() {
     return scheduleId;
   }
@@ -77,9 +83,12 @@ public class DaySchedule {
     this.times = times;
     this.scheduleId = scheduleId;
   }
-  
+
+  public static int dayBitmap(int dayOfWeek) {
+    return 1 << (dayOfWeek-Calendar.SUNDAY);
+  }
   public static DaySchedule findSchedule(DaySchedule[] schedules, int dayOfWeek) {
-    int bitmap = 1 << (dayOfWeek-Calendar.SUNDAY);
+    int bitmap = dayBitmap(dayOfWeek);
     for( DaySchedule schedule: schedules ) {
       if ( (schedule.getScheduleId().getDays() & bitmap) != 0 ) {
         return schedule;
@@ -94,13 +103,17 @@ public class DaySchedule {
   }
   
   public int getClosestIndex(Date date) {
+    System.out.println( "date: " + date);
     int time = Schedule.getTime(date);
+    System.out.println( "time: " + time );
     if ( time < dayChange ) {
       time += 24 * 60;
     }
+    System.out.println( "time2: " + time );
     if ( times.length == 0 )
       return -1;
     int pos = Arrays.binarySearch(times, time);
+    System.out.println( "pos: " + pos);
     if ( pos >= 0 )
       return pos;
     pos = - (pos + 1);
@@ -121,5 +134,10 @@ public class DaySchedule {
 
   public void setDayChange(int dayChange) {
     this.dayChange = dayChange;
+  }
+  
+  public boolean containsTime(int time) {
+    int pos = Arrays.binarySearch(times, time);
+    return pos >= 0;        
   }
 }

@@ -21,9 +21,14 @@
 package org.melato.bus.client;
 
 import java.util.AbstractList;
+import java.util.Collections;
 import java.util.Date;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 import org.melato.bus.model.DaySchedule;
+import org.melato.bus.model.RouteException;
 import org.melato.bus.model.Schedule;
 
 /** A list of times for displaying the schedule. */
@@ -33,9 +38,22 @@ public class TimeOfDayList extends AbstractList<TimeOfDay> {
   /** The time difference from the start to the desired stop, in seconds. */ 
   private int   timeOffset;
   private Date  currentTime;
+  private Set<Integer> exceptionTimes = Collections.emptySet();
 
   public void setTimeOffset(int timeOffset) {
     this.timeOffset = timeOffset;
+  }
+  
+  public void setExceptions(List<RouteException> exceptions) {
+    exceptionTimes = new HashSet<Integer>();
+    for( RouteException exception: exceptions ) {
+      int[] times = exception.getTimes();
+      if ( times != null) {
+        for( int time: times ) {
+          exceptionTimes.add(time);
+        }
+      }      
+    }
   }
 
   public TimeOfDayList(Schedule schedule, Date currentTime) {
@@ -46,9 +64,16 @@ public class TimeOfDayList extends AbstractList<TimeOfDay> {
     this.times = schedule.getTimes();
     this.currentTime = currentTime;
   }
+  
+  public boolean hasException(int position) {
+    int time = times[position];
+    return exceptionTimes.contains(time);    
+  }
   @Override
   public TimeOfDay get(int location) {
-    return new TimeOfDay(times[location], timeOffset);
+    TimeOfDay t = new TimeOfDay(times[location], timeOffset);
+    t.setException(hasException(location));
+    return t;
   }
 
   public boolean hasOffset() {

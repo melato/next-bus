@@ -22,15 +22,20 @@ package org.melato.bus.android.activity;
 
 import java.util.List;
 
+import org.melato.bus.android.Info;
 import org.melato.bus.android.R;
 import org.melato.bus.android.app.HelpActivity;
+import org.melato.bus.model.Agency;
 import org.melato.bus.model.RouteGroup;
+import org.melato.bus.model.RouteManager;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.Menu;
 import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.widget.EditText;
 import android.widget.ListView;
 
@@ -42,6 +47,7 @@ import android.widget.ListView;
 public class AllRoutesActivity extends RoutesActivity {
   private RouteGroup[] all_groups;
   private EditText editView;
+  private Agency agency;
   
   class TextListener implements TextWatcher {
 
@@ -65,14 +71,18 @@ public class AllRoutesActivity extends RoutesActivity {
     }    
   }
   
-  protected Object[] initialRoutes() {
-    if ( all_groups == null ) {
-      List<RouteGroup> groups = RouteGroup.group(activities.getRouteManager().getRoutes());
-      all_groups = groups.toArray(new RouteGroup[0]);
+  protected void initializeRoutes() {    
+    RouteManager routeManager = activities.getRouteManager();
+    String agencyName = Info.getDefaultAgencyName(this);
+    agency = routeManager.getAgency(agencyName);
+    if ( agency != null) {
+      setTitle(agency.getLabel());
     }
-    return all_groups;
+    List<RouteGroup> groups = RouteGroup.group(routeManager.getRoutesForAgency(agencyName));
+    all_groups = groups.toArray(new RouteGroup[0]);
+    setRoutes(all_groups);
   }
-  
+    
   @Override
   public void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
@@ -81,6 +91,22 @@ public class AllRoutesActivity extends RoutesActivity {
     editView.addTextChangedListener(new TextListener());    
   }
   
+  @Override
+  protected void onResume() {    
+    super.onResume();
+    String agencyName = Info.getDefaultAgencyName(this);
+    if ( agencyName != null && agency != null && ! agencyName.equals(agency.getName())) {
+      initializeRoutes();
+    }
+    /*
+    if ( all_groups.length > 10 ) {
+      editView.setVisibility(View.VISIBLE);                        
+    } else {
+      editView.setVisibility(View.INVISIBLE);                        
+    }
+    */
+  }
+
   private int findPosition( String text ) {
     if ( text != null ) {
       text = text.trim();
@@ -108,5 +134,15 @@ public class AllRoutesActivity extends RoutesActivity {
      return true;
   }
 
-  
+  @Override
+  public boolean onOptionsItemSelected(MenuItem item) {
+    switch (item.getItemId()) {
+      case R.id.agencies:
+        startActivity(new Intent(this, AgenciesActivity.class));
+        return true;
+      default:
+        return super.onOptionsItemSelected(item);
+    }
+  }
+
 }

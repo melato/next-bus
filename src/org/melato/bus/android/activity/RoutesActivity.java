@@ -44,20 +44,32 @@ public abstract class RoutesActivity extends ListActivity {
   protected BusActivities activities;
   private Object[] items = new Object[0];
   private ColorScheme colors;
+  private RoutesAdapter adapter;
 
-  protected abstract Object[] initialRoutes();
+  protected void initializeRoutes() {    
+    setRoutes(initialRoutes());
+  }
+  
+  protected Object[] initialRoutes() {
+    return new Object[0];
+  }
+  
+  protected void setRoutes(Object[] items) {
+    this.items = items;
+    adapter = new RoutesAdapter();
+    setListAdapter(adapter);
+  }
   
   /** Called when the activity is first created. */
   @Override
   public void onCreate(Bundle savedInstanceState) {      
       super.onCreate(savedInstanceState);
       activities = new BusActivities(this);
-      items = initialRoutes();
-      setListAdapter(new RoutesAdapter());
+      initializeRoutes();
       //SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
       colors = UI.getColorScheme(this);
       //prefs.registerOnSharedPreferenceChangeListener(this);
-  }
+  }   
 
   void showGroup(RouteGroup group) {
     if ( group.getRoutes().length == 1 ) {

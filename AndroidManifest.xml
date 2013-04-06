@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="org.melato.bus.android"
-    android:versionCode="20"
-    android:versionName="1.3.1-beta10" >
+    android:versionCode="22"
+    android:versionName="1.4-beta11" >
 
     <uses-sdk android:minSdkVersion="8" />
 
@@ -24,6 +24,10 @@
             </intent-filter>
         </activity>
         <activity
+            android:name=".activity.AgenciesActivity"
+            android:label="@string/agencies" >
+        </activity>
+        <activity
             android:name=".activity.AllRoutesActivity"
             android:label="@string/all_routes" >
         </activity>
@@ -42,6 +46,10 @@
         <activity
             android:name=".activity.SchedulesActivity"
             android:label="@string/all_schedules" >
+        </activity>
+        <activity
+            android:name=".activity.ExceptionActivity"
+            android:label="@string/exceptions" >
         </activity>
         <activity
             android:name=".activity.StopsActivity"

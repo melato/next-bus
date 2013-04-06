@@ -6,6 +6,9 @@
     <item android:id="@+id/recent_routes"
           android:icon="@drawable/recent"                          
           android:title="@string/menu_recent_routes" />
+    <item android:id="@+id/agencies"
+          android:icon="@drawable/agencies"                          
+          android:title="@string/menu_agencies" />
     <item android:id="@+id/map"
           android:icon="@drawable/map"                          
           android:title="@string/map" />

@@ -21,10 +21,14 @@
 package org.melato.bus.model;
 
 import java.text.DecimalFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.List;
 
+import org.melato.log.Log;
 import org.melato.util.DateId;
 
 
@@ -34,6 +38,7 @@ public class Schedule {
   private String comment;
   /** The # of minutes after midnight where the schedule is still considered the previous day's schedule. */
   private int dayChange;
+  private List<RouteException> exceptions = Collections.emptyList();
 
   static DecimalFormat d2Format = new DecimalFormat("00");
   
@@ -105,6 +110,69 @@ public class Schedule {
     return DaySchedule.findSchedule(schedules, cal.get(Calendar.DAY_OF_WEEK));
   }
   
+  public List<RouteException> getExceptions(Date date) {
+    if ( exceptions.isEmpty() ) {
+      return exceptions;
+    }
+    Calendar cal = new GregorianCalendar();
+    cal.setTime(date);
+    cal.add(Calendar.MINUTE, -dayChange); // shift the day back.
+    int bitmap = DaySchedule.dayBitmap(Calendar.DAY_OF_WEEK);
+    List<RouteException> result = new ArrayList<RouteException>();
+    for(RouteException exception: exceptions) {
+      if ( (exception.getDays() & bitmap) != 0) {
+        result.add(exception);
+      }
+    }
+    return result;
+  }
+  
+  public List<RouteException> getExceptions(ScheduleId scheduleId) {
+    Log.info("exceptions: " + exceptions.size());
+    if ( exceptions.isEmpty() ) {
+      return exceptions;
+    }
+    int bitmap = scheduleId.getDays();
+    if ( bitmap == 0 ) {
+      
+    }
+    Log.info("bitmap: " + bitmap);
+    List<RouteException> result = new ArrayList<RouteException>();
+    for(RouteException exception: exceptions) {
+      if ( (exception.getDays() & bitmap) != 0) {
+        result.add(exception);
+      }
+    }
+    return result;
+  }
+  
+  static boolean contains(int[] times, int time) {
+    for( int t: times ) {
+      if ( t == time )
+        return true;
+    }
+    return false;
+  }
+  public List<RouteException> getExceptions(ScheduleId scheduleId, int time) {
+    DaySchedule daySchedule = getSchedule(scheduleId);
+    List<RouteException> exceptions = new ArrayList<RouteException>();    
+    if ( daySchedule != null) {
+      List<RouteException> dayExceptions = getExceptions(scheduleId);
+      for( RouteException exception: dayExceptions ) {
+        int[] times = exception.getTimes();
+        if ( times != null && contains(times, time)) {
+          for(int exceptionTime: times) {
+            if ( daySchedule.containsTime(exceptionTime)) {
+              exceptions.add(exception);
+              break;
+            }
+          }
+        }
+      }
+    }
+    return exceptions;
+  }
+  
   /** Get the schedule times for a given day of the week. */
   public int[] getTimes( Date date ) {
     DaySchedule schedule = getSchedule(date);
@@ -148,6 +216,14 @@ public class Schedule {
 
   public void setComment(String comment) {
     this.comment = comment;
+  }
+  
+  public List<RouteException> getExceptions() {
+    return exceptions;
+  }
+
+  public void setExceptions(List<RouteException> exceptions) {
+    this.exceptions = exceptions;
   }
 
   public int getDayChange() {

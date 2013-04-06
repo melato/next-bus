@@ -1,5 +1,5 @@
 /*-------------------------------------------------------------------------
- * Copyright (c) 2012,2013 Alex Athanasopoulos.  All Rights Reserved.
+ * Copyright (c) 2012,2013, Alex Athanasopoulos.  All Rights Reserved.
  * alex@melato.org
  *-------------------------------------------------------------------------
  * This file is part of Athens Next Bus
@@ -18,16 +18,33 @@
  * along with Athens Next Bus.  If not, see <http://www.gnu.org/licenses/>.
  *-------------------------------------------------------------------------
  */
-package org.melato.bus.android.activity;
+package org.melato.bus.model;
 
-/** Preference keys */
-public class Pref {
-  public static final String GPS_TIME= "gps_time";
-  public static final String GPS_DISTANCE = "gps_distance";
-  public static final String ROUTE_COLORS = "route_colors";
-  public static final String COLOR_ORIGINAL = "original";
-  public static final String COLOR_BLACK_ON_WHITE = "black_on_white";
-  public static final String COLOR_WHITE_ON_BLACK = "white_on_black";
-  public static final String NEARBY_TIMES = "nearby_times";
-  public static final String DEFAULT_AGENCY = "agency";
+public class RouteException {
+  private String  note;
+  private int days;
+  private int[] times;
+  
+  public String getNote() {
+    return note;
+  }
+  public void setNote(String note) {
+    this.note = note;
+  }
+  public int getDays() {
+    return days;
+  }
+  public void setDays(int days_bitmap) {
+    this.days = days_bitmap;
+  }
+  public int[] getTimes() {
+    return times;
+  }
+  public void setTimes(int[] times) {
+    this.times = times;
+  }
+  @Override
+  public String toString() {
+    return note;
+  }
 }

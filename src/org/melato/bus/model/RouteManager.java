@@ -80,6 +80,18 @@ public class RouteManager {
     return allRoutes;
   }
 
+  public List<Route> getRoutesForAgency(String name) {
+    if ( name == null)
+      return getRoutes();
+    List<Route> routes = new ArrayList<Route>();
+    for( Route route: getRoutes() ) {
+      if ( name.equals(route.getAgencyName())) {
+        routes.add(route);
+      }
+    }
+    return routes;
+  }
+
   public List<RouteId> getRouteIds() {
     if ( allRouteIds == null ) {
       synchronized( this ) {
@@ -333,4 +345,10 @@ public class RouteManager {
   public Agency getAgency(RouteId routeId) {
     return getAgency(storage.loadAgencyName(routeId));
   }  
+  
+  public String getDefaultAgency() {
+    return storage.getDefaultAgencyName();
+  }
+
+  
 }

@@ -26,6 +26,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.melato.android.AndroidLogger;
+import org.melato.bus.android.activity.Pref;
 import org.melato.bus.android.db.SqlRouteStorage;
 import org.melato.bus.android.map.RoutePointManager;
 import org.melato.bus.client.NearbyManager;
@@ -35,8 +36,11 @@ import org.melato.bus.model.RouteManager;
 import org.melato.log.Log;
 
 import android.content.Context;
+import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.preference.PreferenceManager;
 
 /** Provides access to global (static) objects. */
 public class Info {
@@ -112,5 +116,27 @@ public class Info {
   public static synchronized Drawable getAgencyIcon(Context context, RouteId routeId) {
     Agency agency = Info.routeManager(context).getAgency(routeId);
     return getAgencyIcon(context, agency);
+  }
+  
+  public static String getDefaultAgencyName(Context context) {
+    RouteManager routeManager = routeManager(context);
+    SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+    String agency = prefs.getString(Pref.DEFAULT_AGENCY, null);
+    if ( agency != null) {
+      Agency a = routeManager.getAgency(agency); // make sure it exists.
+      if ( a == null) {
+        agency = null;
+      }
+    }
+    if ( agency == null) {
+      agency = routeManager.getDefaultAgency();      
+    }
+    return agency;
+  }
+  public static void setDefaultAgencyName(Context context, String agency) {
+    SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+    Editor editor = prefs.edit();
+    editor.putString(Pref.DEFAULT_AGENCY, agency);
+    editor.commit();
   }
 }

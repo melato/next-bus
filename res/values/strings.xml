@@ -6,6 +6,8 @@
     <string name="menu_all_routes">All</string>
     <string name="menu_recent_routes">Recent</string>
     <string name="menu_nearby_routes">Nearby</string>
+    <string name="menu_agencies">Agencies</string>
+    <string name="agencies">Transportation Agencies</string>
     <string name="all_routes">All Routes</string>
     <string name="recent_routes">Recent Routes</string>
     <string name="nearby_routes">Nearby Routes</string>
@@ -16,6 +18,7 @@
     <string name="gps_normal">Normal</string>
     <string name="menu_all_schedules">Other Days</string>
     <string name="all_schedules">All Schedules</string>
+    <string name="exceptions">Exceptions</string>
     <string name="days_Su">Sunday</string>
     <string name="days_Mo">Monday</string>
     <string name="days_Tu">Tuesday</string>

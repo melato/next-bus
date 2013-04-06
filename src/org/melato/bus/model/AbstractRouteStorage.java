@@ -134,5 +134,9 @@ public abstract class AbstractRouteStorage implements RouteStorage {
   public List<Agency> loadAgencies() {
     return Collections.emptyList();
   }
-  
+
+  @Override
+  public String getDefaultAgencyName() {
+    return null;
+  }
 }
