@@ -1,12 +1,3 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
-    <item android:id="@+id/nearby"
-          android:icon="@drawable/nearby"                          
-          android:title="@string/menu_nearby_routes" />
-    <item android:id="@+id/all_routes"
-          android:icon="@drawable/all"                          
-          android:title="@string/menu_all_routes" />
-    <item android:id="@+id/map"
-          android:icon="@drawable/map"                          
-          android:title="@string/map" />
 </menu>

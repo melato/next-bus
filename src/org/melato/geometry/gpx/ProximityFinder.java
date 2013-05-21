@@ -25,7 +25,6 @@ import java.util.List;
 import org.melato.gps.GlobalDistance;
 import org.melato.gps.Metric;
 import org.melato.gps.Point2D;
-import org.melato.gps.PointTime;
 
 /**
  * Given a sequence of waypoints S and a target proximity distance D,
@@ -37,26 +36,37 @@ import org.melato.gps.PointTime;
  * It is more efficient than linear search, when used for more than one query.
  */
 public class ProximityFinder {
-  private Metric metric = new GlobalDistance();
+  private Metric metric;
   private float target = 0;
   private float[] lengths;
   private Point2D[] waypoints;
+  
+  
+  public ProximityFinder(Metric metric) {
+    super();
+    this.metric = metric;
+  }
+  
+  public ProximityFinder() {
+    metric = new GlobalDistance();
+  }
+
+
   public void setTargetDistance( float d ) {
     target = d;
   }
-  
-  
+    
   public Metric getMetric() {
     return metric;
   }
-
-
+  
   public void setPath(Path path) {
     waypoints = path.getWaypoints();
     lengths = path.getLengths();
+    metric = path.getMetric();
   }
   
-  public void setWaypoints(PointTime[] waypoints) {
+  public void setWaypoints(Point2D[] waypoints) {
     setPath(new Path(waypoints));
   }
 

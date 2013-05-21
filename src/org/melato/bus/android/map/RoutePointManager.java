@@ -20,14 +20,11 @@
  */
 package org.melato.bus.android.map;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
-
 import org.melato.bus.android.Info;
 import org.melato.bus.model.RouteId;
 import org.melato.bus.model.RouteManager;
-import org.melato.gps.Point2D;
+import org.melato.bus.model.cache.RoutePointCache;
+import org.melato.bus.model.cache.RoutePoints;
 
 import android.app.Activity;
 import android.content.Context;
@@ -38,9 +35,8 @@ import android.content.Context;
 public class RoutePointManager {
   private static RoutePointManager instance;
   private RouteManager routeManager;
-  private Map<RouteId,RoutePoints> map = new HashMap<RouteId,RoutePoints>();
+  private RoutePointCache cache;
   private boolean isLoading;
-  private boolean allLoaded;
   /**
    * A callback to notify the map when data loading by a background thread has completed.
    * Use to redraw the map with the loaded routes.
@@ -66,7 +62,8 @@ public class RoutePointManager {
   private RoutePointManager(Context context) {
     super();
     routeManager = Info.routeManager(context);
-    load(false);
+    cache = routeManager.getPointCache();
+    cache.load(false);
   }
 
   public synchronized static RoutePointManager getInstance(Context context) {
@@ -80,25 +77,8 @@ public class RoutePointManager {
     instance = null;
   }
   
-  private void load(boolean all) {
-    RoutePointsCollector collector = new RoutePointsCollector();
-    if (all) {
-      routeManager.iterateAllRouteStops(collector);
-    } else {
-      routeManager.iteratePrimaryRouteStops(collector);
-    }
-    synchronized(this) {
-      map = collector.getMap();
-    }
-  }
-  
   public boolean isLoaded() {
-    return allLoaded;
-  }
-  
-  private RoutePoints loadRoute(RouteId routeId) {    
-    Point2D[] stops = routeManager.getStops(routeId);
-    return RoutePoints.createFromPoints(Arrays.asList(stops));
+    return cache.isLoaded(true);
   }
   
   /**
@@ -108,14 +88,7 @@ public class RoutePointManager {
    * @return
    */
   public synchronized RoutePoints getRoutePoints(RouteId routeId) {
-    RoutePoints points = map.get(routeId);
-    if ( points == null && ! isLoading ) {
-      // if the route is not loaded, and we are not already loading all routes, load it immediately.
-      // otherwise return null.  The map will be redrawn later.
-      points = loadRoute(routeId);
-      map.put(routeId, points);
-    }
-    return points;
+    return cache.getRoutePoints(routeId, ! isLoading);
   }  
 
   /** Run the specified action on the activity's UI thread, when the routes are loaded.
@@ -142,7 +115,7 @@ public class RoutePointManager {
   public void loadAll() {
     if ( isLoading )
       return;
-    if ( allLoaded ) {
+    if ( cache.isLoaded(true) ) {
       invokeLoadListener();
     } else {
       new Thread( new RouteLoader()).start();
@@ -158,10 +131,9 @@ public class RoutePointManager {
     public void run() {
       isLoading = true;
       try {
-        load(true);
+        cache.load(true);
       } finally {
         isLoading = false;
-        allLoaded = true;
       }
       invokeLoadListener();
     }    

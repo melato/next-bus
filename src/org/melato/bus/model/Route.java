@@ -31,6 +31,7 @@ import java.io.Serializable;
  */
 public class Route implements Cloneable, Serializable, Comparable<Route> {
   private static final long serialVersionUID = 1L;
+  public static final int FLAG_PRIMARY = 0x1;
 
   private RouteId routeId;
   /** The internal agency name */
@@ -45,7 +46,7 @@ public class Route implements Cloneable, Serializable, Comparable<Route> {
   private String      title; // e.g. "Γραμμή 304 ΣΤ. ΝΟΜΙΣΜΑΤΟΚΟΠΕΙΟ - ΑΡΤΕΜΙΣ (ΒΡΑΥΡΩΝΑ)"
   private int color = 0x0000ff;
   private int backgroundColor = 0;
-  private boolean primary;
+  private int flags;
   
   public Route() {
     super();
@@ -98,14 +99,22 @@ public class Route implements Cloneable, Serializable, Comparable<Route> {
   public void setBackgroundColor(int backgroundColor) {
     this.backgroundColor = backgroundColor;
   }
+  
+  public int getFlags() {
+    return flags;
+  }
+
+  public void setFlags(int flags) {
+    this.flags = flags;
+  }
 
   public boolean isPrimary() {
-    return primary;
+    return (flags & FLAG_PRIMARY) != 0;
   }
 
   public void setPrimary(boolean primary) {
-    this.primary = primary;
-  }
+    flags |= FLAG_PRIMARY;
+  }    
 
   public String getDirection() {
     return routeId.getDirection();

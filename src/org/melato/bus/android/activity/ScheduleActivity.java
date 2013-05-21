@@ -31,12 +31,12 @@ import org.melato.bus.client.TimeOfDay;
 import org.melato.bus.client.TimeOfDayList;
 import org.melato.bus.model.Agency;
 import org.melato.bus.model.DaySchedule;
+import org.melato.bus.model.RStop;
 import org.melato.bus.model.RouteException;
 import org.melato.bus.model.RouteId;
 import org.melato.bus.model.Schedule;
 import org.melato.bus.model.ScheduleId;
 import org.melato.bus.model.Stop;
-import org.melato.util.DateId;
 
 import android.app.Activity;
 import android.content.Context;
@@ -68,98 +68,23 @@ public class ScheduleActivity extends Activity implements OnItemClickListener {
   private int     timeOffset;
   private ScheduleAdapter scheduleAdapter;
   
-  private static int getFirstBit(int bitmap ) {
-    if ( bitmap == 0 )
-      return -1;
-    for( int i = 0; i < 32; i++ ) {
-      int bit = 1 << i;
-      if ( (bitmap & bit) != 0 ) {
-        return i;
-      }
-    }
-    return -1;
-  }
-  private static int getLastBit(int bitmap ) {
-    if ( bitmap == 0 )
-      return -1;
-    for( int i = 31; i >= 0; i-- ) {
-      int bit = 1 << i;
-      if ( (bitmap & bit) != 0 ) {
-        return i;
-      }
-    }
-    return -1;
-  }
-  private static boolean isContiguous( int bitmap, int first, int last ) {
-    for( int i = first; i <= last; i++ ) {
-      int bit = 1 << i;
-      if ( (bitmap & bit) == 0 ) {
-        return false;
-      }
-    }
-    return true;    
-  }
-
-  private static final int[] DAY_RESOURCES = {
-    R.string.days_Su,
-    R.string.days_Mo,
-    R.string.days_Tu,
-    R.string.days_We,
-    R.string.days_Th,
-    R.string.days_Fr,
-    R.string.days_Sa,
-  };
-  public static String getDayName(Context context, int bit) {
-    if ( bit < 7 ) {
-      return context.getResources().getString(DAY_RESOURCES[bit]);      
-    }
-    return "";
-  }
-  public static String getDaysName(Context context, int days) {    
-    int first = getFirstBit(days);
-    int last = getLastBit(days);
-    if ( first == last ) {
-      return getDayName(context, first);      
-    }
-    if ( days == 127 ) {
-      return context.getResources().getString(R.string.days_all);
-    }
-    if ( isContiguous(days, first, last)) {
-      return getDayName(context, first) + "-" + getDayName(context,last);
-    }
-    StringBuilder buf = new StringBuilder();
-    for( int i = first; i <= last; i++ ) {
-      int bit = 1 << i;
-      if ( (days & bit) != 0 ) { 
-        if ( i > first ) {
-          buf.append(",");
-        }
-        buf.append(getDayName(context,i));
-      }
-    }
-    return buf.toString();
-  }
-  
-  public static String getScheduleName(Context context, ScheduleId scheduleId) {
-    int days = scheduleId.getDays();
-    if ( days == 0 ) {
-      return DateId.toString(scheduleId.getDateId());
-    }
-    return getDaysName(context, days);
-  }
-
   protected String getScheduleName() {
     if ( daySchedule == null )
       return "";
-    return getScheduleName(this, daySchedule.getScheduleId());
+    return ScheduleUtilities.getScheduleName(this, daySchedule.getScheduleId());
   }
   
-  private void setStopInfo(RouteStop stop) {
-    Stop[] stops = Info.routeManager(this).getStops(stop.getRouteId());
-    stopName = stop.getStopName(stops);
-    timeOffset = stop.getTimeFromStart(stops);
-    if ( timeOffset == 0 && stops.length > 0 ) {
-      stopName = stops[0].getName();
+  private void setStopInfo(RStop rstop) {
+    Stop[] stops = Info.routeManager(this).getStops(rstop.getRouteId());
+    Stop stop = rstop.getStop();
+    if ( stop == null || stop.getIndex() > 0 && stop.getSecondsFromStart() == 0) {
+      if ( stops.length > 0 ) {
+        stop = stops[0];
+      }
+    }
+    if ( stop != null) {
+      stopName = stop.getName();
+      timeOffset = stop.getSecondsFromStart();
     }
   }
   
@@ -169,16 +94,22 @@ public class ScheduleActivity extends Activity implements OnItemClickListener {
       super.onCreate(savedInstanceState);
       activities = new BusActivities(this);
       IntentHelper helper = new IntentHelper(this);
-      RouteStop routeStop = helper.getRouteStop();
-      if ( routeStop == null )
+      RStop rstop = helper.getRStop();
+      if ( rstop == null )
         return;
-      setStopInfo(routeStop);
-      schedule = activities.getRouteManager().getSchedule(routeStop.getRouteId());
+      setStopInfo(rstop);
+      schedule = activities.getRouteManager().getSchedule(rstop.getRouteId());
       ScheduleId scheduleId = (ScheduleId) getIntent().getSerializableExtra(KEY_SCHEDULE_ID);
-      this.daySchedule = schedule.getSchedule(scheduleId);
-      if ( daySchedule == null ) {
-        daySchedule = schedule.getSchedule(currentTime);
-        if ( daySchedule != null ) {
+      if ( scheduleId == null) {
+        scheduleId = Info.getStickyScheduleId();
+      } else {
+        Info.setStickyScheduleId(scheduleId);
+      }
+      if ( scheduleId != null) {
+        daySchedule = schedule.getSchedule(scheduleId);
+      } else {
+        daySchedule = schedule.getSchedule(currentTime);   
+        if ( daySchedule != null) {
           scheduleId = daySchedule.getScheduleId();
         }
       }

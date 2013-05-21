@@ -25,8 +25,7 @@ import org.melato.android.progress.ActivityProgressHandler;
 import org.melato.android.progress.ProgressTitleHandler;
 import org.melato.bus.android.Info;
 import org.melato.bus.android.R;
-import org.melato.bus.android.activity.BusActivities;
-import org.melato.bus.android.activity.RoutesActivity;
+import org.melato.bus.android.activity.HomeActivity;
 import org.melato.log.Log;
 import org.melato.progress.CanceledException;
 import org.melato.progress.ProgressGenerator;
@@ -128,12 +127,8 @@ public class UpdateActivity extends Activity {
   }
 
   void startMain() {
-    BusActivities activities = new BusActivities(this);
-    if ( activities.hasRecentRoutes() ) {
-      RoutesActivity.showRecent(this);
-    } else {
-      RoutesActivity.showAll(this);
-    }
+    Intent intent = new Intent(this, HomeActivity.class);
+    startActivity(intent);        
   }
   
   void startUpdate() {   
@@ -209,7 +204,11 @@ public class UpdateActivity extends Activity {
     */
     @Override
     protected Boolean doInBackground(Void... params) {
-      return ! updateManager.getAvailableUpdates().isEmpty();
+      try {
+        return ! updateManager.getAvailableUpdates().isEmpty();
+      } catch( CanceledException e) {
+        return false;
+      }
       
     }
 

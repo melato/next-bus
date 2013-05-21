@@ -21,7 +21,6 @@
 package org.melato.bus.model;
 
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -48,37 +47,7 @@ public abstract class AbstractRouteStorage implements RouteStorage {
     List<Route> routes = loadRoutes();
     return extractRouteIds(routes);
   }
-
-
-  @Override
-  public MarkerInfo loadMarker(String symbol) {
-    throw new UnsupportedOperationException();
-  }
-
   
-  @Override
-  public void iterateNearbyRoutes(Point2D point, float latitudeDifference,
-      float longitudeDifference, Collection<RouteId> collector) {
-    throw new UnsupportedOperationException();
-  }
-
-  @Override
-  public void iterateNearbyStops(Point2D point, float latDiff, float lonDiff,
-      Collection<RStop> collector) {
-    throw new UnsupportedOperationException();
-  }
-
-  @Override
-  public void iterateAllRouteStops(RouteStopCallback callback) {
-    throw new UnsupportedOperationException();
-  }
-  
-  @Override
-  public void iteratePrimaryRouteStops(RouteStopCallback callback) {
-    throw new UnsupportedOperationException();
-  }
-
-
   @Override
   public String getUri(RouteId routeId) {
     return null;

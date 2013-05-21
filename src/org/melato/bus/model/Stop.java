@@ -20,6 +20,8 @@
  */
 package org.melato.bus.model;
 
+import java.util.Comparator;
+
 import org.melato.gps.Point2D;
 import org.melato.gps.PointTime;
 
@@ -29,9 +31,23 @@ import org.melato.gps.PointTime;
  */
 public class Stop extends PointTime {
   private static final long serialVersionUID = 1L;
+  /** The stop is timed. */
+  public static final int FLAG_TIMED = 0x1;
+  /** This is the last stop in the route. */
+  public static final int FLAG_LAST = 0x2;
   String name;
   String symbol;
+  int   flags;
+  int   index;
   float deviation = 1;
+  
+  public static class IndexComparator implements Comparator<Stop> {
+    @Override
+    public int compare(Stop s1, Stop s2) {
+      return s1.getIndex() - s2.getIndex();
+    }    
+  }
+  
   public Stop() {
     super();
   }
@@ -47,9 +63,21 @@ public class Stop extends PointTime {
   }
   public String getName() {
     return name;
-  }
+  }  
   public void setName(String name) {
     this.name = name;
+  }  
+  public int getFlags() {
+    return flags;
+  }
+  public void setFlags(int flags) {
+    this.flags = flags;
+  }
+  public boolean isTimed() {
+    return (flags & FLAG_TIMED) != 0; 
+  }
+  public boolean isLast() {
+    return (flags & FLAG_LAST) != 0; 
   }
   public String getSymbol() {
     return symbol;
@@ -63,9 +91,22 @@ public class Stop extends PointTime {
   public void setDeviation(float deviation) {
     this.deviation = deviation;
   }
+  public int getIndex() {
+    return index;
+  }
+  public void setIndex(int index) {
+    this.index = index;
+  }
+  public boolean isBefore(Stop stop2) {
+    return index < stop2.index;
+  }
   @Override
   public String toString() {
     return symbol + ":" + name + " " + super.toString();
+  }
+  
+  public int getSecondsFromStart() {
+    return (int) (getTime() / 1000);
   }
   
 }

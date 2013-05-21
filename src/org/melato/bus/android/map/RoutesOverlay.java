@@ -33,6 +33,7 @@ import org.melato.bus.android.activity.UI;
 import org.melato.bus.model.Route;
 import org.melato.bus.model.RouteId;
 import org.melato.bus.model.RouteManager;
+import org.melato.bus.model.cache.RoutePoints;
 import org.melato.gps.Point2D;
 
 import android.content.Context;
@@ -54,14 +55,14 @@ public class RoutesOverlay extends BaseRoutesOverlay {
   private RouteManager routeManager;
   private float latDiff; 
   private float lonDiff;
-  /** The minimum displayed latitude, in 6E format */
-  private int latMin6E;
-  /** The maximum displayed latitude, in 6E format */
-  private int latMax6E;
-  /** The minimum displayed longitude, in 6E format */
-  private int lonMin6E;
-  /** The maximum displayed longitude, in 6E format */
-  private int lonMax6E;
+  /** The minimum displayed latitude */
+  private float latMin;
+  /** The maximum displayed latitude */
+  private float latMax;
+  /** The minimum displayed longitude */
+  private float lonMin;
+  /** The maximum displayed longitude */
+  private float lonMax;
   /** The routes currently displayed. */
   private List<RouteId> routes = new ArrayList<RouteId>();
   private RoutePointManager routePointManager;
@@ -102,10 +103,10 @@ public class RoutesOverlay extends BaseRoutesOverlay {
     latDiff = ((float) latSpan) / 1E6f / 2; 
     lonDiff = ((float) lonSpan) / 1E6f / 2;
     GeoPoint center = view.getMapCenter();
-    latMin6E = center.getLatitudeE6() - latSpan / 2;
-    latMax6E = center.getLatitudeE6() + latSpan / 2;
-    lonMin6E = center.getLongitudeE6() - lonSpan / 2;
-    lonMax6E = center.getLongitudeE6() + lonSpan / 2;
+    latMin = (center.getLatitudeE6() - latSpan / 2)/1e6f;
+    latMax = (center.getLatitudeE6() + latSpan / 2)/1e6f;
+    lonMin = (center.getLongitudeE6() - lonSpan / 2)/1e6f;
+    lonMax = (center.getLongitudeE6() + lonSpan / 2)/1e6f;
 	}
 	
 	public void refresh(MapView view) {
@@ -119,6 +120,10 @@ public class RoutesOverlay extends BaseRoutesOverlay {
     return routes;
 	}
 	
+	private static GeoPoint getGeoPoint(RoutePoints points, int i) {
+	  return new GeoPoint((int) (1e6f*points.getLat(i)), (int)(1e6f*points.getLon(i)));
+	}
+	
   Path getPath(Projection projection, RoutePoints points) {
     Path path = new Path();
     int size = points.size();
@@ -126,18 +131,18 @@ public class RoutesOverlay extends BaseRoutesOverlay {
       return path;
     Point p = new Point();
     boolean previousInside = false;
-    projection.toPixels(points.getGeoPoint(0), p);
+    projection.toPixels(getGeoPoint(points, 0), p);
     path.moveTo(p.x, p.y);
     for( int i = 0; i < size; i++ ) {
-      boolean inside = points.isInside(i, latMin6E, latMax6E, lonMin6E, lonMax6E);
+      boolean inside = points.isInside(i, latMin, latMax, lonMin, lonMax);
       if ( previousInside ) {
         // draw from previous point
-        projection.toPixels(points.getGeoPoint(i), p);
+        projection.toPixels(getGeoPoint(points, i), p);
         path.lineTo(p.x, p.y );
       } else if ( inside && i > 0 ) {
-        projection.toPixels(points.getGeoPoint(i-1), p);
+        projection.toPixels(getGeoPoint(points, i-1), p);
         path.moveTo(p.x, p.y );          
-        projection.toPixels(points.getGeoPoint(i), p);
+        projection.toPixels(getGeoPoint(points, i), p);
         path.lineTo(p.x, p.y );
       } else {
         // do nothing
@@ -236,7 +241,7 @@ public class RoutesOverlay extends BaseRoutesOverlay {
         
         if ( routeId.equals(selectedRoute) && points.size() > 0 ) {
           Point p = new Point();
-          projection.toPixels(points.getGeoPoint(0), p);
+          projection.toPixels(getGeoPoint(points, 0), p);
           drawStart(canvas, p, paint);      
         }
       }

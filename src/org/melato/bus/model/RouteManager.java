@@ -28,6 +28,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.melato.bus.model.cache.RoutePointCache;
+import org.melato.bus.model.cache.ScheduleCache;
+import org.melato.bus.plan.Leg;
 import org.melato.gps.Earth;
 import org.melato.gps.GlobalDistance;
 import org.melato.gps.LocalDistance;
@@ -55,10 +58,27 @@ public class RouteManager {
   private Route   cachedRoute;
   private Stop[]  cachedStops;
   private Schedule cachedSchedule;
+  
+  private RoutePointCache pointCache;
+  private ScheduleCache scheduleCache;
     
   public RouteManager(RouteStorage storage) {
     super();
     this.storage = storage;
+  }
+  
+  public RoutePointCache getPointCache() {
+    if ( pointCache == null) {
+      pointCache = new RoutePointCache(this);
+    }
+    return pointCache;
+  }
+  
+  public ScheduleCache getScheduleCache() {
+    if ( scheduleCache == null) {
+      scheduleCache = new ScheduleCache(this);
+    }
+    return scheduleCache;
   }
   
   private List<Route> compact(List<Route> list) {
@@ -161,7 +181,11 @@ public class RouteManager {
   }
   
   public DaySchedule getDaySchedule(Route route, Date date) {
-    return storage.loadDaySchedule(route.getRouteId(), date);
+    return getDaySchedule(route.getRouteId(), date);
+  }
+  
+  public DaySchedule getDaySchedule(RouteId routeId, Date date) {
+    return storage.loadDaySchedule(routeId, date);
   }
   
   private boolean isCached(RouteId routeId) {
@@ -222,15 +246,6 @@ public class RouteManager {
     return null;
   }
   
-  /**
-   * Load marker information, which includes all routes that go through the given stop.
-   * @param symbol
-   * @return
-   */
-  public synchronized MarkerInfo loadMarker(String symbol) {
-    return storage.loadMarker(symbol);
-  }
-
   static class DistanceFilter extends AbstractCollector<RStop> {
     Collection<RStop> result;
     Metric metric;
@@ -238,7 +253,7 @@ public class RouteManager {
     private Point2D center;
     private float distance;
     
-    public DistanceFilter(List<RStop> result, Point2D center, float distance, Metric metric) {
+    public DistanceFilter(Collection<RStop> result, Point2D center, float distance, Metric metric) {
       super();
       this.result = result;
       this.center = center;
@@ -261,23 +276,21 @@ public class RouteManager {
   
   public void iterateNearbyRoutes(Point2D point, float latitudeDifference,
       float longitudeDifference, Collection<RouteId> collector) {
-    storage.iterateNearbyRoutes(point, latitudeDifference, longitudeDifference,
-        collector);
+      storage.iterateNearbyRoutes(point, latitudeDifference, longitudeDifference,
+          collector);
   }
-
+  
   /**
    * Find all (route,stop) combinations within a certain radius from a point.
    * @param point
    * @param distance
    * @return
    */
-  public List<RStop> findNearbyStops(Point2D point, float distance) {
-    List<RStop> result = new ArrayList<RStop>();
+  public void findNearbyStops(Point2D point, float distance, Collection<RStop> result) {
     DistanceFilter filter = new DistanceFilter(result, point, distance, getMetric());
     float latDiff = Earth.latitudeForDistance(distance);
     float lonDiff = Earth.longitudeForDistance(distance, point.getLat());
     storage.iterateNearbyStops(point, latDiff, lonDiff, filter);
-    return result;
   }
 
   
@@ -290,6 +303,10 @@ public class RouteManager {
 
   public void iteratePrimaryRouteStops(RouteStopCallback callback) {
     storage.iteratePrimaryRouteStops(callback);
+  }
+  
+  public List<Leg> getLegsBetween(String stop1, String stop2) {
+    return storage.loadLegsBetween(stop1, stop2);
   }
 
   /** Get a center point for the whole route collection. */

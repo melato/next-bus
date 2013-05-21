@@ -42,6 +42,56 @@ public class Schedule {
 
   static DecimalFormat d2Format = new DecimalFormat("00");
   
+  public static interface ScheduleFactory {
+    DaySchedule getSchedule(Schedule schedule);  
+  }
+  public static class DateScheduleFactory implements ScheduleFactory {
+    private Date date;
+    
+    public DateScheduleFactory(Date date) {
+      super();
+      this.date = date;
+    }
+
+    public DateScheduleFactory(int dateId) {
+      this(DateId.getDate(dateId));
+    }
+
+    public DateScheduleFactory() {
+      this(new Date());
+    }
+    
+    @Override
+    public DaySchedule getSchedule(Schedule schedule) {
+      return schedule.getSchedule(date);
+    }      
+  }
+  
+  public static class ScheduleIdScheduleFactory implements ScheduleFactory {
+    private ScheduleId scheduleId;
+            
+    public ScheduleId getScheduleId() {
+      return scheduleId;
+    }
+
+    public ScheduleIdScheduleFactory(ScheduleId scheduleId) {
+      super();
+      this.scheduleId = scheduleId;
+    }
+
+    @Override
+    public DaySchedule getSchedule(Schedule schedule) {
+      return schedule.getSchedule(scheduleId);
+    }
+
+    @Override
+    public String toString() {
+      return scheduleId.toString();
+    }      
+    
+  }
+  
+  
   /**
    * format a schedule time as hh:mm
    * hh may be larger than 24
@@ -54,11 +104,11 @@ public class Schedule {
 
   /**
    * Same as formatTime, but shift hours to the 0-24 range.
-   * @param time
+   * @param minutes
    * @return
    */
-  public static String formatTimeMod24(int time) {
-    return d2Format.format((time/60)%24) + ":" + d2Format.format(time%60);
+  public static String formatTimeMod24(int minutes) {
+    return d2Format.format((minutes/60)%24) + ":" + d2Format.format(minutes%60);
   }
 
   public static String formatDuration(int seconds) {
@@ -86,7 +136,7 @@ public class Schedule {
     return schedules;
   }
   
-  public DaySchedule getSchedule(ScheduleId id) {
+  public DaySchedule getSchedule1(ScheduleId id) {
     if (id == null)
       return null;
     for( DaySchedule d: getSchedules() ) {
@@ -97,6 +147,27 @@ public class Schedule {
     return null;    
   }
   
+  public DaySchedule getSchedule(ScheduleId id) {
+    if (id == null)
+      return null;
+    if ( id.isWeekly()) {
+      for( DaySchedule d: getSchedules() ) {
+        if ( id.matches(d.getScheduleId())) {
+          return d;
+        }
+      }      
+      return null;
+    }    
+    for( DaySchedule d: getSchedules() ) {
+      if ( id.matches(d.getScheduleId())) {
+        return d;
+      }
+    }
+    Calendar cal = new GregorianCalendar();
+    DateId.setCalendar(id.getDateId(), cal);
+    return DaySchedule.findSchedule(schedules, cal.get(Calendar.DAY_OF_WEEK));
+  }
+    
   public DaySchedule getSchedule(Date date) {
     Calendar cal = new GregorianCalendar();
     cal.setTime(date);
@@ -181,8 +252,11 @@ public class Schedule {
     }
     return schedule.getTimes();
   }
-  
-  /** Get the schedule times for a given day of the week. */
+
+  /** Get the schedule times for a given day of the week.
+   * @param dayOfWeek, as per Calendar.DAY_OF_WEEK
+   * @return
+   */
   public int[] getTimesForDayOfWeek( int dayOfWeek ) {
     DaySchedule schedule = DaySchedule.findSchedule(schedules, dayOfWeek);
     if ( schedule == null ) {
@@ -191,13 +265,19 @@ public class Schedule {
     return schedule.getTimes();
   }
   
-  /** Get the time in minutes since midnight */
-  public static int getTime( Date date ) {
+  /** Get the time in seconds since midnight */
+  public static int getSeconds( Date date ) {
     Calendar cal = new GregorianCalendar();
     cal.setTime(date);
     int hour = cal.get(Calendar.HOUR_OF_DAY);
     int minute = cal.get(Calendar.MINUTE);
-    return hour * 60 + minute;
+    int second = cal.get(Calendar.SECOND);
+    return 60 * (hour * 60 + minute) + second;
+  }
+
+  /** Get the time in minutes since midnight */
+  public static int getTime( Date date ) {
+    return getSeconds(date) / 60;
   }
 
   /** For debugging. */
@@ -232,5 +312,5 @@ public class Schedule {
 
   public void setDayChange(int dayChange) {
     this.dayChange = dayChange;
-  }  
+  }
 }

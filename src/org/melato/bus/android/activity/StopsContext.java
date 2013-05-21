@@ -23,6 +23,7 @@ package org.melato.bus.android.activity;
 import org.melato.bus.android.R;
 import org.melato.bus.client.Formatting;
 import org.melato.bus.client.TrackContext;
+import org.melato.bus.model.RStop;
 import org.melato.bus.model.Route;
 import org.melato.bus.model.Stop;
 import org.melato.gps.Earth;
@@ -39,7 +40,6 @@ public class StopsContext extends LocationContext {
   private int closestStop = -1;
   private boolean isSelected;
   private StopsAdapter adapter;
-  private RouteStop markedStop;
   private int markedIndex = -1;
 
   private ListActivity list;
@@ -51,10 +51,9 @@ public class StopsContext extends LocationContext {
     start();
   }
   
-  public void setStop(RouteStop stop) {
-    markedStop = stop;
-    if ( stop != null) {
-      markedIndex = stop.getStopIndex(track.getStops());
+  public void setStop(RStop rstop) {
+    if ( rstop != null) {
+      markedIndex = rstop.getStopIndex();
     }
   }
   

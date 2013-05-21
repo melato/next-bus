@@ -20,38 +20,38 @@
  */
 package org.melato.bus.android.activity;
 
-import org.melato.bus.android.app.UpdateActivity;
+import org.melato.bus.android.R;
+import org.melato.bus.client.ScheduleNames;
 
-import android.app.Activity;
-import android.os.Bundle;
+import android.content.Context;
 
-/** The main activity checks for updates and launches the next activity. */
-public class MainActivity extends Activity {
-  protected BusActivities activities;
-  
-  private boolean checkUpdates() {
-    if ( ! UpdateActivity.checkUpdates(this) ) {
-      return false;
-    }
-    return true;
+public class AndroidScheduleNames extends ScheduleNames {
+  private Context context;
+    
+  public AndroidScheduleNames(Context context) {
+    super();
+    this.context = context;
   }
+  private static final int[] DAY_RESOURCES = {
+    R.string.days_Su,
+    R.string.days_Mo,
+    R.string.days_Tu,
+    R.string.days_We,
+    R.string.days_Th,
+    R.string.days_Fr,
+    R.string.days_Sa,
+  };
   
-  /** Called when the activity is first created. */  
   @Override
-  public void onCreate(Bundle savedInstanceState) {
-      super.onCreate(savedInstanceState);
-      if ( ! checkUpdates() ) {
-        finish();
-        return;
-      }
-      activities = new BusActivities(this);
-      if ( activities.hasRecentRoutes()) {
-        RoutesActivity.showRecent(this);
-      } else {
-        RoutesActivity.showAll(this);
-      }
-      finish();
+  public String getDayName(int day) {
+    return context.getResources().getString(DAY_RESOURCES[day]);      
   }
-
-
+  @Override
+  public String getAllDaysName() {
+    return context.getResources().getString(R.string.days_all);
+  }
+  @Override
+  public String getTodayName() {
+    return context.getString(R.string.today);      
+  }
 }

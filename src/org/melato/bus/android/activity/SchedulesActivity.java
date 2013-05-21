@@ -23,6 +23,7 @@ package org.melato.bus.android.activity;
 import org.melato.bus.android.R;
 import org.melato.bus.android.app.HelpActivity;
 import org.melato.bus.model.DaySchedule;
+import org.melato.bus.model.RStop;
 import org.melato.bus.model.Route;
 import org.melato.bus.model.Schedule;
 import org.melato.bus.model.ScheduleId;
@@ -46,7 +47,7 @@ public class SchedulesActivity extends ListActivity {
   protected BusActivities activities;
   private Schedule schedule;
   private DaySchedule[] schedules;
-  private RouteStop routeStop;
+  private RStop rstop;
   private Route route;
 
   public SchedulesActivity() {
@@ -59,7 +60,7 @@ public class SchedulesActivity extends ListActivity {
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
       TextView view = (TextView) super.getView(position, convertView, parent);
-      String name = ScheduleActivity.getScheduleName(getContext(), this.getItem(position).getScheduleId());
+      String name = ScheduleUtilities.getScheduleName(getContext(), this.getItem(position).getScheduleId());
       view.setText( name );
       return view;
     }
@@ -71,7 +72,7 @@ public class SchedulesActivity extends ListActivity {
   public void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     IntentHelper helper = new IntentHelper(this);
-    routeStop = helper.getRouteStop();
+    rstop = helper.getRStop();
     activities = new BusActivities(this);
     route = activities.getRoute();
     setTitle( route.getFullTitle() );
@@ -86,8 +87,8 @@ public class SchedulesActivity extends ListActivity {
     ScheduleId scheduleId = schedules[position].getScheduleId();
     Intent intent = new Intent(this, ScheduleActivity.class);
     IntentHelper helper = new IntentHelper(intent);
-    if ( routeStop != null) {
-      helper.putRouteStop(routeStop);
+    if ( rstop != null) {
+      helper.putRStop(rstop);
     } else {
       helper.putRoute(route);
     }

@@ -29,6 +29,14 @@ public class DateId {
     cal.set(Calendar.MONTH, getMonth(dateId)-1);
     cal.set(Calendar.DAY_OF_MONTH, getDay(dateId));
   }
+  public static Date getDate(int dateId) {
+    Calendar cal = new GregorianCalendar();
+    cal.set(Calendar.YEAR, getYear(dateId));
+    cal.set(Calendar.MONTH, getMonth(dateId)-1);
+    cal.set(Calendar.DAY_OF_MONTH, getDay(dateId));
+    cal.set(Calendar.HOUR_OF_DAY, 12);
+    return cal.getTime();
+  }
   public static int dateId(int year, int month, int day) {
     return year * 10000 + month * 100 + day;
     

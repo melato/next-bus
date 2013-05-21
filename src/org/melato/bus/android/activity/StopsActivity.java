@@ -22,6 +22,7 @@ package org.melato.bus.android.activity;
 
 import org.melato.bus.android.R;
 import org.melato.bus.android.app.HelpActivity;
+import org.melato.bus.model.RStop;
 import org.melato.bus.model.Route;
 import org.melato.bus.model.Stop;
 
@@ -57,8 +58,8 @@ public class StopsActivity extends ListActivity {
     setTitle(route.getFullTitle());
     stops.setRoute(route);
     IntentHelper helper = new IntentHelper(this);
-    RouteStop routeStop = helper.getRouteStop();
-    stops.setStop(routeStop);
+    RStop rstop = helper.getRStop();
+    stops.setStop(rstop);
   }
   
   @Override
@@ -69,10 +70,10 @@ public class StopsActivity extends ListActivity {
 
   private void showStop(int index) {
     Stop p = stops.getStops()[index];
-    RouteStop stop = new RouteStop(activities.getRouteId(), p.getSymbol(), index);
+    RStop rstop = new RStop(activities.getRouteId(), p);
     Intent intent = new Intent(this, StopActivity.class);
     IntentHelper helper = new IntentHelper(intent);
-    helper.putRouteStop(stop);
+    helper.putRStop(rstop);
     startActivity(intent);    
   }
  

@@ -7,9 +7,9 @@
     <string name="menu_recent_routes">Πρόσφατες</string>
     <string name="menu_nearby_routes">Κοντινές</string>
     <string name="menu_agencies">Φορείς</string>
-    <string name="agencies">Συγκοινωνιακοί Φορείς</string>
+    <string name="agencies">Φορείς</string>
     <string name="all_routes">Όλες οι Γραμμές</string>
-    <string name="recent_routes">Πρόσφατες Γραμμές</string>
+    <string name="recent_routes">Πρόσφατες</string>
     <string name="schedule">Ωράριο</string>
     <string name="fast_gps">Γρήγορο GPS</string>
     <string name="gps_speed">Συχνότητα GPS</string>
@@ -26,6 +26,7 @@
     <string name="days_Fr">Παρασκευή</string>
     <string name="days_Sa">Σάββατο</string>
     <string name="days_all">Κάθε μέρα</string>
+    <string name="today">Σήμερα</string>
     <string name="stops">Στάσεις</string>
     <string name="stop">Στάση</string>
     <string name="name">Όνομα</string>
@@ -33,7 +34,10 @@
     <string name="ETA">Αναμενόμενη Άφιξη</string>
     <string name="walkETA">Αναμενόμενη Άφιξη περπατώντας</string>
     <string name="bikeETA">Αναμενόμενη Άφιξη με ποδήλατο</string>
+    <string name="timed_stops">Στάσεις με χρόνους</string>
+    <string name="timed_stop_counts">%1$s πριν, %2$s μετά</string>
     <string name="nearby_routes">Κοντινές Γραμμές</string>
+    <string name="best_route">Βέλτιστη Γραμμή</string>
     <string name="map">Χάρτης</string>
     <string name="browse">Ιστοσελίδα</string>
     <string name="straight_distance">Ευθεία Απόσταση</string>
@@ -44,6 +48,7 @@
     <string name="time_from_start">Αναμενόμενος χρόνος από την αφετηρία (%s)</string>
     <string name="latitude">Γεωγραφικό πλάτος</string>
     <string name="longitude">Γεωγραφικό μήκος</string>
+    <string name="coordinates">Συντεταγμένες</string>
     <string name="cancel">Άκυρο</string>
     <string name="empty"></string>
     <string name="help">Βοήθεια</string>
@@ -52,6 +57,17 @@
     <string name="unpin_route">Ξεκαρφίτσωμα</string>    
     <string name="unpin_all">Ξεκαρφίτσωμα όλων</string>    
     <string name="loading">Φορτώνει &#8230;</string>
+    <string name="computing">Υπολογίζεται &#8230;</string>
     <string name="ok">Ok</string>
     <string name="terms_of_use">Όροι Χρήσης</string>
+    <string name="sequence">Συνδυασμός</string>
+    <string name="empty_sequence">Συνδυασμός γραμμών</string>
+    <string name="add_stop_after">Συνδυασμός</string>
+    <string name="add_stop_before">Πρίν</string>
+    <string name="clear">Διαγραφή όλων</string>
+    <string name="remove_last">Διαγραφή τελευταίας</string>
+    <string name="remove_first">Διαγραφή πρώτης</string>
+    <string name="walk_leg">Περπάτημα %1$s %2$s</string>
+    <string name="wait">αναμονή</string>
+    <string name="twitter">Twitter</string>
 </resources>

@@ -23,8 +23,8 @@ package org.melato.bus.android.activity;
 import java.util.Date;
 
 import org.melato.android.ui.PropertiesDisplay;
-import org.melato.android.util.LatitudeField;
-import org.melato.android.util.LongitudeField;
+import org.melato.android.util.LabeledPoint;
+import org.melato.android.util.LocationField;
 import org.melato.bus.android.Info;
 import org.melato.bus.android.R;
 import org.melato.bus.client.Formatting;
@@ -32,6 +32,8 @@ import org.melato.bus.client.TrackContext;
 import org.melato.bus.model.Route;
 import org.melato.bus.model.Schedule;
 import org.melato.bus.model.Stop;
+import org.melato.bus.model.StopCount;
+import org.melato.bus.plan.Walk;
 import org.melato.geometry.gpx.PathTracker;
 import org.melato.geometry.gpx.SpeedTracker;
 import org.melato.gps.Earth;
@@ -41,8 +43,6 @@ import android.content.Context;
 import android.widget.ArrayAdapter;
 
 public class StopContext extends LocationContext {
-  public static final float WALK_OVERHEAD = 1.3f;
-  public static final float WALK_SPEED = 5f;
   public static final float BIKE_OVERHEAD = 1.35f;
   public static final float BIKE_SPEED = 15f;
   public static final float MIN_SPEED = 1f / (3600f / 1000f); // 1 Km/h
@@ -51,11 +51,13 @@ public class StopContext extends LocationContext {
   private SpeedTracker speed;
   private int markerIndex;
   private Stop marker;
+  private StopCount previousStops;
+  private StopCount followingStops;
   private int timeFromStart = -1;
 
   private PropertiesDisplay properties;
   private ArrayAdapter<Object> adapter;
-
+  
   private float straightDistance;
 
   public float getStraightDistance() {
@@ -115,8 +117,12 @@ public class StopContext extends LocationContext {
 
   public int getTimeFromStart() {
     if (timeFromStart == -1) {
-      timeFromStart = new RouteStop(null, null, markerIndex)
-          .getTimeFromStart(track.getStops());
+      if ( markerIndex >= 0 ) {
+        Stop[] stops = track.getStops();
+        timeFromStart = stops[markerIndex].getSecondsFromStart();
+      } else {
+        timeFromStart = 0;
+      }
     }
     return timeFromStart;
   }
@@ -131,7 +137,10 @@ public class StopContext extends LocationContext {
   
   public void setMarkerIndex(int index) {
     markerIndex = index;
-    marker = track.getStops()[index];
+    Stop[] stops = track.getStops();
+    marker = stops[index];
+    previousStops = new StopCount(stops, 1, index + 1); // don't include the start stop.
+    followingStops = new StopCount(stops, index + 1, stops.length);
     timeFromStart = -1;
     setLocation(history.getLocation());
     start();
@@ -255,7 +264,7 @@ public class StopContext extends LocationContext {
 
     public String toString() {
       String label = context.getResources().getString(labelId);
-      float time = getStraightDistance() / (speed * 1000 / 3600);
+      float time = getStraightDistance() * overhead / speed;
       return PropertiesDisplay.formatProperty(label, formatTime(time));
     }
   }
@@ -283,14 +292,18 @@ public class StopContext extends LocationContext {
     properties.add(new RouteDistance());
     properties.add(new DistanceFromStart());
     properties.add(new TimeFromStart());
+    properties.add(R.string.timed_stops, context.getString(R.string.timed_stop_counts, previousStops, followingStops));
 
     // properties.add( new PathSpeed());
     properties.add(new Speed60());
     properties.add(new PathETA());
     properties
-        .add(new StraightETA(R.string.walkETA, WALK_SPEED, WALK_OVERHEAD));
-    properties.add(new LatitudeField(context.getString(R.string.latitude), getMarker()));
-    properties.add(new LongitudeField(context.getString(R.string.longitude), getMarker()));
+        .add(new StraightETA(R.string.walkETA, Walk.SPEED, Walk.OVERHEAD));
+    //properties.add(new LatitudeField(context.getString(R.string.latitude), getMarker()));
+    //properties.add(new LongitudeField(context.getString(R.string.longitude), getMarker()));
+    Stop stop = getMarker();
+    LabeledPoint p = new LabeledPoint(stop, stop.getName());
+    properties.add(new LocationField(context.getString(R.string.coordinates), p));
     // properties.add(new StraightETA(R.string.bikeETA, BIKE_SPEED,
     // BIKE_OVERHEAD));
   }

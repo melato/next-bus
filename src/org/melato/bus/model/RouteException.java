@@ -20,9 +20,15 @@
  */
 package org.melato.bus.model;
 
+/** A textual note about specific times of a route's schedule.
+ * An exception may note a deviation from the published itinarary.
+ * */
 public class RouteException {
+  /** The text of the exception. */
   private String  note;
+  /** The days bitmap of the exception. */
   private int days;
+  /** The times when the exception applies, in minutes since midnight. */
   private int[] times;
   
   public String getNote() {

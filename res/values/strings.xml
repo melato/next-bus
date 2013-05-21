@@ -7,10 +7,11 @@
     <string name="menu_recent_routes">Recent</string>
     <string name="menu_nearby_routes">Nearby</string>
     <string name="menu_agencies">Agencies</string>
-    <string name="agencies">Transportation Agencies</string>
+    <string name="agencies">Agencies</string>
     <string name="all_routes">All Routes</string>
     <string name="recent_routes">Recent Routes</string>
     <string name="nearby_routes">Nearby Routes</string>
+    <string name="best_route">Best Route</string>
     <string name="schedule">Schedule</string>
     <string name="fast_gps">Fast GPS</string>
     <string name="gps_speed">GPS Updates</string>
@@ -27,6 +28,7 @@
     <string name="days_Fr">Friday</string>
     <string name="days_Sa">Saturday</string>
     <string name="days_all">Every Day</string>
+    <string name="today">Today</string>
     <string name="stops"> Stops</string>
     <string name="stop">Stop</string>
     <string name="name">Name</string>
@@ -34,6 +36,8 @@
     <string name="ETA">ETA</string>
     <string name="walkETA">ETA by walking</string>
     <string name="bikeETA">ETA by bike</string>
+    <string name="timed_stops">Timed Stops</string>
+    <string name="timed_stop_counts">%1$s before, %2$s after</string>
     <string name="map">Map</string>
     <string name="browse">Web</string>
     <string name="straight_distance">Straight Distance</string>
@@ -42,6 +46,7 @@
     <string name="position_from_start">Distance from Start (%s)</string>
     <string name="position_from_end">Distance from End (%s)</string>
     <string name="time_from_start">Expected Time from Start (%s)</string>
+    <string name="coordinates">Coordinates</string>
     <string name="latitude">Latitude</string>
     <string name="longitude">Longitude</string>
     <string name="cancel">Cancel</string>
@@ -52,7 +57,17 @@
     <string name="unpin_route">Unpin</string>
     <string name="unpin_all">Unpin All</string>
     <string name="loading">Loading &#8230;</string>
+    <string name="computing">Computing &#8230;</string>
     <string name="ok">Ok</string>
     <string name="terms_of_use">Terms of Use</string>
-    
+    <string name="sequence">Sequence</string>
+    <string name="empty_sequence">Route Sequence</string>
+    <string name="add_stop_after">Add Stop</string>
+    <string name="add_stop_before">Prepend Stop</string>
+    <string name="clear">Clear All</string>
+    <string name="remove_last">Clear Last</string>
+    <string name="remove_first">Clear First</string>
+    <string name="walk_leg">Walk %1$s %2$s</string>
+    <string name="wait">wait</string>
+    <string name="twitter">Twitter</string>    
 </resources>

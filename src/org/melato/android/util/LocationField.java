@@ -28,6 +28,7 @@ import android.net.Uri;
 public class LocationField implements Invokable {
   protected String label;
   protected Point2D point;
+  protected String pointLabel;
   
   public LocationField(String label, Point2D point) {
     super();
@@ -35,14 +36,25 @@ public class LocationField implements Invokable {
     this.point = point;
   }
 
+  public LocationField(String label, LabeledPoint p) {
+    this(label, p.getPoint());
+    this.pointLabel = p.getLabel();
+  }
+
   @Override
   public String toString() {
-    return label + ": " + point.toString();
+    return label + ": " + point.getLat() + "," + point.getLon();
   }
 
   @Override
   public void invoke(Context context) {
-    Uri uri = Uri.parse("geo:" + point.getLat() + "," + point.getLon() + "?z=15");
+    StringBuilder buf = new StringBuilder("geo:" + point.getLat() + "," + point.getLon() );
+    buf.append("?z=15");
+    if ( pointLabel != null) {
+      buf.append("#");
+      buf.append(pointLabel);
+    }
+    Uri uri = Uri.parse(buf.toString());
     Intent intent = new Intent(Intent.ACTION_VIEW, uri);
     context.startActivity(intent);
   }    

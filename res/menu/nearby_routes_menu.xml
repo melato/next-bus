@@ -1,9 +1,3 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
-    <item android:id="@+id/all_routes"
-          android:icon="@drawable/all"                          
-          android:title="@string/menu_all_routes" />
-    <item android:id="@+id/recent_routes"
-          android:icon="@drawable/recent"                          
-          android:title="@string/menu_recent_routes" />
 </menu>

@@ -11,6 +11,7 @@
     <string name="help_schedule">Displays the schedule of the route for today or for a selected day.\n\n
 The schedule begins and ends at midnight.</string>
     <string name="help_schedules">Select one of the displayed schedules to see the schedule for another day.</string>
+    <string name="help_sequence">Displays a planned sequence of routes.  To add a route to the sequence, go to the route stops, select a stop, and invoke the Add Stop menu.</string>
     <string name="help_stops">
 A distance in parenthesis is a straight line distance from the current location or from a reference location.
 A distance with a + or - sign is a <i>route distance</i>, the distance along the route

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:id="@+id/schedule"
+          android:icon="@drawable/schedule"                  
+          android:title="@string/schedule" />
+    <item android:id="@+id/clear"
+          android:icon="@drawable/clear"                  
+          android:title="@string/clear" />
+    <item android:id="@+id/remove_first"
+          android:icon="@drawable/remove_first"                  
+          android:title="@string/remove_first" />
+    <item android:id="@+id/remove_last"
+          android:icon="@drawable/back"                  
+          android:title="@string/remove_last" />
+</menu>

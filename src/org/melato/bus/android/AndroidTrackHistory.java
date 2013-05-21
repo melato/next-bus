@@ -20,17 +20,14 @@
  */
 package org.melato.bus.android;
 
-import org.melato.bus.android.activity.Pref;
 import org.melato.bus.client.TrackHistory;
 import org.melato.gps.PointTime;
 
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 
 /**
  * Maintains track history.

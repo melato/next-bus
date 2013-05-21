@@ -24,6 +24,7 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
+import org.melato.bus.plan.Leg;
 import org.melato.gps.Point2D;
 
 /**
@@ -54,8 +55,6 @@ public interface RouteStorage {
   
   /** Load a route's stops. */
   List<Stop> loadStops(RouteId routeId);
-  /** Load information about a single stop. */
-  MarkerInfo loadMarker(String symbol);
   /** Iterate over all stops that are within a certain latitude and longitude difference from a point.
    * The waypoint's links should contain the relevant route-ids.
    * */
@@ -68,6 +67,9 @@ public interface RouteStorage {
    * The waypoint's links should contain the relevant route-ids.
    * */
   void iterateNearbyRoutes(Point2D point, float latitudeDifference, float longitudeDifference, Collection<RouteId> collector);
+  
+  List<Leg> loadLegsBetween(String stop1, String stop2);
+  
   Point2D getCenter();
   /**
    * Return the original web URL for the route at the route provider's web site.

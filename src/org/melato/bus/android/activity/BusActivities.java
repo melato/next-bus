@@ -28,10 +28,10 @@ import org.melato.bus.android.Info;
 import org.melato.bus.android.R;
 import org.melato.bus.android.app.BusPreferencesActivity;
 import org.melato.bus.android.map.RouteMapActivity;
+import org.melato.bus.model.RStop;
 import org.melato.bus.model.Route;
 import org.melato.bus.model.RouteId;
 import org.melato.bus.model.RouteManager;
-import org.melato.bus.model.Stop;
 import org.melato.util.MRU;
 
 import android.app.Activity;
@@ -79,26 +79,27 @@ public class BusActivities  {
     return intentHelper.getRoute();
   }
 
-  public void showRoute(RouteStop stop, Class<? extends Activity> activity) {
-    addRecent(stop);
+  public void showRoute(RStop rstop, Class<? extends Activity> activity) {
+    addRecent(rstop);
     Intent intent = new Intent(context, activity);
-    new IntentHelper(intent).putRouteStop(stop);
+    new IntentHelper(intent).putRStop(rstop);
     context.startActivity(intent);    
   }
+  
   public void showRoute(Route route, Class<? extends Activity> activity) {
-    RouteStop stop = intentHelper.getRouteStop();
+    RStop stop = intentHelper.getRStop();
     if ( stop != null && ! route.getRouteId().equals(stop.getRouteId())) {
-      stop = new RouteStop(route.getRouteId());
+      stop = new RStop(route.getRouteId());
     }
     showRoute(stop, activity);
   }
   
-  public void showRoute(RouteStop stop) {
-    showRoute(stop, defaultView );      
-  }
+  public void showRoute(RStop rstop) {
+    showRoute(rstop, defaultView);
+  }  
   
   public void showRoute(Route route) {
-    showRoute(new RouteStop(route.getRouteId()));
+    showRoute(new RStop(route.getRouteId()));
   }
   
   public void showInBrowser(Route route) {
@@ -108,15 +109,10 @@ public class BusActivities  {
    }
 
   public void showNearby() {
-    RouteStop routeStop = intentHelper.getRouteStop();
-    if ( routeStop != null ) {
-      Stop[] stops = getRouteManager().getStops(routeStop.getRouteId());
-      int stopIndex = routeStop.getStopIndex(stops);
-      if ( stopIndex >= 0 ) {
-        Stop stop = stops[stopIndex];
-        NearbyActivity.start(context, stop);
-        return;
-      }
+    RStop rstop = intentHelper.getRStop();
+    if ( rstop != null && rstop.getStop() != null) {
+      NearbyActivity.start(context, rstop.getStop());
+      return;
     }
     context.startActivity(new Intent(context, NearbyActivity.class));    
   }
@@ -189,11 +185,11 @@ public class BusActivities  {
     File cacheDir = context.getCacheDir();
     return new File(cacheDir, "recent-routes.dat");
   }
-  private void addRecent(RouteStop stop) {
-    RecentRoute route = new RecentRoute(stop, getRouteManager());
+  private void addRecent(RStop rstop) {
+    RecentRoute route = new RecentRoute(rstop, getRouteManager());
     MRU<RecentRoute> recent = getRecentRoutes();
     int n = recent.size();
-    RouteId routeId = stop.getRouteId();
+    RouteId routeId = rstop.getRouteId();
     for( int i = n - 1; i >= 0; i-- ) {
       RecentRoute s = recent.get(i);
       if ( routeId.equals( s.getRouteId())) {

@@ -75,7 +75,7 @@ public class RecentRoutesActivity extends ListActivity {
   protected void onListItemClick(ListView l, View v, int position, long id) {
     super.onListItemClick(l, v, position, id);
     RecentRoute item = items[position];
-    activities.showRoute(item.getRouteStop());
+    activities.showRoute(item.getRStop(Info.routeManager(this)));
   }
 
   class RecentRoutesAdapter extends ArrayAdapter<Object> {
@@ -95,11 +95,6 @@ public class RecentRoutesActivity extends ListActivity {
   
   public static void showRecent(Context context) {
     Intent intent = new Intent(context, RecentRoutesActivity.class);
-    context.startActivity(intent);        
-  }
-  
-  public static void showAll(Context context) {
-    Intent intent = new Intent(context, AllRoutesActivity.class);
     context.startActivity(intent);        
   }
   

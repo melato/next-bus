@@ -22,48 +22,61 @@ package org.melato.bus.android.activity;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.ObjectStreamField;
 import java.io.Serializable;
 
 import org.melato.bus.client.Serialization;
+import org.melato.bus.model.RStop;
 import org.melato.bus.model.Route;
 import org.melato.bus.model.RouteId;
 import org.melato.bus.model.RouteManager;
 import org.melato.bus.model.Stop;
 
-import android.util.Log;
-
 public class RecentRoute implements Serializable {
   private static final long serialVersionUID = 1L;
-  private RouteStop routeStop;
+  private static final ObjectStreamField[] serialPersistentFields
+  = {
+    new ObjectStreamField("route", Route.class),
+    new ObjectStreamField("rstop", RStop.class),
+    };
   private Route route;
-  private String stopName;   
+  private RStop rstop;
+  private boolean isVerified;
   
-  public RecentRoute(RouteStop stop, RouteManager routeManager ) {
-    this.routeStop = stop;
-    route = routeManager.getRoute(stop.getRouteId());
-    Stop[] stops = routeManager.getStops(routeStop.getRouteId());
-    stopName = routeStop.getStopName(stops);
+  public RecentRoute(RStop rstop, RouteManager routeManager ) {
+    this.rstop = rstop;    
+    route = routeManager.getRoute(rstop.getRouteId());
+    isVerified = true;
   }
   public RouteId getRouteId() {
-    return routeStop.getRouteId();
+    return rstop.getRouteId();
   }
   
-  public String getStopName() {
-    return stopName;
+  public RStop getRStop(RouteManager routeManager) {
+    if ( ! isVerified) {
+      Stop stop = rstop.getStop();
+      if ( stop != null) {
+        Stop[] stops = routeManager.getStops(rstop.getRouteId());
+        int i = stop.getIndex();
+        if ( 0 <= i && i < stops.length ) {
+          stop = stops[i];
+        }
+        rstop = new RStop(rstop.getRouteId(), stop);
+      }
+      route = routeManager.getRoute(rstop.getRouteId());
+      isVerified = true;
+    }
+    return rstop;
   }
-  public void setStopName(String stopName) {
-    this.stopName = stopName;
-  }
-  public RouteStop getRouteStop() {
-    return routeStop;
-  }
+  
   public Route getRoute() {
     return route;
   }
   @Override
   public String toString() {
-    if ( stopName != null ) {
-      return route.getFullTitle() + " " + stopName;
+    Stop stop = rstop.getStop();
+    if ( stop != null) {
+      return route.getFullTitle() + " " + stop.getName();
     } else {
       return route.getFullTitle();
     }

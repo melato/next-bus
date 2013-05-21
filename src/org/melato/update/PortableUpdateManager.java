@@ -362,4 +362,6 @@ public class PortableUpdateManager {
     }    
   }
 
+  public void update(List<UpdateFile> updates) {}
+ 
 }

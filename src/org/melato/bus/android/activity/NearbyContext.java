@@ -76,7 +76,7 @@ public class NearbyContext extends LocationContext {
     int getTimeOffset(NearbyStop stop) {
       Stop s = stop.getRStop().getStop();
       int timeOffset = (int) (s.getTime() / 1000);
-      if ( timeOffset == 0 && stop.getRStop().getStopIndex() > 0 )
+      if ( timeOffset == 0 && s.getIndex() > 0 )
         return -1;
       return timeOffset;
     }

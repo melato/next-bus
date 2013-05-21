@@ -22,6 +22,7 @@ package org.melato.bus.model;
 
 import java.io.Serializable;
 import java.text.DecimalFormat;
+import java.util.Comparator;
 
 /**
  * A stop on a route.
@@ -34,13 +35,35 @@ public class RStop implements Serializable, Comparable<RStop> {
   private static DecimalFormat kmFormat = new DecimalFormat( "0.00" );
   private RouteId routeId;
   private Stop    stop;
-  private int     stopIndex;
   private float   distance;
-  public RStop(RouteId routeId, Stop stop, int stopIndex) {
+  
+  public static class RouteComparator implements Comparator<RStop> {
+    @Override
+    public int compare(RStop o1, RStop o2) {
+      int d = o1.routeId.compareTo(o2.routeId);
+      if ( d != 0 )
+        return d;
+      if ( o1.stop != null && o2.stop != null) {
+        return o1.stop.getIndex() - o2.stop.getIndex();
+      }
+      if ( o1.stop == null && o1.stop == null) {
+        return 0;
+      }
+      if ( o1.stop == null ) {
+        return -1;
+      } else {
+        return 1;
+      }
+    }    
+  }
+  public RStop(RouteId routeId, Stop stop) {
     super();
     this.routeId = routeId;
     this.stop = stop;
-    this.stopIndex = stopIndex;
+  }
+  public RStop(RouteId routeId) {
+    super();
+    this.routeId = routeId;
   }
   public RouteId getRouteId() {
     return routeId;
@@ -49,7 +72,9 @@ public class RStop implements Serializable, Comparable<RStop> {
     return stop;
   }
   public int getStopIndex() {
-    return stopIndex;
+    if ( stop == null )
+      return 0;
+    return stop.getIndex();
   }
   public float getDistance() {
     return distance;
@@ -76,4 +101,17 @@ public class RStop implements Serializable, Comparable<RStop> {
   public int compareTo(RStop o) {
     return compare(this, o);
   }
+  /** Return true of the stops are in the same route and the 1st stop is before or equal the 2nd stop. */
+  public boolean isBefore(RStop stop2) {
+    return getRouteId().equals(stop2.getRouteId()) && getStopIndex() < stop2.getStopIndex();
+  }  
+  @Override
+  public String toString() {
+    String s = routeId.toString();
+    if ( stop != null) {
+      s += " " + stop.getName() + " (" + getStopIndex() + ")";
+    }
+    return s;
+  }
+  
 }

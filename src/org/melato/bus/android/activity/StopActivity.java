@@ -25,11 +25,14 @@ import org.melato.android.util.Invokable;
 import org.melato.bus.android.Info;
 import org.melato.bus.android.R;
 import org.melato.bus.android.app.HelpActivity;
-import org.melato.bus.model.MarkerInfo;
+import org.melato.bus.model.RStop;
 import org.melato.bus.model.Route;
+import org.melato.bus.model.RouteId;
 import org.melato.bus.model.Stop;
+import org.melato.bus.plan.Sequence;
 
 import android.app.ListActivity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -49,7 +52,7 @@ public class StopActivity extends ListActivity implements OnItemClickListener
   private StopContext stop;
   private PropertiesDisplay properties;
   private BusActivities activities;
-  private RouteStop routeStop;
+  private RStop rstop;
   
   public StopActivity() {
   }
@@ -62,18 +65,17 @@ public class StopActivity extends ListActivity implements OnItemClickListener
     properties = stop.getProperties();
     activities = new BusActivities(this);
     IntentHelper intentHelper = new IntentHelper(this);
-    routeStop = intentHelper.getRouteStop();
-    if ( routeStop == null || routeStop.getStopSymbol() == null) {
+    rstop = intentHelper.getRStop();
+    if ( rstop == null || rstop.getStop() == null) {
       return;
     }
     Route route = activities.getRoute();
     stop.setRoute(route);
-    Stop[] waypoints = Info.routeManager(this).getStops(routeStop.getRouteId());
+    Stop[] waypoints = Info.routeManager(this).getStops(rstop.getRouteId());
     
-    MarkerInfo markerInfo = Info.routeManager(this).loadMarker(routeStop.getStopSymbol());
-    int index = routeStop.getStopIndex();
+    int index = rstop.getStopIndex();
     if ( index < 0 ) {
-      index = findWaypointIndex(waypoints, markerInfo.getStop());
+      index = findWaypointIndex(waypoints, rstop.getStop());
     }
     stop.setMarkerIndex(index);
     stop.addProperties();
@@ -124,7 +126,18 @@ public class StopActivity extends ListActivity implements OnItemClickListener
    * Start the Schedule activity for the given stop.
    */
   private void showStopSchedule() {
-    activities.showRoute(routeStop, ScheduleActivity.class);
+    activities.showRoute(rstop, ScheduleActivity.class);
+  }
+  private void addToSequence(boolean after) {
+    Sequence sequence = Info.getSequence(this);
+    RouteId routeId = rstop.getRouteId();
+    Stop stop = this.stop.getMarker();
+    if ( after ) {
+      sequence.addStopAfter(Info.routeManager(this), new RStop(routeId, stop));
+    } else {
+      sequence.addStopBefore(Info.routeManager(this), new RStop(routeId, stop));
+    }
+    startActivity(new Intent(this, SequenceActivity.class));    
   }
   @Override
   public boolean onOptionsItemSelected(MenuItem item) {
@@ -138,6 +151,16 @@ public class StopActivity extends ListActivity implements OnItemClickListener
         showStopSchedule();
         handled = true;
         break;
+      case R.id.add_stop_after:
+        addToSequence(true);
+        handled = true;
+        break;
+      /**
+      case R.id.add_stop_before:
+        addToSequence(false);
+        handled = true;
+        break;
+      */
       default:
         break;
     }

@@ -20,6 +20,7 @@ package org.melato.update;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -65,9 +66,8 @@ public class Streams {
     tmpFile.renameTo(file);
   }
 
-  public static String copyToString(URL url)
+  public static String copyToString(InputStream in)
       throws IOException {
-    InputStream in = url.openStream();
     try {
       ByteArrayOutputStream buf = new ByteArrayOutputStream();
       copy(in, buf);
@@ -75,6 +75,16 @@ public class Streams {
     } finally {
       in.close();
     }
+  }
+  
+  public static String copyToString(URL url)
+      throws IOException {
+    return copyToString(url.openStream());
+  }
+  
+  public static String copyToString(File file)
+      throws IOException {
+    return copyToString(new FileInputStream(file));
   }
   
   public static byte[] copyToBinary(InputStream stream) throws IOException {

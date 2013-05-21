@@ -18,6 +18,7 @@
  */
 package org.melato.android.location;
 
+import org.melato.android.util.LabeledPoint;
 import org.melato.gps.GpsPoint;
 import org.melato.gps.Point2D;
 
@@ -39,9 +40,16 @@ public class Locations {
     }
     return p;
   }
-  /** Parse a geo uri of the form:  "geo:{lat},{lon}?..."
-   * */
   public static Point2D getGeoUriPoint(Intent intent) {
+    LabeledPoint p = getGeoUri(intent);
+    if ( p != null) {
+      return p.getPoint();
+    }
+    return null;
+  }
+  /** Parse a geo uri of the form:  "geo:{lat},{lon}?...#label"
+   * */
+  public static LabeledPoint getGeoUri(Intent intent) {
     Uri uri = intent.getData();
     if ( uri == null )
       return null;
@@ -50,8 +58,9 @@ public class Locations {
       return null;
     }
     String value = uri.getSchemeSpecificPart();
+    String label = uri.getFragment();
     int q = value.indexOf('?');
-    if ( q >= 0 ) {
+    if ( q >= 0 ) {      
       value = value.substring(0, q);
     }
     String[] fields = value.split(",");
@@ -59,7 +68,7 @@ public class Locations {
       try {
         float lat = Float.parseFloat(fields[0]);
         float lon = Float.parseFloat(fields[1]);
-        return new Point2D(lat,lon);
+        return new LabeledPoint(new Point2D(lat,lon), label);
       } catch(NumberFormatException e) {        
       }
     }

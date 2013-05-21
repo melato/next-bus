@@ -24,6 +24,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.melato.bus.android.Info;
+import org.melato.bus.model.RStop;
 import org.melato.bus.model.Route;
 import org.melato.bus.model.RouteGroup;
 import org.melato.bus.model.RouteId;
@@ -33,7 +34,6 @@ import org.melato.gps.Point2D;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.net.Uri;
 
 
 /**
@@ -41,7 +41,7 @@ import android.net.Uri;
  * @author Alex Athanasopoulos
  */
 public class IntentHelper  {
-  public static final String KEY_ROUTE_STOP = "org.melato.bus.android.routeStop";
+  public static final String KEY_RSTOP = "org.melato.bus.android.rstop";
   public static final String KEY_ROUTE = "org.melato.bus.android.route";
   public static final String KEY_ROUTE_COUNT = "org.melato.bus.android.route_count";
   public static final String KEY_LOCATION = "org.melato.bus.location";
@@ -110,34 +110,24 @@ public class IntentHelper  {
   }
 
   public void putRoute(RouteId routeId) {
-    putRouteStop(new RouteStop(routeId));
+    putRStop(new RStop(routeId));
   }
   
   public void putRoute(Route route) {
     putRoute(route.getRouteId());
   }
   
-  public void putRouteStop(RouteStop route) {
-    intent.putExtra(KEY_ROUTE_STOP, route);
+  public void putRStop(RStop rstop) {
+    intent.putExtra(KEY_RSTOP, rstop);
   }
   
-  public RouteStop getRouteStop() {
-    RouteStop routeStop = (RouteStop) intent.getSerializableExtra(KEY_ROUTE_STOP);
-    /*
-    if ( routeInfo == null ) {
-      RouteId routeId = (RouteId) intent.getSerializableExtra(KEY_ROUTE);
-      if ( routeId != null ) {
-        routeInfo = new RouteInfo(routeId);
-      }
-    }
-    */
-    return routeStop;
+  public RStop getRStop() {
+    return (RStop) intent.getSerializableExtra(KEY_RSTOP);
   }
-  
   public RouteId getRouteId() {
-    RouteStop routeStop = getRouteStop();
-    if ( routeStop != null )
-      return routeStop.getRouteId();
+    RStop rstop = getRStop();
+    if ( rstop != null )
+      return rstop.getRouteId();
     return null;
   }
   private String keyRoute(int index) {

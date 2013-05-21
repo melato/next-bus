@@ -60,7 +60,6 @@ public class ProgressTitleHandler extends ActivityProgressHandler {
         }
         activity.setTitle(text);        
       }
-      Log.i( "melato.org", "position=" + position + " limit=" + limit + " p=" + position / limit * 10000);
       activity.setProgress(Math.round(position * 10000f / limit) );
     }
   }

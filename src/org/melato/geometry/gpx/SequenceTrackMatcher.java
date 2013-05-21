@@ -21,7 +21,6 @@ package org.melato.geometry.gpx;
 import java.util.List;
 
 import org.melato.geometry.gpx.RouteMatcher.Approach;
-import org.melato.geometry.gpx.SequencePointTrackMatcher.SequenceScore;
 import org.melato.gps.PointTime;
 
 /** A track matcher that matches the track stops to the route and returns the number of matched stops. */

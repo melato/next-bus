@@ -24,10 +24,8 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.melato.bus.model.RStop;
 import org.melato.bus.model.Route;
@@ -36,6 +34,7 @@ import org.melato.bus.model.RouteManager;
 import org.melato.gps.Earth;
 import org.melato.gps.Metric;
 import org.melato.gps.Point2D;
+import org.melato.util.AbstractListGrouper;
 
 /**
  * Provides access to nearby stops.
@@ -131,32 +130,59 @@ public class NearbyManager {
   public RStop[] getNearbyWaypoints(Point2D location) {
     List<RStop> list = readCache(location);
     if ( list == null ) {
+      list = new ArrayList<RStop>();
       // not in cache.  filter the global list
-      list = routeManager.findNearbyStops(location, TARGET_DISTANCE + CACHE_DISTANCE);
+      routeManager.findNearbyStops(location, TARGET_DISTANCE + CACHE_DISTANCE, list);
       writeCache(list, location);
     }
     return filterDistance(list, location);
   }
     
-  public NearbyStop[] getNearby(Point2D location) {
-    RStop[] waypoints = getNearbyWaypoints(location);
+  class NearbyGrouper extends AbstractListGrouper<RStop> {
     List<NearbyStop> nearby = new ArrayList<NearbyStop>();
-    Set<RouteId> routes = new HashSet<RouteId>();
-    Map<RouteId,Route> map = routeManager.getRouteIndex();
     Metric metric = routeManager.getMetric();
-    for( RStop p: waypoints ) {
-      RouteId routeId = p.getRouteId();
-      if ( ! routes.contains( routeId )) {
-        routes.add(routeId);
-        Route route = map.get(routeId);
-        if ( route != null ) {
-          NearbyStop stop = new NearbyStop(p, route);
-          p.setDistance(metric.distance(p.getStop(),  location));
-          nearby.add(stop);
+    Map<RouteId,Route> map = routeManager.getRouteIndex();
+    Point2D location;
+    
+    public NearbyGrouper(Point2D location) {
+      super();
+      this.location = location;
+    }
+
+    @Override
+    protected boolean inSameGroup(RStop a, RStop b) {
+      return a.getRouteId().equals(b.getRouteId()) && a.getStopIndex() + 1 == b.getStopIndex();
+    }
+
+    @Override
+    protected void addGroup(List<RStop> group) {      
+      RStop minStop = null;
+      float minDistance = 0;
+      for( RStop stop: group ) {
+        if (minStop == null || stop.getDistance() < minDistance) {
+          minStop = stop;
+          minDistance = stop.getDistance();
         }
       }
+      RouteId routeId = minStop.getRouteId();
+      Route route = map.get(routeId);
+      if ( route != null ) {
+        NearbyStop stop = new NearbyStop(minStop, route);
+        minStop.setDistance(metric.distance(minStop.getStop(),  location));
+        nearby.add(stop);
+      }
     }
-    NearbyStop[] array = nearby.toArray(new NearbyStop[0]);
+
+    public List<NearbyStop> getNearby() {
+      return nearby;
+    }
+  }
+  public NearbyStop[] getNearby(Point2D location) {
+    RStop[] waypoints = getNearbyWaypoints(location);
+    Arrays.sort(waypoints, new RStop.RouteComparator()); // sort by route/stop
+    NearbyGrouper grouper = new NearbyGrouper(location);
+    grouper.group(waypoints);
+    NearbyStop[] array = grouper.getNearby().toArray(new NearbyStop[0]);
     // sort them by distance and name.
     Arrays.sort( array, new NearbyStop.Comparer() );
     return array;

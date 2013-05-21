@@ -100,7 +100,7 @@ public class ExceptionActivity extends Activity {
     String header = Schedule.formatTimeMod24(exc.time);
     int days = getCommonDays(exceptions);
     if ( days != 0 ) {
-      header = ScheduleActivity.getDaysName(this, days) + " " + header;
+      header = ScheduleUtilities.getDaysName(this, days) + " " + header;
     }
     textView.setText(header);
     String title = route.getFullTitle();

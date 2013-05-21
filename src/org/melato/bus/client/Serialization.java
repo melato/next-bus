@@ -29,6 +29,7 @@ import java.io.ObjectOutputStream;
 
 public class Serialization {
   public static Object read(Class<?> clazz, File file) {
+    System.out.println( "read " + file);
     try {
       ObjectInputStream in = new ObjectInputStream(new FileInputStream(file));
       try {
@@ -41,6 +42,7 @@ public class Serialization {
         in.close();
       }
     } catch( Exception e ) {
+      System.out.println(e);
       return null;
     }
   }
