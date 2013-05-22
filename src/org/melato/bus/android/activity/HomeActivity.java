@@ -148,7 +148,9 @@ public class HomeActivity extends Activity implements OnItemClickListener {
         Button button;
         if (convertView == null) {  // if it's not recycled, initialize some attributes
             button = new Button(context);
-            button.setLayoutParams(new GridView.LayoutParams(128, 64));
+            button.setLayoutParams(new GridView.LayoutParams(
+                (int) getResources().getDimension(R.dimen.grid_width),                                                                                   
+                (int) getResources().getDimension(R.dimen.grid_height)));
             button.setPadding(8, 8, 8, 8);
         } else {
             button = (Button) convertView;
