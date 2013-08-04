@@ -20,22 +20,21 @@
  */
 package org.melato.bus.plan;
 
+import java.io.Serializable;
 import java.util.Comparator;
 
 import org.melato.bus.client.Formatting;
 import org.melato.bus.model.Route;
-import org.melato.bus.model.Schedule;
 import org.melato.bus.model.Stop;
 
 /** One leg of a plan, consisting on a ride on a single route. */
-public class PlanLeg {
+public class PlanLeg implements Serializable {
+  private static final long serialVersionUID = 1L;
   private Route route;
   private Stop stop1;
   private Stop stop2;
   /** Next departure time, in seconds since midnight */ 
   private int departureTime;
-  /** Nearest Departure time and the next one, in seconds since midnight */ 
-  private int[]     nearestTimes;
   /** Distance from previous leg. */
   private float distanceBefore;
   
@@ -71,14 +70,6 @@ public class PlanLeg {
     this.departureTime = departureTime;
   }
 
-  public int[] getNearestTimes() {
-    return nearestTimes;
-  }
-
-  public void setNearestTimes(int[] nearestTimes) {
-    this.nearestTimes = nearestTimes;
-  }
-
   public Route getRoute() {
     return route;
   }
@@ -95,21 +86,10 @@ public class PlanLeg {
   public int getDuration() {
     return (int) ((getStop2().getTime() - getStop1().getTime())/1000L);    
   }
-  private String formatTimes() {
-    if ( nearestTimes == null || nearestTimes.length == 0 )
-      return "";
-    StringBuilder buf = new StringBuilder();
-    for(int time: nearestTimes) {
-      buf.append( " ");
-      buf.append( Schedule.formatTimeMod24(time/60));      
-    }
-    return buf.toString();
-  }
   @Override
   public String toString() {
-    // 17:50 1260(1223,36) 140-2 ΓΕΝΙΚΟ ΚΡΑΤΙΚΟ -> ΣΚΑΛΑΚΙΑ
+    // 140 ΓΕΝΙΚΟ ΚΡΑΤΙΚΟ (350) -> ΣΚΑΛΑΚΙΑ
     return getRoute().getLabel()
-        + formatTimes()
         + " " + getStop1().getName()
         + "(" +(int) getDistanceBefore() + ")" 
         + " -> " + getStop2().getName();
@@ -117,7 +97,6 @@ public class PlanLeg {
   public String shortLabel() {
     // 140-2 (120m) 17:50 18:05 
     return getRoute().getLabel()
-        + " " + Formatting.straightDistance(getDistanceBefore()) 
-        + formatTimes();
+        + " " + Formatting.straightDistance(getDistanceBefore()); 
   }
 }

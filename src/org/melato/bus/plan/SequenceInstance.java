@@ -30,8 +30,7 @@ import org.melato.bus.model.Schedule;
 import org.melato.gps.GlobalDistance;
 
 /** A sequence scheduled at a particular time */
-public class SequenceInstance implements Serializable {
-  private static final long serialVersionUID = 1L;
+public class SequenceInstance {
   int startTime;
   int endTime;
   SequenceSchedule schedule;

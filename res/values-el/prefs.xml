@@ -7,8 +7,13 @@
     <string name="pref_gps_time_desc">Κάθε πόσα δευτερόλεπτα να γίνετονται οι GPS μετρήσεις</string>
     <string name="pref_gps_distance">Ελάχιστη Απόσταση (m)</string>
     <string name="pref_gps_distance_desc">Ελάχιστη Απόσταση μεταξύ διαδοχικών GPS μετρήσεων</string>
-    <string name="pref_nearby_times">Εμφάνιση κοντινών ωραρίων</string>
+    <string name="pref_nearby_times">Κοντινές αφίξεις</string>
     <string name="pref_nearby_times_desc">Εμφανίζει τις δύο κοντινότερες ώρες άφιξης/αναχώρισης στην οθόνη των κοντινών γραμμών</string>
+    <string name="pref_lang">Γλώσσα</string>
+    <string name="pref_lang_summary">Η γλώσσα της εφαρμογής</string>
+    <string name="pref_mayor">Όνομα δημάρχου</string>
+    <string name="pref_mayor_summary">Εμφανίζει το όνομα του δήμαρχου στις πληροφορίες των δήμων</string>
     <string name="appearance">Εμφάνιση</string>
     <string name="route_colors">Χρώματα Γραμμών</string>
+    <string name="route_colors_summary">Τα χρώμματα που χρησιμοποιούνται στη λίστα γραμμών.</string>
 </resources>

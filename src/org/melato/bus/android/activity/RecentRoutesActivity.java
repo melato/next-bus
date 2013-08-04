@@ -53,7 +53,7 @@ public class RecentRoutesActivity extends ListActivity {
   {
      MenuInflater inflater = getMenuInflater();
      inflater.inflate(R.menu.recent_routes_menu, menu);
-     HelpActivity.addItem(menu, this, R.string.help_recent);
+     HelpActivity.addItem(menu, this, Help.RECENT);
      return true;
   }
 

@@ -30,6 +30,8 @@ import org.melato.android.AndroidLogger;
 import org.melato.bus.android.activity.Pref;
 import org.melato.bus.android.db.SqlRouteStorage;
 import org.melato.bus.android.map.RoutePointManager;
+import org.melato.bus.client.HelpStorage;
+import org.melato.bus.client.MenuStorage;
 import org.melato.bus.client.NearbyManager;
 import org.melato.bus.client.Serialization;
 import org.melato.bus.model.Agency;
@@ -67,6 +69,12 @@ public class Info {
       }
     }
     return routeManager;
+  }
+  public static HelpStorage helpManager(Context context) {
+    return (HelpStorage) routeManager(context).getStorage();
+  }
+  public static MenuStorage menuManager(Context context) {
+    return (MenuStorage) routeManager(context).getStorage();
   }
   
   public static boolean isValidDatabase(Context context) {

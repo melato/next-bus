@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="org.melato.bus.android"
-    android:versionCode="26"
-    android:versionName="1.5.1" >
+    android:versionCode="29"
+    android:versionName="1.6.1" >
 
     <uses-sdk android:minSdkVersion="8" />
 
@@ -12,6 +12,7 @@
     
     <application
         android:icon="@drawable/icon"
+        android:name="org.melato.bus.android.BusApplication"
         android:label="@string/app_name" >
         <uses-library android:name="com.google.android.maps" />
         <activity
@@ -86,12 +87,26 @@
             android:label="@string/stop" >
         </activity>
         <activity
+            android:name=".activity.MunicipalityActivity"
+            android:label="@string/stop" >
+        </activity>
+        <activity
+            android:name=".activity.SunActivity"
+            android:label="@string/sun" >
+        </activity>
+        <activity
             android:name=".app.UpdateActivity"
             android:label="@string/available_updates" >
         </activity>
         <activity
             android:name=".app.HelpActivity"
             android:label="@string/help" >
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+                <category android:name="android.intent.category.BROWSABLE"/>
+                <data android:scheme="org.melato.bus.help"/>
+            </intent-filter>
         </activity>
         <activity
             android:name=".app.BusPreferencesActivity"

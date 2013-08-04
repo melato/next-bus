@@ -22,10 +22,10 @@
         android:layout_height="wrap_content"
         android:layout_weight="1.10"
         android:background="@color/white"
-        android:inputType="textMultiLine"
-        android:scrollbars = "vertical"        
-        android:textColor="@color/black"
+        android:inputType="none"
         android:padding="5sp"
+        android:scrollbars="vertical"
+        android:textColor="@color/black"
         android:textSize="20sp" >
         
     </TextView>

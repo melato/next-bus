@@ -366,6 +366,8 @@ public class RouteManager {
   public String getDefaultAgency() {
     return storage.getDefaultAgencyName();
   }
-
   
+  public Municipality getMunicipality(Stop stop) {
+    return storage.loadMunicipality(stop.getSymbol());
+  }
 }

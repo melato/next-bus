@@ -44,8 +44,13 @@ public class RouteId implements Serializable, Comparable<RouteId> {
   }
   public RouteId(String stringId) {
     String[] fields = stringId.split("-");
-    name = fields[0];
-    direction = fields[1];    
+    if ( fields.length == 2 ) {
+      name = fields[0];
+      direction = fields[1];
+    } else {
+      name = stringId;
+      direction = "";
+    }
   }
   
   @Override

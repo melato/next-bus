@@ -56,7 +56,10 @@ public class Sequence implements Serializable {
     this.legs = legs;
   }
 
-
+  public void addLeg(Leg leg) {
+    legs.add(new LegGroup(leg));
+  }
+  
   public void addStopAfter(RouteManager routeManager, RStop stop) {
     if ( legs.isEmpty() ) {
       legs.add(new LegGroup(new Leg(stop)));

@@ -28,7 +28,7 @@ import java.util.GregorianCalendar;
 
 /** Maintains departure information for one route and one day.
  * May apply to several days of the week if they all have the same schedule every day. */
-public class DaySchedule {
+public class DaySchedule implements Comparable<DaySchedule> {
   public static final int SUNDAY = 1;
   public static final int MONDAY = 2;
   public static final int TUESDAY = 4;
@@ -175,4 +175,11 @@ public class DaySchedule {
     int pos = Arrays.binarySearch(times, time);
     return pos >= 0;        
   }
+
+  @Override
+  public int compareTo(DaySchedule o) {
+    return scheduleId.compareTo(o.scheduleId);
+  }
+  
+  
 }

@@ -20,11 +20,15 @@
  */
 package org.melato.bus.client;
 
+import java.text.DateFormat;
 import java.text.DecimalFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 /** Various static methods to do formatting. */
 public class Formatting {
   public static final DecimalFormat KM = new DecimalFormat( "0.00" );
+  public static final DateFormat TIME_FORMAT = new SimpleDateFormat( "HH:mm" );
   
   public static String distance(float distance) {
     if ( Math.abs(distance) < 1000 ) {
@@ -65,4 +69,7 @@ public class Formatting {
     return String.valueOf(degrees);
   }
   
+  public static String formatTime(Date date) {
+    return TIME_FORMAT.format(date);
+  }
 }

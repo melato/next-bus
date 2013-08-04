@@ -8,4 +8,11 @@
       <item>White on Black</item>
    </string-array>
 
+   <string-array
+      name="lang_names">
+      <item>@string/device_lang</item>
+      <item>English</item>
+      <item>Ελληνικά</item>
+      </string-array>
+   
 </resources>

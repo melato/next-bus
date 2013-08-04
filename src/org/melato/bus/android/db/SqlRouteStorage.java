@@ -32,8 +32,13 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
+import org.melato.bus.client.HelpItem;
+import org.melato.bus.client.HelpStorage;
+import org.melato.bus.client.Menu;
+import org.melato.bus.client.MenuStorage;
 import org.melato.bus.model.Agency;
 import org.melato.bus.model.DaySchedule;
+import org.melato.bus.model.Municipality;
 import org.melato.bus.model.RStop;
 import org.melato.bus.model.Route;
 import org.melato.bus.model.RouteException;
@@ -46,7 +51,10 @@ import org.melato.bus.model.ScheduleSummary;
 import org.melato.bus.model.Stop;
 import org.melato.bus.plan.Leg;
 import org.melato.gps.Point2D;
+import org.melato.log.Log;
 import org.melato.progress.ProgressGenerator;
+import org.melato.sun.SunsetProvider;
+import org.melato.util.DateId;
 import org.melato.util.IntArrays;
 import org.melato.util.VariableSubstitution;
 
@@ -56,18 +64,29 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
 import android.util.SparseArray;
 
-public class SqlRouteStorage implements RouteStorage {
+public class SqlRouteStorage implements RouteStorage, SunsetProvider, HelpStorage, MenuStorage {
   public static final String DATABASE_NAME = "ROUTES.db";
   private String databaseFile;
   private Map<String,String> properties;
   private int version;
-  public static final int MIN_VERSION = 5;
+  /**
+   *  9: force up-to-date menu
+   *  8: help, menu
+   *  7: municipalities
+   *  6: route flags, stop flags
+   *  5: exceptions
+   *  4: agencies
+   *  3: time offset
+   *  2: holidays
+   * */
+  public static final int MIN_VERSION = 9;
   public static final String PROPERTY_VERSION = "version";
   public static final String PROPERTY_DATE = "build_date";
   public static final String PROPERTY_LAT = "center_lat";
   public static final String PROPERTY_LON = "center_lon";
   public static final String PROPERTY_DAY_CHANGE = "day_change";
   public static final String PROPERTY_DEFAULT_AGENCY = "default_agency";
+  public static final String PROPERTY_TRANSLITERATION = "transliteration";
   
   private Map<String,String> loadProperties(SQLiteDatabase db) {
     String sql = "select name, value from properties";
@@ -134,6 +153,10 @@ public class SqlRouteStorage implements RouteStorage {
     }
     return null;
   }    
+  
+  public String getTransliteration() {
+    return getProperty(PROPERTY_TRANSLITERATION);
+  }
   
   public int getDayChange() {
     String time = getProperty(PROPERTY_DAY_CHANGE);
@@ -832,7 +855,12 @@ public class SqlRouteStorage implements RouteStorage {
   }
 
   public boolean checkVersion() {
-    return getVersion() >= MIN_VERSION;
+    int dbVersion = getVersion();
+    if ( dbVersion >= MIN_VERSION ) {
+      return true;
+    }
+    Log.info("db version = " + dbVersion + " required: " + MIN_VERSION);
+    return false;
   }
 
   @Override
@@ -887,5 +915,169 @@ public class SqlRouteStorage implements RouteStorage {
   public String getDefaultAgencyName() {
     return getProperty(PROPERTY_DEFAULT_AGENCY);
   }
+
+  @Override
+  public Municipality loadMunicipality(String stop) {
+    if ( getVersion() < 7 ) {
+      return null;
+    }
+    String sql = "select m.name, m.mayor, m.phone, m.website," +
+        " m.address, m.postal_code, m.city," +
+        " m.lat, m.lon" +
+        " from municipalities as m join markers on m._id = markers.municipality" +
+        " where markers.symbol = '%s'";    
+    sql = String.format(sql, stop);
+    SQLiteDatabase db = getDatabase();
+    try {
+      Cursor cursor = db.rawQuery( sql, null);
+      try {
+        if ( cursor.moveToFirst() ) {
+          int i = 0;
+          Municipality m = new Municipality(cursor.getString(i++));
+          if ( ! cursor.isNull(i)) {
+            m.setMayor(cursor.getString(i++));
+            m.setPhone(cursor.getString(i++));
+            m.setWebsite(cursor.getString(i++));
+            m.setAddress(cursor.getString(i++));
+            m.setPostalCode(cursor.getString(i++));
+            m.setCity(cursor.getString(i++));
+            if ( ! cursor.isNull(i)) {
+              Point2D point = new Point2D();            
+              point.setLat(cursor.getFloat(i++));
+              point.setLon(cursor.getFloat(i++));
+              m.setPoint(point);
+            }
+          }
+          return m;
+        }
+      } finally {
+        cursor.close();
+      }
+    } finally {
+      db.close();
+    }
+    return null;
+  }
+
+  @Override
+  public int[] getSunriseSunset(Date date) {
+    int dateId = DateId.dateId(date);
+    String sql = "select sunrise, sunset from sun where date_id = %d";
+    sql = String.format(sql, dateId);
+    SQLiteDatabase db = getDatabase();
+    try {
+      Cursor cursor = db.rawQuery( sql, null);
+      try {
+        if ( cursor.moveToFirst() ) {
+          int[] times = new int[2];
+          times[0] = cursor.getInt(0);
+          times[1] = cursor.getInt(1);
+          return times;
+        }        
+      } finally {
+        cursor.close();
+      }
+    } finally {
+      db.close();
+    }
+    return null;
+  }
+
+  private HelpItem loadHelpWhere(String where) {
+    if ( getVersion() < 8 ) {
+      return null;
+    }
+    String sql = "select title, body, node, name from help where " + where;
+    SQLiteDatabase db = getDatabase();
+    try {
+      Cursor cursor = db.rawQuery( sql, null);
+      try {
+        if ( cursor.moveToFirst() ) {
+          int i = 0;
+          HelpItem h = new HelpItem();
+          h.setTitle(cursor.getString(i++));
+          h.setText(cursor.getString(i++));
+          h.setNode(cursor.getString(i++));
+          if ( ! cursor.isNull(i)) {
+            h.setName(cursor.getString(i));
+          }
+          return h;
+        }
+      } finally {
+        cursor.close();
+      }
+    } finally {
+      db.close();
+    }
+    return null;
+  }
   
+  @Override
+  public HelpItem loadHelpByName(String name, String lang) {
+    if ( lang == null) {
+      return loadHelpWhere( "name = '" + quote(name) + "'");
+    } else {
+      String name2 = name + "." + lang;      
+      return loadHelpWhere( "name IN ('" + quote(name) + "', '" + quote(name2) + "') ORDER BY name DESC");
+    }
+  }
+
+  @Override
+  public HelpItem loadHelpByNode(String node) {
+    return loadHelpWhere( "node = '" + quote(node) + "'");
+  }
+
+  @Override
+  public List<Menu> loadMenus() {
+    String sql = "select label, type, target, icon, start_date, end_date from menus";
+    List<Menu> menus = new ArrayList<Menu>();
+    SQLiteDatabase db = getDatabase();
+    try {
+      Cursor cursor = db.rawQuery(sql, null);
+      try {
+        if ( cursor.moveToFirst() ) {
+          do {
+            Menu menu = new Menu();        
+            int i = 0;
+            menu.setLabel( cursor.getString(i++));
+            menu.setType( cursor.getString(i++));
+            menu.setTarget( cursor.getString(i++));
+            if ( ! cursor.isNull(i)) {
+              menu.setIcon(cursor.getString(i));
+            }
+            i++;
+            menu.setStartDate(cursor.getInt(i++));
+            menu.setEndDate(cursor.getInt(i++));
+            menus.add(menu);
+          } while( cursor.moveToNext() );
+        }
+      } finally {
+        cursor.close();
+      }
+    } finally {
+      db.close();
+    }
+    return menus;
+  }
+
+  @Override
+  public byte[] loadImage(String name) {
+    String sql = String.format("select image from images where name = '%s'", quote(name));
+    SQLiteDatabase db = getDatabase();
+    try {
+      Cursor cursor = db.rawQuery(sql, null);
+      try {
+        if ( cursor.moveToFirst() ) {
+          do {
+            return cursor.getBlob(0);
+          } while( cursor.moveToNext() );
+        }
+      } finally {
+        cursor.close();
+      }
+    } finally {
+      db.close();
+    }
+    return null;
+  }
 }

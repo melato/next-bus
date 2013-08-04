@@ -31,6 +31,10 @@ import java.io.Serializable;
  */
 public class Route implements Cloneable, Serializable, Comparable<Route> {
   private static final long serialVersionUID = 1L;
+  // route types.  Use GTFS constants.
+  public static final int TRAM = 0;
+  public static final int METRO = 1;
+  public static final int BUS = 3;
   public static final int FLAG_PRIMARY = 0x1;
 
   private RouteId routeId;
@@ -47,6 +51,7 @@ public class Route implements Cloneable, Serializable, Comparable<Route> {
   private int color = 0x0000ff;
   private int backgroundColor = 0;
   private int flags;
+  private int type;
   
   public Route() {
     super();
@@ -80,10 +85,28 @@ public class Route implements Cloneable, Serializable, Comparable<Route> {
   public String getTitle() {
     return title;
   }
+  
   public void setTitle(String title) {
     this.title = title;
   }
   
+
+  /**
+   * The type of the route.
+   * @return A GTFS route type constant.
+   *  0 tram
+   *  1 metro
+   *  2 rail
+   *  3 bus
+   */
+  public int getType() {
+    return type;
+  }
+
+  public void setType(int type) {
+    this.type = type;
+  }
+
   public int getColor() {
     return color;
   }

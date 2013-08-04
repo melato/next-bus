@@ -205,7 +205,7 @@ public class ScheduleActivity extends Activity implements OnItemClickListener {
      if ( agency.getLabel() != null) {
        browse.setTitle(agency.getLabel());
      }
-     HelpActivity.addItem(menu, this, R.string.help_schedule);
+     HelpActivity.addItem(menu, this, Help.SCHEDULE);
      return true;
   }
 

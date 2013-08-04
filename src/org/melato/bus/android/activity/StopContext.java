@@ -23,12 +23,15 @@ package org.melato.bus.android.activity;
 import java.util.Date;
 
 import org.melato.android.ui.PropertiesDisplay;
+import org.melato.android.ui.PropertiesDisplay.Item;
+import org.melato.android.util.Invokable;
 import org.melato.android.util.LabeledPoint;
 import org.melato.android.util.LocationField;
 import org.melato.bus.android.Info;
 import org.melato.bus.android.R;
 import org.melato.bus.client.Formatting;
 import org.melato.bus.client.TrackContext;
+import org.melato.bus.model.Municipality;
 import org.melato.bus.model.Route;
 import org.melato.bus.model.Schedule;
 import org.melato.bus.model.Stop;
@@ -146,6 +149,25 @@ public class StopContext extends LocationContext {
     start();
   }
 
+  public class MunicipalityField implements Invokable {
+    Municipality m;
+    
+    public MunicipalityField(Municipality municipality) {
+      super();
+      this.m = municipality;
+    }
+
+    @Override
+    public String toString() {
+      return properties.formatProperty(R.string.municipality, m.getName());
+    }
+
+    @Override
+    public void invoke(Context context) {
+      MunicipalityActivity.start(StopContext.this.context, m);
+    }    
+  }
+  
   class StraightDistance {
     public String toString() {
       return properties.formatProperty(R.string.straight_distance,
@@ -159,7 +181,14 @@ public class StopContext extends LocationContext {
       float travelBearing = history.getBearing();
       if (!Float.isNaN(travelBearing)) {
         float markerBearing = Earth.bearing(getLocation(), marker);
-        bearing = Formatting.bearing(markerBearing - travelBearing);
+        int turn = Math.round(Formatting.normalizeBearing(markerBearing - travelBearing));
+        if ( turn < 0 ) {
+          bearing = context.getString(R.string.bearing_left, -turn );
+        } else if ( turn > 0 ) {
+          bearing = context.getString(R.string.bearing_right, turn );
+        } else {
+          bearing = context.getString(R.string.bearing_straight);
+        }
       }
       return properties.formatProperty(R.string.bearing, bearing);
     }
@@ -286,6 +315,15 @@ public class StopContext extends LocationContext {
   }
 
   public void addProperties() {
+    Stop stop = getMarker();
+    Municipality municipality = Info.routeManager(context).getMunicipality(stop);
+    if ( municipality != null) {
+      if ( municipality.hasDetails() ) {
+        properties.add(new MunicipalityField(municipality));
+      } else {
+        properties.add(new Item(context, R.string.municipality, municipality.getName()));
+      }
+    }
     properties.add(new StraightDistance());
     properties.add(new Bearing());
     properties.add(new GpsMode());
@@ -295,13 +333,12 @@ public class StopContext extends LocationContext {
     properties.add(R.string.timed_stops, context.getString(R.string.timed_stop_counts, previousStops, followingStops));
 
     // properties.add( new PathSpeed());
-    properties.add(new Speed60());
-    properties.add(new PathETA());
+    //properties.add(new Speed60());
+    //properties.add(new PathETA());
     properties
         .add(new StraightETA(R.string.walkETA, Walk.SPEED, Walk.OVERHEAD));
     //properties.add(new LatitudeField(context.getString(R.string.latitude), getMarker()));
     //properties.add(new LongitudeField(context.getString(R.string.longitude), getMarker()));
-    Stop stop = getMarker();
     LabeledPoint p = new LabeledPoint(stop, stop.getName());
     properties.add(new LocationField(context.getString(R.string.coordinates), p));
     // properties.add(new StraightETA(R.string.bikeETA, BIKE_SPEED,

@@ -20,6 +20,7 @@
  */
 package org.melato.bus.plan;
 
+import java.io.Serializable;
 import java.util.Comparator;
 
 import org.melato.bus.client.Formatting;
@@ -27,9 +28,9 @@ import org.melato.bus.model.Schedule;
 import org.melato.gps.Metric;
 import org.melato.gps.Point2D;
 
-
-
-public class Plan implements Comparable<Plan>{
+/** A plan is a sequence of walk or transit legs from one point to another, at a particular time. */ 
+public class Plan implements Comparable<Plan>, Serializable {
+  private static final long serialVersionUID = 1L;
   private Point2D origin;
   private Point2D destination;
   private PlanLeg[] legs;
@@ -42,8 +43,8 @@ public class Plan implements Comparable<Plan>{
   /** Arrival time (seconds from midnight) */
   private int arrivalTime;
 
+  /** Compares plans by duration. */
   public static class TimeComparator implements Comparator<Plan> {
-
     @Override
     public int compare(Plan o1, Plan o2) {
       return compareFloats(o1.duration, o2.duration);
@@ -147,6 +148,17 @@ public class Plan implements Comparable<Plan>{
     return buf.toString();
   }
 
+  public String getLabel() {
+    StringBuilder buf = new StringBuilder();
+    for(PlanLeg leg: getLegs()) {
+      if ( buf.length() > 0 ) {
+        buf.append( " -> " );        
+      }
+      buf.append(leg.getRoute().getLabel());
+    }
+    return buf.toString();
+  }
+  
   @Override
   public String toString() {
     StringBuilder buf = new StringBuilder();

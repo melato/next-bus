@@ -89,7 +89,7 @@ public class StopsActivity extends ListActivity {
   public boolean onCreateOptionsMenu(Menu menu) {
     MenuInflater inflater = getMenuInflater();
     inflater.inflate(R.menu.stops_menu, menu);
-    HelpActivity.addItem(menu, this, R.string.help_stops);
+    HelpActivity.addItem(menu, this, Help.STOPS);
     return true;
   }
   

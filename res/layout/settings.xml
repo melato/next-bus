@@ -11,7 +11,7 @@
             android:entries="@array/route_colors"
             android:entryValues="@array/route_colors_values"
             android:key="route_colors"
-            android:summary="Summary"
+            android:summary="@string/route_colors_summary"
             android:title="@string/route_colors" />
 
         <CheckBoxPreference
@@ -19,6 +19,21 @@
             android:key="nearby_times"
             android:summary="@string/pref_nearby_times_desc"
             android:title="@string/pref_nearby_times" />
+
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:key="mayor"
+            android:summary="@string/pref_mayor_summary"
+            android:title="@string/pref_mayor" />
+
+        <ListPreference
+            android:defaultValue=""
+            android:entries="@array/lang_names"
+            android:entryValues="@array/lang_codes"
+            android:key="pref_lang"
+            android:summary="@string/pref_lang_summary"
+            android:title="@string/language" />
+        
     </PreferenceCategory>
 
 </PreferenceScreen>

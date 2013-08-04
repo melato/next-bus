@@ -85,4 +85,10 @@ public interface RouteStorage {
   String loadAgencyName(RouteId route);
   
   String getDefaultAgencyName();
+  
+  /** Retrieve the municipality where a stop is located.
+   * @param stop  The stop code.
+   * @return
+   */
+  Municipality loadMunicipality(String stop);
 }

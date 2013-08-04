@@ -28,16 +28,22 @@ import org.json.JSONObject;
 import org.melato.bus.otp.OTP.Itinerary;
 import org.melato.bus.otp.OTP.Leg;
 import org.melato.bus.otp.OTP.Plan;
+import org.melato.bus.otp.OTP.Stop;
 import org.melato.bus.otp.OTP.TransitLeg;
 import org.melato.bus.otp.OTP.WalkLeg;
 
 
 /** Parses OTP plan file from JSON */
 public class OTPParser {
-  static String getStopId(JSONObject leg, String endPoint) throws JSONException {
-    JSONObject stop = leg.getJSONObject(endPoint);
-    JSONObject stopId = stop.getJSONObject("stopId");
-    return stopId.getString("id");    
+  static Stop getStop(JSONObject leg, String endPoint) throws JSONException {
+    JSONObject jsonStop = leg.getJSONObject(endPoint);
+    Stop stop = new Stop();
+    stop.name = jsonStop.getString("name");
+    stop.stopCode = jsonStop.getString("stopCode");
+    JSONObject stopId = jsonStop.getJSONObject("stopId");
+    stop.id = stopId.getString("id");
+    stop.agencyId = stopId.getString("agencyId");
+    return stop;
   }
   static Leg parseLeg(JSONObject json) throws JSONException {
     String mode = json.getString("mode");
@@ -45,11 +51,12 @@ public class OTPParser {
     if ( "WALK".equals(mode)) {
       WalkLeg walk = new WalkLeg();
       leg = walk;
-    } else if ( "BUS".equals(mode)) {
+    } else {
       TransitLeg transit = new TransitLeg();
       transit.routeId = json.getString("routeId");
-      transit.fromStopId = getStopId(json, "from");
-      transit.toStopId = getStopId(json, "to");
+      transit.label = json.getString("routeShortName");
+      transit.from = getStop(json, "from");
+      transit.to = getStop(json, "to");
       leg = transit;
     }
     leg.distance = (float) json.getDouble("distance");
@@ -62,6 +69,8 @@ public class OTPParser {
     JSONArray legs = json.getJSONArray("legs");
     Itinerary itinerary = new Itinerary();
     itinerary.legs = new Leg[legs.length()];
+    itinerary.startTime = new Date(json.getLong("startTime"));    
+    itinerary.endTime = new Date(json.getLong("endTime"));    
     for( int i = 0; i < itinerary.legs.length; i++ ) {
       itinerary.legs[i] = parseLeg(legs.getJSONObject(i));
     }

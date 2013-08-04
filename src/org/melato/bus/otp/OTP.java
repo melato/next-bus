@@ -20,26 +20,69 @@
  */
 package org.melato.bus.otp;
 
+import java.io.Serializable;
 import java.util.Date;
 
+
+/** Contains various classes that represent an Open Trip Planner plan */
 public class OTP {
-  public static class Plan {
+  /** A plan is the result of an OTP query, consisting of several alternate itineraries to go from A to B. */
+  public static class Plan implements Serializable {
+    private static final long serialVersionUID = 1L;
     public Itinerary[] itineraries;
   }
-  public static class Itinerary {
+  /** An itinerary is a series of legs with various modes (walk, bus, etc.) that go from A to B. */
+  public static class Itinerary implements Serializable {
+    private static final long serialVersionUID = 1L;
+    /** The start time. */
+    public Date startTime;
+    /** The end time. */
+    public Date endTime;
     public Leg[] legs;
   }
-  public static class Leg {
+  
+  /** A Leg is a portion of an itinerary at a particular time (and place).
+   * There are subclasses for various modes.
+   */ 
+  public static class Leg implements Serializable {
+    private static final long serialVersionUID = 1L;
+    /** The start time. */
     public Date startTime;
+    /** The end time. */
     public Date endTime;
+    /** The leg distance from start to finish, in meters. */
     public float distance;
+    /** The leg duration from start to finish, in seconds. */
     public int duration;
   }
+  /** A leg using walking.  */
   public static class WalkLeg extends Leg {    
+    private static final long serialVersionUID = 1L;
   }
-  public static class TransitLeg extends Leg { 
+  public static class Stop implements Serializable {
+    private static final long serialVersionUID = 1L;
+    /** The human-readable name of the stop. */
+    public String name;
+    /** The internal stop code. */
+    public String stopCode;
+    /** The stop id.  May be the same as the stop code. */
+    public String id;
+    /** The agency id. */
+    public String agencyId;
+  }
+  /** A leg using transit. */
+  public static class TransitLeg extends Leg {
+    private static final long serialVersionUID = 1L;
+    /** The route id of the transit route */
     public String routeId;
-    public String fromStopId;
-    public String toStopId;
+    /** The short label of the route */
+    public String label;
+    /** The starting stop. */
+    public Stop from;
+    /** The end stop. */
+    public Stop to;
+  }
+  public static interface Planner {
+    Plan plan(OTPRequest request) throws Exception;
   }
 }

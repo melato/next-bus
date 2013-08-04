@@ -20,17 +20,50 @@
  */
 package org.melato.bus.android.app;
 
-import org.melato.bus.android.R;
+import java.util.Locale;
 
+import org.melato.bus.android.R;
+import org.melato.bus.android.activity.Pref;
+
+import android.content.SharedPreferences;
+import android.content.res.Configuration;
+import android.content.res.Resources;
 import android.os.Bundle;
 import android.preference.PreferenceActivity;
+import android.preference.PreferenceManager;
 
 public class BusPreferencesActivity extends PreferenceActivity {
+  private String lang;
+  
   @Override
   protected void onCreate( Bundle savedInstanceState ) 
   {
       super.onCreate( savedInstanceState );
-
       addPreferencesFromResource( R.layout.settings );
+      
+      SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(this);
+      lang = settings.getString(Pref.LANG, "");
   }
+  @Override
+  protected void onResume() {
+    super.onResume();
+  }
+  void updateLocale(String lang) {
+    Locale locale = new Locale(lang);
+    Resources resources = getBaseContext().getResources(); 
+    Configuration config = resources.getConfiguration();
+    config.locale = locale;
+    resources.updateConfiguration(config, resources.getDisplayMetrics());
+    
+  }
+  @Override
+  protected void onDestroy() {
+    SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(this);
+    String lang = settings.getString(Pref.LANG, "");
+    if ( ! this.lang.equals(lang)) {
+      updateLocale(lang);      
+    }
+    super.onDestroy();
+  }  
+  
 }

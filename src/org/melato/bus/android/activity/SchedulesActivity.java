@@ -99,7 +99,7 @@ public class SchedulesActivity extends ListActivity {
   @Override
   public boolean onCreateOptionsMenu(Menu menu)
   {
-     HelpActivity.addItem(menu, this, R.string.help_schedules);
+     HelpActivity.addItem(menu, this, Help.SCHEDULES);
      return true;
   }
 

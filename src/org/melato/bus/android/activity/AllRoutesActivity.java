@@ -25,6 +25,7 @@ import java.util.List;
 import org.melato.bus.android.Info;
 import org.melato.bus.android.R;
 import org.melato.bus.android.app.HelpActivity;
+import org.melato.bus.android.db.SqlRouteStorage;
 import org.melato.bus.model.Agency;
 import org.melato.bus.model.RouteGroup;
 import org.melato.bus.model.RouteManager;
@@ -48,6 +49,7 @@ public class AllRoutesActivity extends RoutesActivity {
   private RouteGroup[] all_groups;
   private EditText editView;
   private Agency agency;
+  private static String transliteration;
   
   class TextListener implements TextWatcher {
 
@@ -107,6 +109,31 @@ public class AllRoutesActivity extends RoutesActivity {
     */
   }
 
+  private char transliterate(char c) {
+    if ( transliteration == null) {
+      SqlRouteStorage storage = (SqlRouteStorage) Info.routeManager(this).getStorage();
+      transliteration = storage.getTransliteration();
+      if ( transliteration == null) {
+        transliteration = "";
+      }
+    }
+    int n = transliteration.length() / 2;
+    for( int i = 0; i < n; i++ ) {
+      if ( c == transliteration.charAt(i*2)) {
+        return transliteration.charAt(i*2+1);
+      }
+    }
+    return c;    
+  }
+  
+  private String transliterateString(String text) {
+    char[] chars = text.toCharArray();
+    for(int i = 0; i < chars.length; i++ ) {
+      char c = transliterate(chars[i]);
+      chars[i] = c;
+    }
+    return new String(chars);
+  }
   private int findPosition( String text ) {
     if ( text != null ) {
       text = text.trim();
@@ -117,6 +144,7 @@ public class AllRoutesActivity extends RoutesActivity {
       return -1;
     }
     text = text.toUpperCase();
+    text = transliterateString(text);
     for( int i = 0; i < all_groups.length; i++ ) {
       if ( all_groups[i].getTitle().startsWith(text)) {
         return i;
@@ -130,7 +158,7 @@ public class AllRoutesActivity extends RoutesActivity {
   {
      MenuInflater inflater = getMenuInflater();
      inflater.inflate(R.menu.all_routes_menu, menu);
-     HelpActivity.addItem(menu, this, R.string.help_all);
+     HelpActivity.addItem(menu, this, Help.ALL);
      return true;
   }
 

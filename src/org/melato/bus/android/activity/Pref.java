@@ -30,4 +30,6 @@ public class Pref {
   public static final String COLOR_WHITE_ON_BLACK = "white_on_black";
   public static final String NEARBY_TIMES = "nearby_times";
   public static final String DEFAULT_AGENCY = "agency";
+  public static final String LANG = "pref_lang";
+  public static final String MAYOR = "mayor";
 }

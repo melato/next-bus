@@ -35,6 +35,10 @@ public class Stop extends PointTime {
   public static final int FLAG_TIMED = 0x1;
   /** This is the last stop in the route. */
   public static final int FLAG_LAST = 0x2;
+  /** Stop is for pickup only */
+  public static final int FLAG_NO_DROPOFF = 0x4;
+  /** Stop is for dropoff only */
+  public static final int FLAG_NO_PICKUP = 0x8;
   String name;
   String symbol;
   int   flags;
@@ -78,6 +82,12 @@ public class Stop extends PointTime {
   }
   public boolean isLast() {
     return (flags & FLAG_LAST) != 0; 
+  }
+  public boolean isDropoff() {
+    return (flags & FLAG_NO_DROPOFF) == 0; 
+  }
+  public boolean isPickup() {
+    return (flags & FLAG_NO_PICKUP) == 0; 
   }
   public String getSymbol() {
     return symbol;

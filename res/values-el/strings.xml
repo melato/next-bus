@@ -42,6 +42,9 @@
     <string name="browse">Ιστοσελίδα</string>
     <string name="straight_distance">Ευθεία Απόσταση</string>
     <string name="bearing">Κατεύθυνση</string>
+    <string name="bearing_right">Δεξιά %d°</string>
+    <string name="bearing_left">Αριστερά %d°</string>
+    <string name="bearing_straight">Ευθεία</string>
     <string name="route_distance">Απόσταση Διαδρομής</string>
     <string name="position_from_start">Απόσταση από Αφετηρία (%s)</string>
     <string name="position_from_end">Απόσταση από Τέρμα (%s)</string>
@@ -70,4 +73,18 @@
     <string name="walk_leg">Περπάτημα %1$s %2$s</string>
     <string name="wait">αναμονή</string>
     <string name="twitter">Twitter</string>
+    <string name="language">Γλώσσα</string>    
+    <string name="device_lang">Γλώσσα συσκευής</string>    
+    <string name="municipality">Δήμος</string>
+    <string name="mayor">Δήμαρχος</string>    
+    <string name="police_phone">Δημοτική Αστυνομία</string>    
+    <string name="website">Ιστοσελίδα</string>
+    <string name="city_hall">Δημαρχείο</string>
+    
+    <string name="sun">Ήλιος</string>
+    <string name="sunrise_sunset">Ανατολή/Δύση</string>
+    <string name="date">Ημερομηνία</string>
+    <string name="sunrise">Ανατολή</string>
+    <string name="sunset">Δύση</string>
+    <string name="pezh">ΠΕΖΗ</string>    
 </resources>

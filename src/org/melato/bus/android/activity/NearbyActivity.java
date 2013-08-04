@@ -69,7 +69,7 @@ public class NearbyActivity extends ListActivity {
   {
      MenuInflater inflater = getMenuInflater();
      inflater.inflate(R.menu.nearby_routes_menu, menu);
-     HelpActivity.addItem(menu, this, R.string.help_nearby);
+     HelpActivity.addItem(menu, this, Help.NEARBY);
     return true;
   }
   

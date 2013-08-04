@@ -152,7 +152,7 @@ public class SequenceActivity extends ListActivity {
   {
      MenuInflater inflater = getMenuInflater();
      inflater.inflate(R.menu.sequence_menu, menu);
-     HelpActivity.addItem(menu, this, R.string.help_sequence);
+     HelpActivity.addItem(menu, this, Help.SEQUENCE);
      return true;
   }
 

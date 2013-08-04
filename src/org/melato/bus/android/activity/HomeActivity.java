@@ -20,17 +20,33 @@
  */
 package org.melato.bus.android.activity;
 
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+
+import org.melato.android.util.Invokable;
+import org.melato.bus.android.Info;
 import org.melato.bus.android.R;
 import org.melato.bus.android.app.BusPreferencesActivity;
 import org.melato.bus.android.app.HelpActivity;
 import org.melato.bus.android.app.UpdateActivity;
 import org.melato.bus.android.map.RouteMapActivity;
+import org.melato.bus.client.Menu;
+import org.melato.bus.client.MenuStorage;
+import org.melato.util.DateId;
 
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.BitmapFactory;
+import android.graphics.BitmapFactory.Options;
+import android.graphics.Color;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.DisplayMetrics;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
@@ -42,63 +58,118 @@ import android.widget.GridView;
 
 /** The main activity checks for updates and launches the next activity. */
 public class HomeActivity extends Activity implements OnItemClickListener {
-  static class LaunchItem {
+  List<LaunchItem> items = new ArrayList<LaunchItem>();
+  static interface LaunchItem extends Invokable {
+    public void init(Button button);
+  }
+
+  static void setButtonColors(Button button) {
+    button.setBackgroundColor(Color.TRANSPARENT);
+    button.setTextColor(Color.WHITE);
+  }
+  
+  static class InternalLaunchItem implements LaunchItem {
     Class<? extends Activity> activity;
     int drawable;
     int text;
-    public LaunchItem(Class<? extends Activity> activity, int drawable, int text) {
+    public InternalLaunchItem(Class<? extends Activity> activity, int drawable, int text) {
       super();
       this.activity = activity;
       this.drawable = drawable;
       this.text = text;
     }    
-    protected LaunchItem(int drawable, int text) {
+    protected InternalLaunchItem(int drawable, int text) {
       super();
       this.drawable = drawable;
       this.text = text;
+    }
+    public void init(Button button) {
+      button.setCompoundDrawablesWithIntrinsicBounds(0, drawable, 0, 0);
+      button.setText(text);
+      setButtonColors(button);
     }
     public void invoke(Context context) {
       context.startActivity(new Intent(context, activity));      
     }
   }
-  static class About extends LaunchItem {
+  static class MenuLaunchItem implements LaunchItem {
+    Drawable drawable;
+    Menu menu;
     
+    public MenuLaunchItem(Context context, Menu menu) {      
+      this.menu = menu;
+      MenuStorage db = Info.menuManager(context);
+      if ( menu.getIcon() != null) {
+        byte[] icon = db.loadImage(menu.getIcon());
+        if ( icon != null) { 
+          Options options = new BitmapFactory.Options();
+          options.inDensity = DisplayMetrics.DENSITY_DEFAULT;
+          InputStream in = new ByteArrayInputStream(icon);
+          drawable = Drawable.createFromResourceStream(context.getResources(), null, in, menu.icon, options);
+        }
+      }
+    }
+    public void invoke(Context context) {
+      if ( "url".equals( menu.type)){ 
+        Uri uri = Uri.parse(menu.target);
+        Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+        context.startActivity(intent);
+      } else if ("help".equals(menu.type)) {
+        HelpActivity.showHelp(context, menu.target);
+      }
+    }
+    @Override
+    public void init(Button button) {
+      button.setText(menu.getLabel());
+      button.setCompoundDrawablesWithIntrinsicBounds(null, drawable, null, null);
+      setButtonColors(button);
+    }
+    
+  }
+  static class Help extends InternalLaunchItem {
+    private String helpName;
+    
+    public Help(int icon, int label, String helpName) {
+      super(icon, label);
+      this.helpName = helpName;
+    }
+
+    public void invoke(Context context) {
+      HelpActivity.showHelp(context, helpName);
+    }
+  }
+
+  static class About extends Help {    
     public About() {
-      super(R.drawable.about, R.string.about);
+      super(R.drawable.about, R.string.about, "about");
     }
-
-    public void invoke(Context context) {
-      HelpActivity.showHelp(context, R.string.help_about, R.string.about, false, true);        
-    }
-  }
-  static class Twitter extends LaunchItem {
-    
-    public Twitter() {
-      super(R.drawable.twitter, R.string.twitter);
-    }
-
-    public void invoke(Context context) {
-      Uri uri = Uri.parse("http://twitter.com/athensnextbus");
-      Intent intent = new Intent(Intent.ACTION_VIEW, uri);
-      context.startActivity(intent);
-    }
-  }
-  
+  }  
   
   // references to our images
-  private LaunchItem[] items = {
-      new LaunchItem(AllRoutesActivity.class, R.drawable.all, R.string.all_routes),
-      new LaunchItem(RecentRoutesActivity.class, R.drawable.recent, R.string.menu_recent_routes),
-      new LaunchItem(NearbyActivity.class, R.drawable.nearby, R.string.menu_nearby_routes),
-      new LaunchItem(RouteMapActivity.class, R.drawable.map, R.string.map),
-      new LaunchItem(AgenciesActivity.class, R.drawable.agencies, R.string.menu_agencies),
-      new LaunchItem(SequenceActivity.class, R.drawable.sequence, R.string.sequence),
-      new LaunchItem(BusPreferencesActivity.class, R.drawable.preferences, R.string.pref_menu),
+  private InternalLaunchItem[] internalItems = {
+      new InternalLaunchItem(AllRoutesActivity.class, R.drawable.all, R.string.all_routes),
+      new InternalLaunchItem(RecentRoutesActivity.class, R.drawable.recent, R.string.menu_recent_routes),
+      new InternalLaunchItem(AgenciesActivity.class, R.drawable.agencies, R.string.menu_agencies),
+      new InternalLaunchItem(SequenceActivity.class, R.drawable.sequence, R.string.sequence),
+      new InternalLaunchItem(NearbyActivity.class, R.drawable.nearby, R.string.menu_nearby_routes),
+      new InternalLaunchItem(RouteMapActivity.class, R.drawable.map, R.string.map),
+      new InternalLaunchItem(SunActivity.class, R.drawable.sun, R.string.sun),
+      new InternalLaunchItem(BusPreferencesActivity.class, R.drawable.preferences, R.string.pref_menu),
       new About(),
-      //new Twitter(),
   };
   
-  
+  void initMenus() {
+    for( LaunchItem item: internalItems ) {
+      items.add(item);
+    }
+    MenuStorage db = (MenuStorage) Info.routeManager(this).getStorage();
+    int dateId = DateId.dateId(new Date());
+    for(Menu menu: db.loadMenus() ) {
+      if ( menu.isActive(dateId)) {
+        items.add( new MenuLaunchItem(this, menu));
+      }
+    }    
+  }
   /** Called when the activity is first created. */  
   @Override
   public void onCreate(Bundle savedInstanceState) {
@@ -109,13 +180,14 @@ public class HomeActivity extends Activity implements OnItemClickListener {
       }
       setContentView(R.layout.home);
       GridView grid = (GridView) findViewById(R.id.gridView);
+      initMenus();
       grid.setAdapter(new ImageAdapter(this));
       grid.setOnItemClickListener(this);
   }
 
 
   void select(int position) {
-    LaunchItem item = items[position];
+    Invokable item = items.get(position);
     item.invoke(this);
   }
   @Override
@@ -132,7 +204,7 @@ public class HomeActivity extends Activity implements OnItemClickListener {
     }
 
     public int getCount() {
-        return items.length;
+        return items.size();
     }
 
     public Object getItem(int position) {
@@ -155,11 +227,8 @@ public class HomeActivity extends Activity implements OnItemClickListener {
         } else {
             button = (Button) convertView;
         }
-        LaunchItem item = items[position];
-        button.setCompoundDrawablesWithIntrinsicBounds(0, item.drawable, 0, 0);
-        button.setText(item.text);
-        //button.setBackgroundColor(Color.BLACK);
-        //button.setTextColor(Color.WHITE);
+        LaunchItem item = items.get(position);
+        item.init(button);
         button.setOnClickListener(new ButtonListener(position));
         return button;
     }

@@ -25,6 +25,7 @@ import org.melato.android.gpx.map.GMap;
 import org.melato.bus.android.Info;
 import org.melato.bus.android.R;
 import org.melato.bus.android.activity.BusActivities;
+import org.melato.bus.android.activity.Help;
 import org.melato.bus.android.activity.IntentHelper;
 import org.melato.bus.android.app.HelpActivity;
 import org.melato.bus.model.RStop;
@@ -122,7 +123,7 @@ public class RouteMapActivity extends MapActivity {
   public boolean onCreateOptionsMenu(Menu menu) {
     MenuInflater inflater = getMenuInflater();
     inflater.inflate(R.menu.map_menu, menu);
-    HelpActivity.addItem(menu, this, R.string.help_map);
+    HelpActivity.addItem(menu, this, Help.MAP);
     if ( activities.getRoute() == null) {
       int[] ids = new int[] { R.id.schedule, R.id.stops };
       for( int id: ids ) {

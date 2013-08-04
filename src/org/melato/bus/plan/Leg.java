@@ -29,7 +29,8 @@ import org.melato.bus.model.RStop;
 import org.melato.bus.model.RouteId;
 import org.melato.bus.model.Stop;
 
-/** A leg is a portion of a route between two stops. */ 
+/** A portion of a route between two stops.
+ * */ 
 public class Leg implements Serializable {
   private static final long serialVersionUID = 1L;
   public RouteId routeId;
@@ -86,7 +87,7 @@ public class Leg implements Serializable {
    * @param symbol2
    * @param legs
    */
-  public static void findLegs(RouteId routeId, Collection<Stop> stopList, String symbol1, String symbol2, Collection<Leg> legs ) {
+  public static void findLegs(RouteId routeId, Collection<Stop> stopList, String symbol1, String symbol2, Collection<Leg> results ) {
     Comparator<Stop> comparator = new Stop.IndexComparator();
     Stop[] stops = stopList.toArray(new Stop[0]);
     Arrays.sort(stops, comparator);
@@ -95,7 +96,7 @@ public class Leg implements Serializable {
         for( int j = i + 1; j < stops.length; j++ ) {
           if ( stops[i].getSymbol().equals(symbol1)) {
             Leg leg = new Leg(routeId, stops[i], stops[j]);
-            legs.add(leg);
+            results.add(leg);
             break;
           }
         }

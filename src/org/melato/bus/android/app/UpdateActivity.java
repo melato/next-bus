@@ -42,6 +42,7 @@ import android.net.NetworkInfo.State;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.text.Html;
 import android.text.method.ScrollingMovementMethod;
 import android.view.View;
 import android.widget.Button;
@@ -61,7 +62,7 @@ public class UpdateActivity extends Activity {
   private void showMessage(int messageId) {
     setContentView(R.layout.message);
     TextView noteView = (TextView) findViewById(R.id.note);
-    noteView.setText(messageId);
+    noteView.setText(Html.fromHtml(getResources().getString(messageId)));
     noteView.setMovementMethod(new ScrollingMovementMethod());    
   }
   @Override

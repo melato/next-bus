@@ -28,7 +28,7 @@ import org.melato.bus.model.RouteId;
 import org.melato.bus.model.RouteManager;
 import org.melato.bus.model.Stop;
 
-/** A leg is a portion of a route between two stops. */ 
+/** A leg group is a leg and equivalent legs that have the same start/end stops. */
 public class LegGroup implements Serializable {
   private static final long serialVersionUID = 1L;
   public Leg leg;

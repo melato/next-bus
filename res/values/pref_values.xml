@@ -8,4 +8,11 @@
       <item>white_on_black</item>
    </string-array>
 
+   <string-array
+      name="lang_codes" translatable="false">
+      <item></item>
+      <item>en</item>
+      <item>el</item>
+      </string-array>
+   
 </resources>

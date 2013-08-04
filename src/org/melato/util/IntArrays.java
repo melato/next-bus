@@ -19,6 +19,7 @@
 package org.melato.util;
 
 import java.util.AbstractList;
+import java.util.Collection;
 import java.util.List;
 
 public class IntArrays {
@@ -33,6 +34,15 @@ public class IntArrays {
     return array;
   }
   
+  public static int[] toArray(Collection<Integer> list) {
+    int[] array = new int[list.size()];
+    int i = 0;
+    for( Integer a: list ) {
+      array[i++] = a;
+    }
+    return array;
+  }
+
   private static class IntArrayList extends AbstractList<Integer> {
     private int[] array;
     
