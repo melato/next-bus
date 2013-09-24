@@ -34,7 +34,7 @@
             android:layout_height="wrap_content"
             android:layout_marginBottom="8dp"
             android:layout_marginTop="8dp"
-            android:src="@drawable/nearby" />
+            android:src="@drawable/search" />
     </LinearLayout>
 
     <ListView

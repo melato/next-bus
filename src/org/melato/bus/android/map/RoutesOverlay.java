@@ -28,7 +28,7 @@ import java.util.Map;
 import org.melato.android.gpx.map.GMap;
 import org.melato.bus.android.Info;
 import org.melato.bus.android.R;
-import org.melato.bus.android.activity.NearbyActivity;
+import org.melato.bus.android.activity.PointSelectionActivity;
 import org.melato.bus.android.activity.UI;
 import org.melato.bus.model.Route;
 import org.melato.bus.model.RouteId;
@@ -255,7 +255,8 @@ public class RoutesOverlay extends BaseRoutesOverlay {
 
   @Override
   public boolean onTap(GeoPoint geoPoint, MapView mapView) {
-    NearbyActivity.start(mapView.getContext(), GMap.point(geoPoint));
+    //NearbyActivity.start(mapView.getContext(), GMap.point(geoPoint));
+    PointSelectionActivity.selectPoint(mapView.getContext(), GMap.point(geoPoint));
     return true;
   }
   

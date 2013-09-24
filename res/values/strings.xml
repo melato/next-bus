@@ -65,8 +65,19 @@
     <string name="terms_of_use">Terms of Use</string>
     <string name="sequence">Sequence</string>
     <string name="empty_sequence">Route Sequence</string>
+    <string name="search">Search</string>
+    <string name="select">Select</string>
     <string name="add_stop_after">Add Stop</string>
     <string name="add_stop_before">Prepend Stop</string>
+    
+    <string name="point_selection">Point Selection</string>
+    <string name="add_to_sequence">Add to Sequence</string>
+    <string name="set_origin">Set as Origin</string>
+    <string name="set_destination">Set as Destination</string>
+    <string name="fewer_transfers">Fewer Transfers</string>
+    <string name="max_walk">Max Walk (m)</string>
+    <string name="walk_speed">Walk Speed (Km/h)</string>
+    
     <string name="clear">Clear All</string>
     <string name="remove_last">Clear Last</string>
     <string name="remove_first">Clear First</string>
@@ -87,5 +98,21 @@
     <string name="sunrise">Sunrise</string>
     <string name="sunset">Sunset</string>
     <string name="pezh">ΠΕΖΗ</string>
-        
+
+    <string name="plan">Trip Planner</string>
+    <string name="itineraries">Itineraries</string>
+    <string name="itinerary">Itinerary</string>
+    <string name="last_plan">Last Results</string>
+    <string name="swap">Swap</string>
+    <string name="from">From:</string>
+    <string name="to">To:</string>
+    <string name="plan_time">Time:</string>
+    <string name="arrive">Arrive</string>
+    <string name="walk">Walk</string>
+    <string name="mode_bus">Bus</string>
+    <string name="mode_tram">Tram</string>
+    <string name="mode_subway">Subway</string>
+    <string name="error_convert_route">Cannot find route</string>
+    <string name="error_connect">Cannot connect to server.</string>
+    
 </resources>

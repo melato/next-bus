@@ -82,8 +82,6 @@ public class StopsContext extends LocationContext {
   }
 
   class StopsAdapter extends ArrayAdapter<Stop> {
-    TextView view;
-
     public StopsAdapter() {
       super(context, R.layout.list_item, track.getStops()); 
     }

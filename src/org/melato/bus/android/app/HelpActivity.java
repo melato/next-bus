@@ -21,7 +21,6 @@
 package org.melato.bus.android.app;
 
 import java.util.HashMap;
-import java.util.Locale;
 import java.util.Map;
 
 import org.melato.bus.android.Info;

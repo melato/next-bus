@@ -22,24 +22,21 @@ package org.melato.bus.plan;
 
 import java.io.Serializable;
 
-import org.melato.bus.model.Route;
 import org.melato.bus.model.RouteManager;
 import org.melato.bus.model.Schedule;
 
 /** A Leg at a particular schedule time. */
 public class LegTime implements Comparable<LegTime>, Serializable {
   private static final long serialVersionUID = 1L;
-  private Route route;
-  public Leg leg;
+  public RouteLeg leg;
   /** This is the scheduled time that the route starts from its starting point, in minutes. */
   int     time;
   /** Whether this is the last leg or not.  Provided as a convenience to a list display. */
   public boolean last;
-  public LegTime(Leg leg, int time, RouteManager routeManager) {
+  public LegTime(RouteLeg leg, int time, RouteManager routeManager) {
     super();
     this.leg = leg;
     this.time = time;
-    this.route = routeManager.getRoute(leg.getRouteId());
   }
       
   @Override
@@ -61,11 +58,7 @@ public class LegTime implements Comparable<LegTime>, Serializable {
     }
   }
     
-  public Route getRoute() {
-    return route;
-  }
-
-  public Leg getLeg() {
+  public RouteLeg getLeg() {
     return leg;
   }
 
@@ -77,11 +70,15 @@ public class LegTime implements Comparable<LegTime>, Serializable {
   public String toString() {
     StringBuilder buf = new StringBuilder();
     //buf.append( (leg.index+1) + " " );
-    buf.append( route.getLabel());
+    buf.append( leg.routeId );
     buf.append( " " );
     buf.append( Schedule.formatTime(getTime1()/60));
+    buf.append( " " );
+    buf.append( leg.stop1.getName() );
     buf.append( " -> " );
     buf.append( Schedule.formatTime(getTime2()/60));
+    buf.append( " " );
+    buf.append( leg.stop2.getName() );
     return buf.toString();
   }
 }

@@ -39,11 +39,13 @@ public class Stop extends PointTime {
   public static final int FLAG_NO_DROPOFF = 0x4;
   /** Stop is for dropoff only */
   public static final int FLAG_NO_PICKUP = 0x8;
-  String name;
-  String symbol;
-  int   flags;
-  int   index;
-  float deviation = 1;
+  /** Stop is a station */
+  public static final int FLAG_STATION = 0x10;
+  private String name;
+  private String symbol;
+  private int   flags;
+  private int   index;
+  private float deviation = 1;
   
   public static class IndexComparator implements Comparator<Stop> {
     @Override
@@ -74,6 +76,12 @@ public class Stop extends PointTime {
   public int getFlags() {
     return flags;
   }
+  public void setFlag(int flag) {
+    this.flags = flags | flag;
+  }
+  public boolean isFlag(int flag) {
+    return (flags & flag) != 0;
+  }
   public void setFlags(int flags) {
     this.flags = flags;
   }
@@ -88,6 +96,9 @@ public class Stop extends PointTime {
   }
   public boolean isPickup() {
     return (flags & FLAG_NO_PICKUP) == 0; 
+  }
+  public boolean isStation() {
+    return isFlag(FLAG_STATION);
   }
   public String getSymbol() {
     return symbol;

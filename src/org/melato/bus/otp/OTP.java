@@ -30,6 +30,19 @@ public class OTP {
   public static class Plan implements Serializable {
     private static final long serialVersionUID = 1L;
     public Itinerary[] itineraries;
+    public Error error;
+        
+    public void postParse() {
+      for(Itinerary it: itineraries) {
+        it.addTimeDifferences();
+      }
+    }
+  }
+  
+  public static class Error implements Serializable {
+    private static final long serialVersionUID = 1L;
+    public int id;
+    public String msg;
   }
   /** An itinerary is a series of legs with various modes (walk, bus, etc.) that go from A to B. */
   public static class Itinerary implements Serializable {
@@ -39,6 +52,19 @@ public class OTP {
     /** The end time. */
     public Date endTime;
     public Leg[] legs;
+    
+    public void addTimeDifferences() {
+      Date lastTime = null;
+      for(Leg leg: legs) {
+        if ( leg instanceof TransitLeg) {
+          TransitLeg t = (TransitLeg) leg;
+          if ( lastTime != null ) {
+            t.diffTime = (int) ((t.startTime.getTime() - lastTime.getTime()) / 1000L); 
+          }
+          lastTime = t.endTime;
+        }
+      }
+    }
   }
   
   /** A Leg is a portion of an itinerary at a particular time (and place).
@@ -54,6 +80,12 @@ public class OTP {
     public float distance;
     /** The leg duration from start to finish, in seconds. */
     public int duration;
+    
+    public String mode;
+    
+    public int getDuration() {
+      return duration;
+    }    
   }
   /** A leg using walking.  */
   public static class WalkLeg extends Leg {    
@@ -70,6 +102,13 @@ public class OTP {
     /** The agency id. */
     public String agencyId;
   }
+  /** A transfer leg between two transit stops.  Uses walking, elevators, etc. */
+  public static class TransferLeg extends Leg {
+    private static final long serialVersionUID = 1L;
+    public Stop from;
+    /** The end stop. */
+    public Stop to;
+  }
   /** A leg using transit. */
   public static class TransitLeg extends Leg {
     private static final long serialVersionUID = 1L;
@@ -81,6 +120,8 @@ public class OTP {
     public Stop from;
     /** The end stop. */
     public Stop to;
+    /** The time from the end of the previous transit leg, or -1, in seconds. */
+    public int diffTime = -1;
   }
   public static interface Planner {
     Plan plan(OTPRequest request) throws Exception;

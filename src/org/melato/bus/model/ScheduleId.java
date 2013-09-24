@@ -103,6 +103,10 @@ public class ScheduleId implements Comparable<ScheduleId>, Serializable {
     return this.dateId == dateId;
   }
   
+  /*
+   * @param dayOfWeek  One of the Calendar day constants, e.g. Calendar.SUNDAY, Calendar.MONDAY, etc.
+   * @return
+   */
   public boolean matchesDayOfWeek(int dayOfWeek) {
     int bitmap = 1 << (dayOfWeek-Calendar.SUNDAY);
     return (days & bitmap) != 0;

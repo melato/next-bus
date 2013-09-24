@@ -56,13 +56,13 @@ public class Sequence implements Serializable {
     this.legs = legs;
   }
 
-  public void addLeg(Leg leg) {
+  public void addLeg(RouteLeg leg) {
     legs.add(new LegGroup(leg));
   }
   
   public void addStopAfter(RouteManager routeManager, RStop stop) {
     if ( legs.isEmpty() ) {
-      legs.add(new LegGroup(new Leg(stop)));
+      legs.add(new LegGroup(new RouteLeg(stop)));
       return;
     }
     LegGroup lastLeg = legs.get(legs.size()-1);
@@ -83,17 +83,17 @@ public class Sequence implements Serializable {
         Stop s = findClosestStopAfterStop(routeManager, lastLeg.getRouteId(), lastLeg.getStop1(), stop.getStop());
         lastLeg.setStop2(s);
       }
-      Leg leg = new Leg(stop);
+      RouteLeg leg = new RouteLeg(stop);
       legs.add(new LegGroup(leg));
     }
   }
   
   public void addStopBefore(RouteManager routeManager, RStop stop) {
     if ( legs.isEmpty() ) {
-      legs.add(new LegGroup(new Leg(stop.getRouteId(), stop.getStop(), stop.getStop())));
+      legs.add(new LegGroup(new RouteLeg(stop.getRouteId(), stop.getStop(), stop.getStop())));
       return;
     }
-    Leg firstLeg = legs.get(0).getLeg();
+    RouteLeg firstLeg = legs.get(0).getLeg();
     if ( firstLeg.getRouteId().equals(stop.getRouteId())) {
       // if the first leg is for the same route.
       if ( stop.getStop().isBefore(firstLeg.getStop2())) {
@@ -106,7 +106,7 @@ public class Sequence implements Serializable {
       }
     } else {
       // add a new leg at the beginning
-      Leg leg = new Leg(stop.getRouteId(), stop.getStop(), stop.getStop());
+      RouteLeg leg = new RouteLeg(stop.getRouteId(), stop.getStop(), stop.getStop());
       legs.add(0, new LegGroup(leg));
     }
   }

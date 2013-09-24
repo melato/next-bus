@@ -30,7 +30,8 @@ import java.util.Map;
 
 import org.melato.bus.model.cache.RoutePointCache;
 import org.melato.bus.model.cache.ScheduleCache;
-import org.melato.bus.plan.Leg;
+import org.melato.bus.otp.OTPRequest;
+import org.melato.bus.plan.RouteLeg;
 import org.melato.gps.Earth;
 import org.melato.gps.GlobalDistance;
 import org.melato.gps.LocalDistance;
@@ -305,7 +306,7 @@ public class RouteManager {
     storage.iteratePrimaryRouteStops(callback);
   }
   
-  public List<Leg> getLegsBetween(String stop1, String stop2) {
+  public List<RouteLeg> getLegsBetween(String stop1, String stop2) {
     return storage.loadLegsBetween(stop1, stop2);
   }
 
@@ -316,6 +317,13 @@ public class RouteManager {
       center = new Point2D( 37.975086f, 23.735683f); // hardcoded Syntagma Square.
     }
     return center;    
+  }
+  
+  public String getPlannerUrl() {
+    return storage.getPlannerUrl();
+  }
+  public void setOtpDefaults(OTPRequest request) {
+    storage.applyOtpDefaults(request);
   }
 
   public Metric getMetric() {

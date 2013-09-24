@@ -32,4 +32,8 @@ public class Pref {
   public static final String DEFAULT_AGENCY = "agency";
   public static final String LANG = "pref_lang";
   public static final String MAYOR = "mayor";
+
+  public static final String WALK_SPEED = "walk_speed";
+  public static final String MAX_WALK_DISTANCE = "max_walk";
+  public static final String FEWER_TRANSFERS = "fewer_transfers";
 }

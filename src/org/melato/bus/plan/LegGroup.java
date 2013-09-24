@@ -31,16 +31,16 @@ import org.melato.bus.model.Stop;
 /** A leg group is a leg and equivalent legs that have the same start/end stops. */
 public class LegGroup implements Serializable {
   private static final long serialVersionUID = 1L;
-  public Leg leg;
-  private Leg[] equivalentLegs;
+  public RouteLeg leg;
+  private RouteLeg[] equivalentLegs;
   
-  public Leg getLeg() {
+  public RouteLeg getLeg() {
     return leg;
   }
-  public Leg[] getLegs() {
+  public RouteLeg[] getLegs() {
     return equivalentLegs;
   }
-  public LegGroup(Leg leg) {
+  public LegGroup(RouteLeg leg) {
     super();
     this.leg = leg;
   }  
@@ -65,15 +65,15 @@ public class LegGroup implements Serializable {
   public RStop getRStop1() {
     return leg.getRStop1();
   }
-  Leg[] findEquivalentLegs(RouteManager routeManager) {
+  RouteLeg[] findEquivalentLegs(RouteManager routeManager) {
     if ( leg.getStop2() != null) {
-      List<Leg> legs = routeManager.getLegsBetween(leg.getStop1().getSymbol(), leg.getStop2().getSymbol());
-      return legs.toArray(new Leg[0]);
+      List<RouteLeg> legs = routeManager.getLegsBetween(leg.getStop1().getSymbol(), leg.getStop2().getSymbol());
+      return legs.toArray(new RouteLeg[0]);
     } else {
-      return new Leg[] {leg};
+      return new RouteLeg[] {leg};
     }
   }
-  public Leg[] getEquivalentLegs(RouteManager routeManager) {
+  public RouteLeg[] getEquivalentLegs(RouteManager routeManager) {
     if ( equivalentLegs == null) {
       equivalentLegs = findEquivalentLegs(routeManager);
     }

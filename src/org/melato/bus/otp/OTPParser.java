@@ -29,6 +29,7 @@ import org.melato.bus.otp.OTP.Itinerary;
 import org.melato.bus.otp.OTP.Leg;
 import org.melato.bus.otp.OTP.Plan;
 import org.melato.bus.otp.OTP.Stop;
+import org.melato.bus.otp.OTP.TransferLeg;
 import org.melato.bus.otp.OTP.TransitLeg;
 import org.melato.bus.otp.OTP.WalkLeg;
 
@@ -51,6 +52,11 @@ public class OTPParser {
     if ( "WALK".equals(mode)) {
       WalkLeg walk = new WalkLeg();
       leg = walk;
+    } else if ( "TRANSFER".equals(mode)) {
+      TransferLeg transfer = new TransferLeg();
+      transfer.from = getStop(json, "from");
+      transfer.to = getStop(json, "to");
+      leg = transfer;
     } else {
       TransitLeg transit = new TransitLeg();
       transit.routeId = json.getString("routeId");
@@ -63,6 +69,7 @@ public class OTPParser {
     leg.duration = (int) (json.getLong("duration")/1000L);
     leg.startTime = new Date(json.getLong("startTime"));
     leg.endTime = new Date(json.getLong("endTime"));
+    leg.mode = mode;
     return leg;    
   }
   static Itinerary parseItinerary(JSONObject json) throws JSONException {
@@ -76,17 +83,39 @@ public class OTPParser {
     }
     return itinerary;
   }
+  static JSONObject getObject(JSONObject json, String key) throws JSONException {
+    if ( json.has(key) && ! json.isNull(key)) {
+      return json.getJSONObject(key);
+    }
+    return null;
+  }
+  static OTP.Error parseError(JSONObject json) throws JSONException {
+    json = getObject(json, "error");
+    if (json == null) {
+      return null;
+    }
+    OTP.Error error = new OTP.Error();
+    error.id = json.getInt("id");
+    error.msg = json.getString("msg");
+    return error;
+  }
   public static Plan parse(String data) {
     try {
-      JSONObject json = new JSONObject(data);
-      JSONObject jsonPlan = json.getJSONObject("plan");
-      JSONArray jsonItineraries = jsonPlan.getJSONArray("itineraries");
-      Itinerary[] itineraries = new Itinerary[jsonItineraries.length()];
-      for( int i = 0; i < itineraries.length; i++ ) {
-        itineraries[i] = parseItinerary(jsonItineraries.getJSONObject(i));
-      }
       Plan plan = new Plan();
-      plan.itineraries = itineraries;
+      plan.itineraries = new Itinerary[0];
+      JSONObject json = new JSONObject(data);
+      JSONObject jsonPlan = getObject(json, "plan");
+      if ( jsonPlan != null) {
+        JSONArray jsonItineraries = jsonPlan.getJSONArray("itineraries");
+        if ( jsonItineraries != null) {
+          Itinerary[] itineraries = new Itinerary[jsonItineraries.length()];
+          for( int i = 0; i < itineraries.length; i++ ) {
+            itineraries[i] = parseItinerary(jsonItineraries.getJSONObject(i));
+          }
+          plan.itineraries = itineraries;
+        }
+      }
+      plan.error = parseError(json);
       return plan;
     } catch (JSONException e) {
       e.printStackTrace();

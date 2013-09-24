@@ -49,7 +49,8 @@ import org.melato.bus.model.Schedule;
 import org.melato.bus.model.ScheduleId;
 import org.melato.bus.model.ScheduleSummary;
 import org.melato.bus.model.Stop;
-import org.melato.bus.plan.Leg;
+import org.melato.bus.otp.OTPRequest;
+import org.melato.bus.plan.RouteLeg;
 import org.melato.gps.Point2D;
 import org.melato.log.Log;
 import org.melato.progress.ProgressGenerator;
@@ -87,6 +88,9 @@ public class SqlRouteStorage implements RouteStorage, SunsetProvider, HelpStorag
   public static final String PROPERTY_DAY_CHANGE = "day_change";
   public static final String PROPERTY_DEFAULT_AGENCY = "default_agency";
   public static final String PROPERTY_TRANSLITERATION = "transliteration";
+  public static final String PROPERTY_PLANNER_URL = "planner_url";
+  public static final String PROPERTY_OTP_MIN_TRANSFER_TIME = "otp.minTransferTime";
+  public static final String PROPERTY_OTP_MAX_TRANSFERS = "otp.maxTransfers";
   
   private Map<String,String> loadProperties(SQLiteDatabase db) {
     String sql = "select name, value from properties";
@@ -143,6 +147,16 @@ public class SqlRouteStorage implements RouteStorage, SunsetProvider, HelpStorag
   public String getBuildDate() {
     return getProperty(PROPERTY_DATE, null);
   }
+
+  @Override
+  public String getPlannerUrl() {
+    return getProperty(PROPERTY_PLANNER_URL, null);
+  }
+  @Override
+  public void applyOtpDefaults(OTPRequest request) {
+    //request.setMinTransferTime(Integer.parseInt(getProperty(PROPERTY_OTP_MIN_TRANSFER_TIME, "300")));
+    request.setMaxTransfers(Integer.parseInt(getProperty(PROPERTY_OTP_MAX_TRANSFERS, "5")));
+  }  
 
   @Override
   public Point2D getCenter() {
@@ -838,15 +852,15 @@ public class SqlRouteStorage implements RouteStorage, SunsetProvider, HelpStorag
   }
   
   @Override
-  public List<Leg> loadLegsBetween(String stop1, String stop2) {
+  public List<RouteLeg> loadLegsBetween(String stop1, String stop2) {
     SQLiteDatabase db = getDatabase();
     try {
       List<String> symbols = Arrays.asList(new String[] { stop1, stop2});
       Collection<RouteId> routes = loadRoutesBetween(stop1, stop2);
-      List<Leg> legs = new ArrayList<Leg>();
+      List<RouteLeg> legs = new ArrayList<RouteLeg>();
       for(RouteId routeId: routes) {
         List<Stop> stops = loadStops(db, routeId, symbols);
-        Leg.findLegs(routeId, stops, stop1, stop2, legs);
+        RouteLeg.findLegs(routeId, stops, stop1, stop2, legs);
       }
       return legs;
     } finally {

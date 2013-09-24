@@ -31,17 +31,17 @@ import org.melato.bus.model.Stop;
 
 /** A portion of a route between two stops.
  * */ 
-public class Leg implements Serializable {
+public class RouteLeg implements Serializable {
   private static final long serialVersionUID = 1L;
   public RouteId routeId;
   public Stop stop1;
   public Stop stop2;
-  public Leg(RStop stop) {
+  public RouteLeg(RStop stop) {
     this.routeId = stop.getRouteId();
     this.stop1 = stop.getStop();      
   }
   
-  public Leg(RouteId routeId, Stop stop1, Stop stop2) {
+  public RouteLeg(RouteId routeId, Stop stop1, Stop stop2) {
     super();
     this.routeId = routeId;
     this.stop1 = stop1;
@@ -87,7 +87,7 @@ public class Leg implements Serializable {
    * @param symbol2
    * @param legs
    */
-  public static void findLegs(RouteId routeId, Collection<Stop> stopList, String symbol1, String symbol2, Collection<Leg> results ) {
+  public static void findLegs(RouteId routeId, Collection<Stop> stopList, String symbol1, String symbol2, Collection<RouteLeg> results ) {
     Comparator<Stop> comparator = new Stop.IndexComparator();
     Stop[] stops = stopList.toArray(new Stop[0]);
     Arrays.sort(stops, comparator);
@@ -95,7 +95,7 @@ public class Leg implements Serializable {
       if ( stops[i].getSymbol().equals(symbol1)) {
         for( int j = i + 1; j < stops.length; j++ ) {
           if ( stops[i].getSymbol().equals(symbol1)) {
-            Leg leg = new Leg(routeId, stops[i], stops[j]);
+            RouteLeg leg = new RouteLeg(routeId, stops[i], stops[j]);
             results.add(leg);
             break;
           }

@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="org.melato.bus.android"
-    android:versionCode="29"
-    android:versionName="1.6.1" >
+    android:versionCode="30"
+    android:versionName="2.0" >
 
-    <uses-sdk android:minSdkVersion="8" />
+    <uses-sdk android:minSdkVersion="8" android:targetSdkVersion="18" />
 
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
@@ -59,12 +59,6 @@
         <activity
             android:name=".activity.NearbyActivity"
             android:label="@string/nearby_routes" >
-            <intent-filter>
-                <action android:name="android.intent.action.VIEW"/>
-                <category android:name="android.intent.category.DEFAULT"/>
-                <category android:name="android.intent.category.BROWSABLE"/>
-                <data android:scheme="geo"/>
-            </intent-filter>
         </activity>        
         <activity
             android:name=".activity.SequenceActivity"
@@ -78,6 +72,33 @@
             android:name=".activity.SequenceInstanceActivity"
             android:label="@string/schedule" >
         </activity>        
+        <activity
+            android:name=".activity.PlanActivity"
+            android:windowSoftInputMode="stateHidden"
+            android:label="@string/plan" >
+        </activity>
+        <activity
+            android:name=".activity.PointSelectionActivity"
+            android:label="@string/app_name" >
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+                <category android:name="android.intent.category.BROWSABLE"/>
+                <data android:scheme="geo"/>
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".activity.OTPItinerariesActivity"
+            android:label="@string/itineraries" >
+        </activity>
+        <activity
+            android:name=".activity.OTPItineraryActivity"
+            android:label="@string/itinerary" >
+        </activity>
+        <activity
+            android:name=".activity.PlanResultsActivity"
+            android:label="@string/plan" >
+        </activity>
         <activity
             android:name=".map.RouteMapActivity"
             android:label="@string/map" >
@@ -110,6 +131,10 @@
         </activity>
         <activity
             android:name=".app.BusPreferencesActivity"
+            android:label="@string/pref_title" >
+        </activity>
+        <activity
+            android:name=".activity.PlanPreferencesActivity"
             android:label="@string/pref_title" >
         </activity>
         </application>

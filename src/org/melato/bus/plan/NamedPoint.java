@@ -22,6 +22,7 @@ package org.melato.bus.plan;
 
 import org.melato.gps.Point2D;
 
+/** A point with a name. */
 public class NamedPoint extends Point2D {
   private static final long serialVersionUID = 1L;
   private String name;

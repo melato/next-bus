@@ -65,8 +65,16 @@
     <string name="terms_of_use">Όροι Χρήσης</string>
     <string name="sequence">Συνδυασμός</string>
     <string name="empty_sequence">Συνδυασμός γραμμών</string>
+    <string name="search">Αναζήτηση</string>
+    <string name="select">Επιλογή</string>
     <string name="add_stop_after">Συνδυασμός</string>
     <string name="add_stop_before">Πρίν</string>
+    
+    <string name="point_selection">Επιλογή Σημείου</string>    
+    <string name="add_to_sequence">Συνδυασμός</string>
+    <string name="set_origin">Αρχή</string>
+    <string name="set_destination">Προορισμός</string>
+    
     <string name="clear">Διαγραφή όλων</string>
     <string name="remove_last">Διαγραφή τελευταίας</string>
     <string name="remove_first">Διαγραφή πρώτης</string>
@@ -86,5 +94,22 @@
     <string name="date">Ημερομηνία</string>
     <string name="sunrise">Ανατολή</string>
     <string name="sunset">Δύση</string>
-    <string name="pezh">ΠΕΖΗ</string>    
+    <string name="pezh">ΠΕΖΗ</string>
+    
+    <string name="plan">Αναζήτηση Διαδρομής</string>
+    <string name="itineraries">Διαδρομές</string>
+    <string name="itinerary">Διαδρομή</string>
+    <string name="last_plan">Αποτελέσματα</string>
+    <string name="swap">Αλλαγή Κατεύθυνσης</string>
+    <string name="from">Από:</string>
+    <string name="to">Έως:</string>
+    <string name="plan_time">Ώρα:</string>
+    <string name="arrive">Άφιξη</string>
+    <string name="walk">Περπάτημα</string>
+    <string name="mode_bus">Λεωφορείο</string>
+    <string name="mode_tram">Τραμ</string>
+    <string name="mode_subway">Μετρό/Προαστιακός</string>
+    <string name="error_convert_route">Άγνωστη γραμμή</string>
+    <string name="error_connect">Δεν είναι δυνατή η σύνδεση.</string>
+    
 </resources>

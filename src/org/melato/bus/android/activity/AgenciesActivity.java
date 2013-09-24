@@ -22,6 +22,7 @@ package org.melato.bus.android.activity;
 
 import org.melato.bus.android.Info;
 import org.melato.bus.android.R;
+import org.melato.bus.android.app.HelpActivity;
 import org.melato.bus.model.Agency;
 
 import android.app.ListActivity;
@@ -29,6 +30,7 @@ import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
@@ -88,7 +90,11 @@ public class AgenciesActivity extends ListActivity {
   }
 
   @Override
-  public boolean onCreateOptionsMenu(Menu menu) {
-    return true;
+  public boolean onCreateOptionsMenu(Menu menu)
+  {
+     HelpActivity.addItem(menu, this, Help.AGENCIES);
+     return true;
   }
+
+  
 }

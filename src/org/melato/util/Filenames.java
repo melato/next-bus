@@ -23,11 +23,11 @@ import java.io.File;
 public class Filenames {
 	public static String getExtension( File file ) {
 		String name = file.getName();
-		int dot = name.indexOf( '.' );
+		int dot = name.lastIndexOf( '.' );
 		return dot >= 0 ? name.substring( dot + 1 ) : null;
 	}
   public static String getBasename( String name ) {
-    int dot = name.indexOf( '.' );
+    int dot = name.lastIndexOf( '.' );
     return dot >= 0 ? name.substring( 0, dot ) : name;
   }
 	public static String getBasename( File file ) {

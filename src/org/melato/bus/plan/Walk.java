@@ -27,13 +27,12 @@ import org.melato.gps.GlobalDistance;
 import org.melato.gps.Point2D;
 
 public class Walk {
-  public static final float OVERHEAD = 1.3f;
-  /** Normal walk speed in m/s */
-  public static final float SPEED = 5000f/3600;
   public static final DecimalFormat D2 = new DecimalFormat("00");
+  private WalkModel model;
   private float distance;
-  public Walk(Point2D point1, Point2D point2) {
+  public Walk(Point2D point1, Point2D point2, WalkModel model) {
     super();
+    this.model = model;
     distance = new GlobalDistance().distance(point1, point2);
   }
   public static String formatDuration(float time) {
@@ -45,15 +44,8 @@ public class Walk {
     }
   }
   
-  public static float duration(float distance) {
-    return distance*OVERHEAD/SPEED;
-  }
-  public static String distanceDuration(float distance) {
-    return formatDuration(duration(distance));
-  }
-  
   @Override
   public String toString() {
-    return "Walk " + Formatting.straightDistance(distance) + " " + distanceDuration(distance);
+    return "Walk " + Formatting.straightDistance(distance) + " " + model.distanceDuration(distance);
   }
 }

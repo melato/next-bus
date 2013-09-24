@@ -39,6 +39,7 @@ import org.melato.bus.model.RouteId;
 import org.melato.bus.model.RouteManager;
 import org.melato.bus.model.ScheduleId;
 import org.melato.bus.plan.Sequence;
+import org.melato.bus.plan.WalkModel;
 import org.melato.log.Log;
 
 import android.content.Context;
@@ -51,8 +52,10 @@ import android.preference.PreferenceManager;
 /** Provides access to global (static) objects. */
 public class Info {
   public static final float MARK_PROXIMITY = 200f;
+  public static final String PREF_WALK_SPEED = "walk_speed";
   public static final String SEQUENCE_FILE = "sequence.dat";
   private static RouteManager routeManager;
+  private static WalkModel walkModel;
   private static AndroidTrackHistory trackHistory;
   private static Map<String,Drawable.ConstantState> agencyIcons = new HashMap<String,Drawable.ConstantState>();
   private static Sequence sequence;
@@ -171,6 +174,11 @@ public class Info {
     return sequence;
   }
   
+  public static void setSequence(Context context, Sequence sequence) {
+    Info.sequence = sequence;
+    saveSequence(context);
+  }
+  
   public static void saveSequence(Context context) {
     if ( sequence != null) {
       File dir = context.getFilesDir();
@@ -190,4 +198,18 @@ public class Info {
   public static void setStickyScheduleId(ScheduleId stickyScheduleId) {
     Info.stickyScheduleId = stickyScheduleId;
   }
+
+  public static WalkModel walkModel(Context context) {
+    if ( walkModel == null ) {
+      synchronized(Info.class) {
+        if ( walkModel == null ) {
+          context = context.getApplicationContext();
+          PlanOptions options = new PlanOptions(context);
+          walkModel = new WalkModel(options.getWalkSpeedMetric());
+        }
+      }
+    }
+    return walkModel;
+  }
+  
 }

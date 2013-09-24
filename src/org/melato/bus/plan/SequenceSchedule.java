@@ -36,11 +36,12 @@ import org.melato.progress.ProgressGenerator;
 public class SequenceSchedule {
   public Level[] levels;
   private List<SequenceInstance> instances;
+  private WalkModel walkModel;
 
   /** Helper class for scheduling one leg and equivalent legs */
   public static class Level {
     private LegGroup leg;
-    private Leg[] legs;
+    private RouteLeg[] legs;
     public LegTime[] legTimes;
     private int[] times;
     private int walkTime;
@@ -48,12 +49,17 @@ public class SequenceSchedule {
       super();
       this.leg = leg;
     }
-    public void setWalkDistance(float distance) {
-      this.walkTime = (int)Walk.duration(distance);
-    }    
+    
+    public void setWalkTime(int walkTime) {
+      this.walkTime = walkTime;
+    }
+
     public int getWalkTime() {
       return walkTime;
     }
+    public void setWalkDistance(WalkModel walk, float distance) {
+      this.walkTime = (int) walk.duration(distance);
+    }    
     void compute(ScheduleFactory scheduleFactory, RouteManager routeManager) {
       ProgressGenerator progress = ProgressGenerator.get();
       Route route = routeManager.getRoute(leg.getLeg().getRouteId());
@@ -61,7 +67,7 @@ public class SequenceSchedule {
       legs = leg.getEquivalentLegs(routeManager);
       List<LegTime> timeList = new ArrayList<LegTime>();
       for(int i = 0; i < legs.length; i++ ) {
-        Leg leg = legs[i];
+        RouteLeg leg = legs[i];
         Schedule schedule = routeManager.getSchedule(leg.getRouteId());
         DaySchedule daySchedule = scheduleFactory.getSchedule(schedule);
         if ( daySchedule != null) {
@@ -92,7 +98,8 @@ public class SequenceSchedule {
     }
   }
   
-  public SequenceSchedule(Sequence sequence, ScheduleFactory scheduleFactory, RouteManager routeManager) {
+  public SequenceSchedule(Sequence sequence, ScheduleFactory scheduleFactory, RouteManager routeManager, WalkModel walkModel) {
+    this.walkModel = walkModel;
     List<LegGroup> legs = sequence.getLegs();
     levels = new Level[legs.size()];
     Metric metric = routeManager.getMetric();
@@ -101,7 +108,7 @@ public class SequenceSchedule {
     }
     for( int i = 1; i < levels.length; i++ ) {
       float distance = metric.distance(levels[i-1].leg.getLeg().getStop2(), levels[i].leg.getLeg().getStop1());
-      levels[i].setWalkDistance(distance);
+      levels[i].setWalkDistance(walkModel, distance);
     }
     ProgressGenerator progress = ProgressGenerator.get();
     progress.setLimit(levels.length);
@@ -110,6 +117,10 @@ public class SequenceSchedule {
       levels[i].compute(scheduleFactory, routeManager);
     }
     instances = createInstances(levels);
+  }
+  
+  public WalkModel getWalkModel() {
+    return walkModel;
   }
 
   public List<SequenceInstance> getInstances() {

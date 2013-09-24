@@ -36,6 +36,13 @@ public class Route implements Cloneable, Serializable, Comparable<Route> {
   public static final int METRO = 1;
   public static final int BUS = 3;
   public static final int FLAG_PRIMARY = 0x1;
+  /** Do not include the label in the title.
+   * Some agencies do not use labels.
+   * All routes of that agency may have the same label.
+   * This flag specifies that the label will not be prepended to the route title when displaying the route.
+   * The label may still appear in places where only labels appear, e.g. in itineraries.
+   * */
+  public static final int FLAG_NOLABEL = 0x2;
 
   private RouteId routeId;
   /** The internal agency name */
@@ -130,6 +137,14 @@ public class Route implements Cloneable, Serializable, Comparable<Route> {
   public void setFlags(int flags) {
     this.flags = flags;
   }
+  
+  public void setFlag(int flag) {
+    this.flags |= flag;
+  }
+
+  public boolean isFlag(int flag) {
+    return (this.flags & flag) != 0;
+  }
 
   public boolean isPrimary() {
     return (flags & FLAG_PRIMARY) != 0;
@@ -144,7 +159,11 @@ public class Route implements Cloneable, Serializable, Comparable<Route> {
   }
   
   public String getFullTitle() {
-    return getLabel() + " " + getTitle();
+    if ( isFlag(FLAG_NOLABEL)) {
+      return getTitle();
+    } else {
+      return getLabel() + " " + getTitle();
+    }
   }
   
   @Override

@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
-    <item android:id="@+id/nearby"
-          android:icon="@drawable/nearby"                          
-          android:title="@string/menu_nearby_routes" />
     <item android:id="@+id/map"
           android:icon="@drawable/map"                  
           android:title="@string/map" />
     <item android:id="@+id/schedule"
           android:icon="@drawable/schedule"                  
           android:title="@string/schedule" />
-    <item android:id="@+id/add_stop_after"
+    <item android:id="@+id/search"
+          android:icon="@drawable/search"                          
+          android:title="@string/search" />
+    <item android:id="@+id/add"
           android:icon="@drawable/add_stop"                  
           android:title="@string/add_stop_after" />
     <item android:id="@+id/fast_gps"

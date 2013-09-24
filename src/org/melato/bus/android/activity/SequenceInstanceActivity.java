@@ -20,24 +20,30 @@
  */
 package org.melato.bus.android.activity;
 
+import org.melato.bus.android.Info;
 import org.melato.bus.android.R;
-import org.melato.bus.android.activity.SequenceActivity.WalkItem;
-import org.melato.bus.plan.SequenceInstance.LegInstance;
-import org.melato.bus.plan.SequenceInstance.WalkInstance;
+import org.melato.bus.model.RouteManager;
+import org.melato.bus.plan.LegAdapter;
+import org.melato.bus.plan.SequenceItinerary;
+import org.melato.bus.plan.SequenceLegAdapter;
 
 import android.app.ListActivity;
 import android.os.Bundle;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.TextView;
 
 /**
  * Displays a sequence instance:  An instance schedule at a particular time.
  * @author Alex Athanasopoulos
  */
 public class SequenceInstanceActivity extends ListActivity {
-  public static final String KEY_LEGS = "org.melato.bus.android.legs";
-  private Object[] legs;
+  public static final String KEY_ITINERARY = "org.melato.bus.android.itinerary";
+  /** This is really SequenceInstanceLeg[], but somehow its type does not survive serialization. */
+  private SequenceItinerary itinerary;
+  private RouteManager routeManager;
 
   public SequenceInstanceActivity() {
   }
@@ -46,30 +52,37 @@ public class SequenceInstanceActivity extends ListActivity {
   @Override
   public void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
-    legs = (Object[]) getIntent().getSerializableExtra(KEY_LEGS);
-    if ( legs == null) {
+    itinerary = (SequenceItinerary) getIntent().getSerializableExtra(KEY_ITINERARY);
+    if ( itinerary == null) {
       finish();
     }
-    // translate strings
-    String waitString = getString(R.string.wait);
-    for(int i = 0; i < legs.length; i++ ) {
-      if ( legs[i] instanceof WalkInstance ) {
-        legs[i] = new WalkItem((WalkInstance) legs[i], this);
-      } else if ( legs[i] instanceof LegInstance) {
-        LegInstance leg = (LegInstance) legs[i];
-        leg.setWaitString(waitString);
-      }
-    }
-    setListAdapter(new ArrayAdapter<Object>(this, R.layout.list_item, legs));
+    routeManager = Info.routeManager(this);
+    setListAdapter(new ItineraryAdapter());
   }
 
+  class ItineraryAdapter extends ArrayAdapter<SequenceItinerary.Leg> {
+    public ItineraryAdapter() {
+      super(SequenceInstanceActivity.this, R.layout.list_item, itinerary.legs); 
+    }
+
+    @Override
+    public View getView(int position, View convertView, ViewGroup parent) {
+      TextView view = (TextView) super.getView(position, convertView, parent);
+      SequenceItinerary.Leg leg = itinerary.legs[position];
+      LegAdapter adapter = new SequenceLegAdapter(leg, routeManager);
+      String text = LegFormatter.label(adapter, SequenceInstanceActivity.this);
+      view.setText( text );
+      return view;
+    }
+  }
+  
   @Override
   protected void onListItemClick(ListView l, View v, int position, long id) {
-    Object leg = legs[position];
-    if ( leg instanceof LegInstance) {
-      LegInstance legInstance = (LegInstance) leg;
+    SequenceItinerary.Leg leg = itinerary.legs[position];
+    if ( leg instanceof SequenceItinerary.TransitLeg) {
+      SequenceItinerary.TransitLeg transit = (SequenceItinerary.TransitLeg) leg;
       BusActivities activities = new BusActivities(this);
-      activities.showRoute(legInstance.getRStop());    
+      activities.showRoute(transit.leg.getRStop1());    
     }
   }    
 }

@@ -35,7 +35,7 @@ public class RouteGroup {
   }
   private void setRoutes(Route[] routes) {
     this.routes = routes;
-    this.title = routes[0].getLabel() + " " + routes[0].getTitle();
+    this.title = routes[0].getFullTitle();
     this.title = title.toUpperCase();  // just in case.  make sure search is case insensitive.
   }
   public RouteGroup(Route[] routes) {
@@ -69,19 +69,20 @@ public class RouteGroup {
    */
   public static List<RouteGroup> group(List<Route> routes) {
     List<RouteGroup> groups = new ArrayList<RouteGroup>();
-    String label = null;
+    String groupName = null;
     List<Route> group = new ArrayList<Route>();
     for(Route route: routes ) {
-      if (label == null ) {
+      String name = route.getRouteId().getName();
+      if (groupName == null ) {
         group.add(route);
-        label = route.getLabel();
-      } else if ( label.equals(route.getLabel())) {
+        groupName = name;
+      } else if ( groupName.equals(name)) {
         group.add(route);
       } else {
         groups.add(new RouteGroup(group));
         group.clear();
         group.add(route);
-        label = route.getLabel();
+        groupName = name;
       }
     }
     groups.add(new RouteGroup(group));    

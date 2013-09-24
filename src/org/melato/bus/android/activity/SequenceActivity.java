@@ -30,11 +30,10 @@ import org.melato.bus.client.Formatting;
 import org.melato.bus.model.Route;
 import org.melato.bus.model.RouteManager;
 import org.melato.bus.model.Stop;
-import org.melato.bus.plan.Leg;
 import org.melato.bus.plan.LegGroup;
+import org.melato.bus.plan.RouteLeg;
 import org.melato.bus.plan.Sequence;
-import org.melato.bus.plan.SequenceInstance.WalkInstance;
-import org.melato.bus.plan.Walk;
+import org.melato.bus.plan.WalkModel;
 import org.melato.gps.Point2D;
 
 import android.app.ListActivity;
@@ -49,7 +48,8 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
 /**
- * Displays a sequence
+ * Displays a sequence and allows simple editing.
+ * Launches the sequence schedule activity.
  * @author Alex Athanasopoulos
  */
 public class SequenceActivity extends ListActivity {
@@ -71,7 +71,7 @@ public class SequenceActivity extends ListActivity {
 
     @Override
     public String toString() {
-      Leg leg = this.leg.getLeg();
+      RouteLeg leg = this.leg.getLeg();
       StringBuilder buf = new StringBuilder();
       buf.append(route.getLabel());
       buf.append( " " );
@@ -90,15 +90,16 @@ public class SequenceActivity extends ListActivity {
   public static class WalkItem implements SequenceItem {
     private float distance;
     private String label;
+    
+    private void initLabel(Context context) {
+      WalkModel walkModel = Info.walkModel(context);
+      label = context.getString(R.string.walk_leg, Formatting.straightDistance(distance), walkModel.distanceDuration(distance));
+    }
     public WalkItem(Point2D point1, Point2D point2, RouteManager routeManager, Context context) {
       super();
       distance = routeManager.getMetric().distance(point1, point2);
       System.out.println( "WalkItem: from=" + point1 + " to=" + point2 + " distance=" + distance);
-      label = context.getString(R.string.walk_leg, Formatting.straightDistance(distance), Walk.distanceDuration(distance));
-    }
-    public WalkItem(WalkInstance walk, Context context) {
-      this.distance = walk.getDistance();
-      label = context.getString(R.string.walk_leg, Formatting.straightDistance(distance), Walk.distanceDuration(distance));
+      initLabel(context);
     }
     @Override
     public String toString() {
@@ -108,7 +109,7 @@ public class SequenceActivity extends ListActivity {
   
   public List<SequenceItem> getSequenceItems(Sequence sequence, RouteManager routeManager) {
     List<SequenceItem> items = new ArrayList<SequenceItem>();
-    Leg previous = null;
+    RouteLeg previous = null;
     for(LegGroup leg: sequence.getLegs() ) {
       if ( previous != null) {
         items.add(new WalkItem(previous.getStop2(), leg.getLeg().getStop1(), routeManager, this));
@@ -141,7 +142,7 @@ public class SequenceActivity extends ListActivity {
   protected void onListItemClick(ListView l, View v, int position, long id) {
     SequenceItem item = items.get(position);
     if ( item instanceof LegItem ) {
-      Leg leg = ((LegItem) item).leg.getLeg();
+      RouteLeg leg = ((LegItem) item).leg.getLeg();
       BusActivities activities = new BusActivities(this);
       activities.showRoute(leg.getRStop1());
     }
@@ -170,7 +171,7 @@ public class SequenceActivity extends ListActivity {
   private void removeLast() {
     List<LegGroup> legs = sequence.getLegs();
     if ( ! legs.isEmpty()) {
-      Leg last = legs.get(legs.size()-1).getLeg();
+      RouteLeg last = legs.get(legs.size()-1).getLeg();
       if ( last.getStop2() != null) {
         last.setStop2(null);
       } else {

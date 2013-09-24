@@ -118,10 +118,6 @@ public class StopActivity extends ListActivity implements OnItemClickListener
     return true;
   }
  
-  private void showNearby() {
-    Stop point = stop.getMarker();
-    NearbyActivity.start(this, point);
-  }
   /**
    * Start the Schedule activity for the given stop.
    */
@@ -143,24 +139,18 @@ public class StopActivity extends ListActivity implements OnItemClickListener
   public boolean onOptionsItemSelected(MenuItem item) {
     boolean handled = false;
     switch (item.getItemId()) {
-      case R.id.nearby:
-        showNearby();
+      case R.id.search:
+        PointSelectionActivity.selectPoint(this,rstop);
         handled = true;
         break;
       case R.id.schedule:
         showStopSchedule();
         handled = true;
         break;
-      case R.id.add_stop_after:
+      case R.id.add:
         addToSequence(true);
         handled = true;
         break;
-      /**
-      case R.id.add_stop_before:
-        addToSequence(false);
-        handled = true;
-        break;
-      */
       default:
         break;
     }

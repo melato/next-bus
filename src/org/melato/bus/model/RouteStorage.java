@@ -24,7 +24,8 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
-import org.melato.bus.plan.Leg;
+import org.melato.bus.otp.OTPRequest;
+import org.melato.bus.plan.RouteLeg;
 import org.melato.gps.Point2D;
 
 /**
@@ -68,9 +69,13 @@ public interface RouteStorage {
    * */
   void iterateNearbyRoutes(Point2D point, float latitudeDifference, float longitudeDifference, Collection<RouteId> collector);
   
-  List<Leg> loadLegsBetween(String stop1, String stop2);
+  List<RouteLeg> loadLegsBetween(String stop1, String stop2);
   
   Point2D getCenter();
+
+  void applyOtpDefaults(OTPRequest request);
+  
+  String getPlannerUrl();
   /**
    * Return the original web URL for the route at the route provider's web site.
    * @param route

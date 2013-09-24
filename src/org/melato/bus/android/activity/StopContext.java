@@ -36,7 +36,7 @@ import org.melato.bus.model.Route;
 import org.melato.bus.model.Schedule;
 import org.melato.bus.model.Stop;
 import org.melato.bus.model.StopCount;
-import org.melato.bus.plan.Walk;
+import org.melato.bus.plan.WalkModel;
 import org.melato.geometry.gpx.PathTracker;
 import org.melato.geometry.gpx.SpeedTracker;
 import org.melato.gps.Earth;
@@ -281,19 +281,17 @@ public class StopContext extends LocationContext {
 
   class StraightETA {
     int labelId;
-    float speed;
-    float overhead;
+    WalkModel walkModel;
 
-    public StraightETA(int labelId, float speed, float overhead) {
+    public StraightETA(int labelId, WalkModel walkModel ) {
       super();
       this.labelId = labelId;
-      this.speed = speed;
-      this.overhead = overhead;
+      this.walkModel = walkModel;
     }
 
     public String toString() {
       String label = context.getResources().getString(labelId);
-      float time = getStraightDistance() * overhead / speed;
+      float time = walkModel.duration(getStraightDistance());
       return PropertiesDisplay.formatProperty(label, formatTime(time));
     }
   }
@@ -336,7 +334,7 @@ public class StopContext extends LocationContext {
     //properties.add(new Speed60());
     //properties.add(new PathETA());
     properties
-        .add(new StraightETA(R.string.walkETA, Walk.SPEED, Walk.OVERHEAD));
+        .add(new StraightETA(R.string.walkETA, Info.walkModel(context)));
     //properties.add(new LatitudeField(context.getString(R.string.latitude), getMarker()));
     //properties.add(new LongitudeField(context.getString(R.string.longitude), getMarker()));
     LabeledPoint p = new LabeledPoint(stop, stop.getName());

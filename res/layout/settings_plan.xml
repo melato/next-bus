@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="match_parent"
+    android:title="@string/pref_title" >
+
+    <PreferenceCategory android:title="@string/plan" >
+        <EditTextPreference
+           android:key="max_walk_distance"
+           android:title="@string/max_walk"
+           android:summary="@string/max_walk"
+           android:defaultValue="1000"
+           android:inputType="number"
+           android:singleLine="true" />
+        <EditTextPreference
+           android:key="walk_speed"
+           android:title="@string/walk_speed"
+           android:summary="@string/walk_speed"
+           android:defaultValue="5"
+           android:inputType="number"
+           android:singleLine="true" />
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:key="fewer_transfers"
+            android:summary="@string/fewer_transfers"
+            android:title="@string/fewer_transfers" />
+
+        </PreferenceCategory>
+
+</PreferenceScreen>
