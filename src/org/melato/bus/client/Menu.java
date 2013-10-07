@@ -68,7 +68,7 @@ public class Menu {
     this.endDate = date;
   }
   public boolean isActive(int dateId) {
-    return (startDate == 0 || startDate <= dateId) && (startDate == 0 || dateId <= endDate);
+    return (startDate == 0 || startDate <= dateId) && (endDate == 0 || dateId <= endDate);
   }
   @Override
   public String toString() {

@@ -90,8 +90,8 @@ public class PointSelectionActivity extends Activity implements OnClickListener 
   }  
   private void showPlan() {
     finish();
-    Intent intent = new Intent(this, PlanActivity.class);
-    intent.putExtra(PlanActivity.POINT, point);
+    Intent intent = new Intent(this, PlanTabsActivity.class);
+    intent.putExtra(PlanTabsActivity.KEY_TAB, PlanTabsActivity.TAB_SEARCH);
     startActivity(intent);    
   }
  
@@ -154,14 +154,14 @@ public class PointSelectionActivity extends Activity implements OnClickListener 
       case R.id.origin:
         p = getNamedPoint();
         if ( p != null) {
-          PlanActivity.origin = p;
+          PlanFragment.origin = p;
           showPlan();          
         }
         break;
       case R.id.destination:
         p = getNamedPoint();
         if ( p != null) {
-          PlanActivity.destination = p;
+          PlanFragment.destination = p;
           showPlan();          
         }
         break;

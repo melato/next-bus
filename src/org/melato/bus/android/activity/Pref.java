@@ -34,6 +34,6 @@ public class Pref {
   public static final String MAYOR = "mayor";
 
   public static final String WALK_SPEED = "walk_speed";
-  public static final String MAX_WALK_DISTANCE = "max_walk";
+  public static final String MAX_WALK_DISTANCE = "max_walk_distance";
   public static final String FEWER_TRANSFERS = "fewer_transfers";
 }

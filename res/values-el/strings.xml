@@ -34,10 +34,12 @@
     <string name="ETA">Αναμενόμενη Άφιξη</string>
     <string name="walkETA">Αναμενόμενη Άφιξη περπατώντας</string>
     <string name="bikeETA">Αναμενόμενη Άφιξη με ποδήλατο</string>
-    <string name="timed_stops">Στάσεις με χρόνους</string>
-    <string name="timed_stop_counts">%1$s πριν, %2$s μετά</string>
+    <string name="untimed_stops">Στάσεις χωρίς χρόνους</string>
+    <string name="stop_counts">%1$s πριν, %2$s μετά</string>
     <string name="nearby_routes">Κοντινές Γραμμές</string>
-    <string name="best_route">Βέλτιστη Γραμμή</string>
+    <string name="suggested_routes">Προτεινόμενες Διαδρομές</string>
+    <string name="missing_origin">Επιλέξτε Αρχή</string>
+    <string name="missing_destination">Επιλέξτε Προορισμό</string>
     <string name="map">Χάρτης</string>
     <string name="browse">Ιστοσελίδα</string>
     <string name="straight_distance">Ευθεία Απόσταση</string>
@@ -74,6 +76,10 @@
     <string name="add_to_sequence">Συνδυασμός</string>
     <string name="set_origin">Αρχή</string>
     <string name="set_destination">Προορισμός</string>
+    <string name="fewer_transfers">Λιγότερες Γραμμές</string>
+    <string name="max_walk">Μέγιστη Απόσταση Περπατήματος (m)</string>
+    <string name="walk_speed">Ταχύτητα Περπατήματος Speed (Km/h)</string>
+    <string name="fewer_transfers_summary">Προτιμώ διαδρομές με λιγότερες ανταποκρίσεις</string>
     
     <string name="clear">Διαγραφή όλων</string>
     <string name="remove_last">Διαγραφή τελευταίας</string>
@@ -97,6 +103,7 @@
     <string name="pezh">ΠΕΖΗ</string>
     
     <string name="plan">Αναζήτηση Διαδρομής</string>
+    <string name="compute">Υπολογισμός</string>
     <string name="itineraries">Διαδρομές</string>
     <string name="itinerary">Διαδρομή</string>
     <string name="last_plan">Αποτελέσματα</string>

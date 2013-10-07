@@ -22,6 +22,7 @@ package org.melato.bus.android.app;
 
 import java.util.Locale;
 
+import org.melato.bus.android.PlanOptions;
 import org.melato.bus.android.R;
 import org.melato.bus.android.activity.Pref;
 
@@ -29,16 +30,26 @@ import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.os.Bundle;
+import android.preference.EditTextPreference;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceManager;
+import android.util.Log;
 
 public class BusPreferencesActivity extends PreferenceActivity {
   private String lang;
+  
+  private void setTextSummary(String key, String summary) {
+    EditTextPreference pref = (EditTextPreference) findPreference(key);
+    if ( pref != null) {
+      pref.setSummary(summary);
+    }
+  }
   
   @Override
   protected void onCreate( Bundle savedInstanceState ) 
   {
       super.onCreate( savedInstanceState );
+      addPreferencesFromResource( R.layout.settings_plan );
       addPreferencesFromResource( R.layout.settings );
       
       SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(this);
@@ -47,6 +58,10 @@ public class BusPreferencesActivity extends PreferenceActivity {
   @Override
   protected void onResume() {
     super.onResume();
+    PlanOptions options = new PlanOptions(this);
+
+    setTextSummary(Pref.WALK_SPEED, String.valueOf(Math.round(options.getWalkSpeed())) + " Km/h");
+    setTextSummary(Pref.MAX_WALK_DISTANCE, String.valueOf(Math.round(options.getMaxWalk())) + " m");
   }
   void updateLocale(String lang) {
     Locale locale = new Locale(lang);

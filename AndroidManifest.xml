@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="org.melato.bus.android"
-    android:versionCode="30"
-    android:versionName="2.0" >
+    android:versionCode="33"
+    android:versionName="2.0.3" android:installLocation="auto">
 
     <uses-sdk android:minSdkVersion="8" android:targetSdkVersion="18" />
 
@@ -73,7 +73,7 @@
             android:label="@string/schedule" >
         </activity>        
         <activity
-            android:name=".activity.PlanActivity"
+            android:name=".activity.PlanTabsActivity"
             android:windowSoftInputMode="stateHidden"
             android:label="@string/plan" >
         </activity>
@@ -88,16 +88,8 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".activity.OTPItinerariesActivity"
-            android:label="@string/itineraries" >
-        </activity>
-        <activity
             android:name=".activity.OTPItineraryActivity"
             android:label="@string/itinerary" >
-        </activity>
-        <activity
-            android:name=".activity.PlanResultsActivity"
-            android:label="@string/plan" >
         </activity>
         <activity
             android:name=".map.RouteMapActivity"
@@ -131,10 +123,6 @@
         </activity>
         <activity
             android:name=".app.BusPreferencesActivity"
-            android:label="@string/pref_title" >
-        </activity>
-        <activity
-            android:name=".activity.PlanPreferencesActivity"
             android:label="@string/pref_title" >
         </activity>
         </application>

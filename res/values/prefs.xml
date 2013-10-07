@@ -13,7 +13,7 @@
     <string name="pref_lang_summary">The application language</string>
     <string name="pref_mayor">Display mayor\'s name in municipality info</string>
     <string name="pref_mayor_summary">Display mayor\'s name</string>
-    <string name="appearance">Route Colors</string>
+    <string name="appearance">Appearance</string>
     <string name="route_colors">Route Colors</string>
     <string name="route_colors_summary">The colors used to display routes</string>
 </resources>

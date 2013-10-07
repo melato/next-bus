@@ -11,7 +11,9 @@
     <string name="all_routes">All Routes</string>
     <string name="recent_routes">Recent Routes</string>
     <string name="nearby_routes">Nearby Routes</string>
-    <string name="best_route">Best Route</string>
+    <string name="suggested_routes">Suggested Itineraries</string>
+    <string name="missing_origin">Please select origin</string>
+    <string name="missing_destination">Please select destination</string>
     <string name="schedule">Schedule</string>
     <string name="fast_gps">Fast GPS</string>
     <string name="gps_speed">GPS Updates</string>
@@ -36,8 +38,8 @@
     <string name="ETA">ETA</string>
     <string name="walkETA">ETA by walking</string>
     <string name="bikeETA">ETA by bike</string>
-    <string name="timed_stops">Timed Stops</string>
-    <string name="timed_stop_counts">%1$s before, %2$s after</string>
+    <string name="untimed_stops">Stops without data</string>
+    <string name="stop_counts">%1$s before, %2$s after</string>
     <string name="map">Map</string>
     <string name="browse">Web</string>
     <string name="straight_distance">Straight Distance</string>
@@ -77,6 +79,7 @@
     <string name="fewer_transfers">Fewer Transfers</string>
     <string name="max_walk">Max Walk (m)</string>
     <string name="walk_speed">Walk Speed (Km/h)</string>
+    <string name="fewer_transfers_summary">Prefer itineraries with fewer transfers</string>
     
     <string name="clear">Clear All</string>
     <string name="remove_last">Clear Last</string>
@@ -100,6 +103,7 @@
     <string name="pezh">ΠΕΖΗ</string>
 
     <string name="plan">Trip Planner</string>
+    <string name="compute">Compute</string>
     <string name="itineraries">Itineraries</string>
     <string name="itinerary">Itinerary</string>
     <string name="last_plan">Last Results</string>

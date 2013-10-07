@@ -328,7 +328,9 @@ public class StopContext extends LocationContext {
     properties.add(new RouteDistance());
     properties.add(new DistanceFromStart());
     properties.add(new TimeFromStart());
-    properties.add(R.string.timed_stops, context.getString(R.string.timed_stop_counts, previousStops, followingStops));
+    properties.add(R.string.untimed_stops, context.getString(R.string.stop_counts,
+        previousStops.missingRatio(),
+        followingStops.missingRatio()));
 
     // properties.add( new PathSpeed());
     //properties.add(new Speed60());

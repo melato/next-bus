@@ -22,8 +22,8 @@
         <CheckBoxPreference
             android:defaultValue="true"
             android:key="fewer_transfers"
-            android:summary="@string/fewer_transfers"
-            android:title="@string/fewer_transfers" />
+            android:title="@string/fewer_transfers"
+            android:summary="@string/fewer_transfers_summary"/>
 
         </PreferenceCategory>
 

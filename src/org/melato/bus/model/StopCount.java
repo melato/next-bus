@@ -27,6 +27,9 @@ public class StopCount {
   public String toString() {
     return timedStops + "/" + stops;
   }
+  public String missingRatio() {
+    return (stops-timedStops) + "/" + stops;
+  }
   /** Count the number of stops that are timed within a range of stops.
    * @param stops
    * @param start The first stop to count.  Stop 0 should not be counted, so start from 1.

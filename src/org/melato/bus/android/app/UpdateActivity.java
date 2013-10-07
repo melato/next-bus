@@ -20,6 +20,8 @@
  */
 package org.melato.bus.android.app;
 
+import java.util.List;
+
 import org.melato.android.AndroidLogger;
 import org.melato.android.progress.ActivityProgressHandler;
 import org.melato.android.progress.ProgressTitleHandler;
@@ -43,7 +45,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.text.Html;
-import android.text.method.ScrollingMovementMethod;
+import android.text.method.LinkMovementMethod;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -63,8 +65,38 @@ public class UpdateActivity extends Activity {
     setContentView(R.layout.message);
     TextView noteView = (TextView) findViewById(R.id.note);
     noteView.setText(Html.fromHtml(getResources().getString(messageId)));
-    noteView.setMovementMethod(new ScrollingMovementMethod());    
+    noteView.setMovementMethod(new LinkMovementMethod());    
   }
+  
+  class IndexTask extends AsyncTask<Void,Void,Boolean> {
+    List<UpdateFile> updateFiles;
+    @Override
+    protected Boolean doInBackground(Void... params) {
+      boolean required = updateManager.isRequired();
+      updateFiles = updateManager.getAvailableUpdates();
+      return required;
+    }
+    @Override
+    protected void onPostExecute(Boolean result) {
+      if ( result ) {
+        setTitle(R.string.update_required);
+      }
+      StringBuilder buf = new StringBuilder();
+      for(UpdateFile f: updateFiles) {
+        if ( f.getNote() != null ) {
+          if ( buf.length() > 0 ) {
+            buf.append( "\n" );
+          }
+          buf.append(f.getNote());
+        }
+      }
+      setContentView(R.layout.update);
+      TextView noteView = (TextView) findViewById(R.id.note);
+      noteView.setText(buf.toString());
+    }
+  }
+
+  
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
@@ -81,21 +113,7 @@ public class UpdateActivity extends Activity {
     }
     progress = new ProgressTitleHandler(this);
     updateManager = new UpdateManager(this);
-    if ( updateManager.isRequired() ) {
-      setTitle(R.string.update_required);
-    }
-    StringBuilder buf = new StringBuilder();
-    for(UpdateFile f: updateManager.getAvailableUpdates()) {
-      if ( f.getNote() != null ) {
-        if ( buf.length() > 0 ) {
-          buf.append( "\n" );
-        }
-        buf.append(f.getNote());
-      }
-    }
-    setContentView(R.layout.update);
-    TextView noteView = (TextView) findViewById(R.id.note);
-    noteView.setText(buf.toString());
+    new IndexTask().execute();      
   }
 
   /** Called from the update button */

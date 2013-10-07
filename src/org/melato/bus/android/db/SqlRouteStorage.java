@@ -154,7 +154,7 @@ public class SqlRouteStorage implements RouteStorage, SunsetProvider, HelpStorag
   }
   @Override
   public void applyOtpDefaults(OTPRequest request) {
-    //request.setMinTransferTime(Integer.parseInt(getProperty(PROPERTY_OTP_MIN_TRANSFER_TIME, "300")));
+    request.setMinTransferTime(Integer.parseInt(getProperty(PROPERTY_OTP_MIN_TRANSFER_TIME, "0")));
     request.setMaxTransfers(Integer.parseInt(getProperty(PROPERTY_OTP_MAX_TRANSFERS, "5")));
   }  
 
