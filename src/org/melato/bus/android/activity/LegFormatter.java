@@ -30,16 +30,18 @@ import android.content.Context;
 public class LegFormatter {
   public static String label(LegAdapter leg, Context context) {
     StringBuilder buf = new StringBuilder();
-    if ( ! leg.isWalk()) {
+    if ( leg.isTransit()) {
       buf.append(leg.getLabel());
       buf.append(" ");
       buf.append(Schedule.formatTime(leg.getStartTime() / 60));
       buf.append(" ");
       buf.append(leg.getFromName());
-      buf.append(" -> ");
-      buf.append(Schedule.formatTime(leg.getEndTime() / 60));
-      buf.append(" ");
-      buf.append(leg.getToName());
+      if ( leg.hasEnd()) {
+        buf.append(" -> ");
+        buf.append(Schedule.formatTime(leg.getEndTime() / 60));
+        buf.append(" ");
+        buf.append(leg.getToName());
+      }
       int diffTime = leg.getDiffTime();
       if ( diffTime >= 0 ) {
         buf.append(" (");

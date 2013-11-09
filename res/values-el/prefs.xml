@@ -13,6 +13,8 @@
     <string name="pref_lang_summary">Η γλώσσα της εφαρμογής</string>
     <string name="pref_mayor">Όνομα δημάρχου</string>
     <string name="pref_mayor_summary">Εμφανίζει το όνομα του δήμαρχου στις πληροφορίες των δήμων</string>
+    <string name="min_transfer_time">Ελάχιστος χρόνος ανταπόκρισης</string>
+    <string name="min_transfer_time_summary">%1$d\' ελάχιστος χρόνος ανταπόκρισης, σε λεπτά.</string>    
     <string name="appearance">Εμφάνιση</string>
     <string name="route_colors">Χρώματα Γραμμών</string>
     <string name="route_colors_summary">Τα χρώμματα που χρησιμοποιούνται στη λίστα γραμμών.</string>

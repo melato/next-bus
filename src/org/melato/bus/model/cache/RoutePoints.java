@@ -24,6 +24,9 @@ import java.util.List;
 
 import org.melato.gps.Point2D;
 
+/** A compact way of representing the coordinates of all the stops in a route.
+ * Used to cache route shapes and draw them on a map.
+ * */
 public class RoutePoints {
   private float[] lat;
   private float[] lon;
@@ -69,10 +72,10 @@ public class RoutePoints {
   public Point2D getCenter() {
     return new Point2D(mean(lat), mean(lon));    
   }
-  public boolean isInside(int i, float latMin, float latMax, float lonMin, float lonMax) {
+  public boolean isInside(int i, GpsRectangle r) {
     float lat = this.lat[i];
     float lon = this.lon[i];
-    return latMin < lat && lat < latMax && lonMin < lon && lon < lonMax;     
+    return r.latMin < lat && lat < r.latMax && r.lonMin < lon && lon < r.lonMax;     
   }
   
   public RoutePoints(float[] lat, float[] lon) {

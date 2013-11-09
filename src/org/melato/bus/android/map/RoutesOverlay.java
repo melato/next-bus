@@ -33,6 +33,7 @@ import org.melato.bus.android.activity.UI;
 import org.melato.bus.model.Route;
 import org.melato.bus.model.RouteId;
 import org.melato.bus.model.RouteManager;
+import org.melato.bus.model.cache.GpsRectangle;
 import org.melato.bus.model.cache.RoutePoints;
 import org.melato.gps.Point2D;
 
@@ -52,18 +53,12 @@ import com.google.android.maps.Projection;
  * @author Alex Athanasopoulos
  */
 public class RoutesOverlay extends BaseRoutesOverlay {
-  private RouteManager routeManager;
   private float latDiff; 
   private float lonDiff;
-  /** The minimum displayed latitude */
-  private float latMin;
-  /** The maximum displayed latitude */
-  private float latMax;
-  /** The minimum displayed longitude */
-  private float lonMin;
-  /** The maximum displayed longitude */
-  private float lonMax;
-  /** The routes currently displayed. */
+
+  private GpsRectangle boundaries;
+  
+  private RouteManager routeManager;
   private List<RouteId> routes = new ArrayList<RouteId>();
   private RoutePointManager routePointManager;
   /** The single route that is displayed more prominently. */
@@ -74,6 +69,15 @@ public class RoutesOverlay extends BaseRoutesOverlay {
   private Map<RouteId,Route> routeIndex;
   private Context context;
 
+  private void findBoundaries(MapView view) {
+    int latSpan = view.getLatitudeSpan();
+    int lonSpan = view.getLongitudeSpan();
+    latDiff = ((float) latSpan) / 1E6f / 2; 
+    lonDiff = ((float) lonSpan) / 1E6f / 2;
+    boundaries = RoutePlotter.findBoundaries(view);
+    }    
+  
+  
 	public RoutesOverlay(Context context) {
     super();
     routeManager = Info.routeManager(context);
@@ -97,64 +101,19 @@ public class RoutesOverlay extends BaseRoutesOverlay {
 	  selectedPoint = point;
   }
 
-  private void findBoundaries(MapView view) {
-    int latSpan = view.getLatitudeSpan();
-    int lonSpan = view.getLongitudeSpan();
-    latDiff = ((float) latSpan) / 1E6f / 2; 
-    lonDiff = ((float) lonSpan) / 1E6f / 2;
-    GeoPoint center = view.getMapCenter();
-    latMin = (center.getLatitudeE6() - latSpan / 2)/1e6f;
-    latMax = (center.getLatitudeE6() + latSpan / 2)/1e6f;
-    lonMin = (center.getLongitudeE6() - lonSpan / 2)/1e6f;
-    lonMax = (center.getLongitudeE6() + lonSpan / 2)/1e6f;
-	}
-	
 	public void refresh(MapView view) {
 	  selectedRoute = null;
-    routes = new ArrayList<RouteId>();
-    GeoPoint center = view.getMapCenter();
-    routeManager.iterateNearbyRoutes(GMap.point(center), latDiff, lonDiff, routes);
+      routes = new ArrayList<RouteId>();
+      GeoPoint center = view.getMapCenter();
+      routeManager.iterateNearbyRoutes(GMap.point(center), latDiff, lonDiff, routes);
 	}
 	
 	List<RouteId> getMapRoutes(MapView view) {
     return routes;
 	}
 	
-	private static GeoPoint getGeoPoint(RoutePoints points, int i) {
-	  return new GeoPoint((int) (1e6f*points.getLat(i)), (int)(1e6f*points.getLon(i)));
-	}
-	
-  Path getPath(Projection projection, RoutePoints points) {
-    Path path = new Path();
-    int size = points.size();
-    if ( size == 0 )
-      return path;
-    Point p = new Point();
-    boolean previousInside = false;
-    projection.toPixels(getGeoPoint(points, 0), p);
-    path.moveTo(p.x, p.y);
-    for( int i = 0; i < size; i++ ) {
-      boolean inside = points.isInside(i, latMin, latMax, lonMin, lonMax);
-      if ( previousInside ) {
-        // draw from previous point
-        projection.toPixels(getGeoPoint(points, i), p);
-        path.lineTo(p.x, p.y );
-      } else if ( inside && i > 0 ) {
-        projection.toPixels(getGeoPoint(points, i-1), p);
-        path.moveTo(p.x, p.y );          
-        projection.toPixels(getGeoPoint(points, i), p);
-        path.lineTo(p.x, p.y );
-      } else {
-        // do nothing
-        // segment is outside the view area or we are at the beginning            
-      }
-      previousInside = inside;
-    }
-    return path;
-  }
-	
   void drawPath(Canvas canvas, Paint paint, Projection projection, RoutePoints route ) {
-    Path path = getPath(projection, route);
+    Path path = RoutePlotter.getPath(projection, route, boundaries);
     canvas.drawPath(path, paint);    
   }
 
@@ -241,7 +200,7 @@ public class RoutesOverlay extends BaseRoutesOverlay {
         
         if ( routeId.equals(selectedRoute) && points.size() > 0 ) {
           Point p = new Point();
-          projection.toPixels(getGeoPoint(points, 0), p);
+          projection.toPixels(RoutePlotter.getGeoPoint(points, 0), p);
           drawStart(canvas, p, paint);      
         }
       }

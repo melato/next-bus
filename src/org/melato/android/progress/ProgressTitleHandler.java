@@ -49,7 +49,6 @@ public class ProgressTitleHandler extends ActivityProgressHandler {
   @Override
   public void updateUI() {
     if ( limit == 0 || position >= limit - 1 || isCanceled() ) {      
-      Log.i( "melato.org", "end progress" );
       end();
     } else {
       activity.setProgressBarVisibility(true);

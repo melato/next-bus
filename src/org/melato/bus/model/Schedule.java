@@ -28,7 +28,6 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
 
-import org.melato.log.Log;
 import org.melato.util.DateId;
 
 
@@ -199,7 +198,6 @@ public class Schedule {
   }
   
   public List<RouteException> getExceptions(ScheduleId scheduleId) {
-    Log.info("exceptions: " + exceptions.size());
     if ( exceptions.isEmpty() ) {
       return exceptions;
     }
@@ -207,7 +205,6 @@ public class Schedule {
     if ( bitmap == 0 ) {
       
     }
-    Log.info("bitmap: " + bitmap);
     List<RouteException> result = new ArrayList<RouteException>();
     for(RouteException exception: exceptions) {
       if ( (exception.getDays() & bitmap) != 0) {

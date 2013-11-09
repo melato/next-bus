@@ -28,7 +28,9 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipException;
 import java.util.zip.ZipFile;
@@ -55,22 +57,25 @@ public class PortableUpdateManager {
   
   private File  filesDir;
   private URL   indexUrl;
+  
+  private Set<String> missingFiles = new HashSet<String>();
+  
     
   public PortableUpdateManager(URL indexUrl, File filesDir) {
-    super();
+    this();
     setIndexUrl(indexUrl);
     setFilesDir(filesDir);
   }
 
   public PortableUpdateManager(String indexUrl, File filesDir) {
-    super();
+    this();
     setIndexUrl(indexUrl);
     setFilesDir(filesDir);
   }
 
-  protected PortableUpdateManager() {    
+  protected PortableUpdateManager() {
+    Log.info("PortableUpdateManager()");
   }
-  
   
   protected void setFilesDir(File filesDir) {
     this.filesDir = filesDir;
@@ -95,7 +100,7 @@ public class PortableUpdateManager {
       try {
         ReflectionHandler<UpdateFile> reader = new FieldHandler<UpdateFile>(UpdateFile.class, collector);    
         reader.parse(UPDATES_TAG + "/" + FILE_TAG, new FileInputStream(file));
-        Log.info( "readIndex size=" + collector.size());
+        //Log.info( "readIndex size=" + collector.size());
         return true;
       } catch(Exception e) {
         file.delete();
@@ -145,12 +150,16 @@ public class PortableUpdateManager {
   private void downloadAvailable() throws IOException {
     File file = new File(filesDir, AVAILABLE);
     Streams.copy(indexUrl, file);
-    Log.info( indexUrl );
+    //Log.info( indexUrl );
   }
   
   /** If the list of available updates is empty, check once a week. */
   private int DEFAULT_FREQUENCY_HOURS = 24 * 7;
   
+  public void addMissingFile(String name) {
+    missingFiles.add(name);
+    Log.info("addMissing: " + name);
+  }
   /**
    * Return true if any of the updates in the list needs to be rechecked relative 
    * If 
@@ -167,7 +176,7 @@ public class PortableUpdateManager {
       hasFiles = true;
       long expires = lastUpdateTime + f.getFrequencyHours() * 3600 * 1000L;
       //expires = lastUpdateTime + 10;  // *****  DEBUG *****
-      Log.info( "refresh now: " + now + " last: " + lastUpdateTime + " expires: " + expires + " hours: " + f.getFrequencyHours() );
+      //Log.info( "refresh now: " + now + " last: " + lastUpdateTime + " expires: " + expires + " hours: " + f.getFrequencyHours() );
       if ( expires < now ) {
         needsRefresh = true;
         break;
@@ -176,13 +185,20 @@ public class PortableUpdateManager {
     if ( ! hasFiles ) {
       needsRefresh = lastUpdateTime + DEFAULT_FREQUENCY_HOURS * 3600 * 1000L < now;
     }
-    Log.info( "needsRefresh: " + needsRefresh );
+    //Log.info( "needsRefresh: " + needsRefresh );
     return needsRefresh;
   }
 
   public boolean isRequired() {
-    return isFirstTime();
-  }
+    if ( isFirstTime()) {
+      return true;
+    }
+    if ( ! missingFiles.isEmpty()) {
+      forceUpdates();
+      return true;
+    }
+    return false;
+  }  
     
   public boolean isFirstTime() {
     File file = new File(filesDir, AVAILABLE);
@@ -200,9 +216,12 @@ public class PortableUpdateManager {
   public boolean needsRefresh() {
     availableFiles = new ArrayList<UpdateFile>();
     File file = new File(filesDir, AVAILABLE);
-    Log.info( file );
+    //Log.info( file );
     if ( file.exists() ) {
       readIndex(AVAILABLE, availableFiles);
+      if ( ! missingFiles.isEmpty()) {
+        return true;
+      }
       return needsRefresh(availableFiles, file.lastModified());
     } else {
       availableFiles = null;
@@ -219,15 +238,15 @@ public class PortableUpdateManager {
    * In all cases, the available updates will be not-null.
    */
   private void initAvailable() {
-    Log.info("initAvailable availableFiles=" + availableFiles );
+    //Log.info("initAvailable availableFiles=" + availableFiles );
     if ( availableFiles == null && needsRefresh() ) {
       availableFiles = new ArrayList<UpdateFile>();
       File file = new File(filesDir, AVAILABLE);
-      Log.info( file );
+      //Log.info( file );
       try {
         downloadAvailable();
       } catch (IOException e) {
-        Log.info(e);
+        //Log.info(e);
       }
       if ( file.exists() ) {
         readIndex(AVAILABLE, availableFiles);
@@ -275,14 +294,22 @@ public class PortableUpdateManager {
     initInstalled();
     List<UpdateFile> updates = new ArrayList<UpdateFile>();
     for(UpdateFile available: availableFiles ) {
-      Log.info( available );
       String version = available.getVersion();
       if ( version == null ) {
         System.err.println( "Missing version from available update: " + available.getName());
         continue;
       }
-      UpdateFile installed = findFile(installedFiles, available.getName());
-      if ( installed == null || ! version.equals(installed.getVersion())) {
+      boolean update = false;
+      if ( missingFiles.contains(available.getName())) {
+        update = true;
+      } else {
+        UpdateFile installed = findFile(installedFiles, available.getName());
+        if ( installed == null || ! version.equals(installed.getVersion())) {
+          update = true;
+        }
+      }
+      Log.info( available + ": " + update );
+      if ( update ) {
         updates.add(available);
       }
     }
@@ -320,7 +347,7 @@ public class PortableUpdateManager {
   
   public void updateFile(UpdateFile updateFile, File destinationFile) {
     File tmpFile = getTempFile(destinationFile, ".tmp");
-    Log.info("update file: " + destinationFile);
+    //Log.info("update file: " + destinationFile);
     URL url;
     try {
       url = getURL(updateFile.getUrl());
@@ -338,30 +365,25 @@ public class PortableUpdateManager {
     }    
   }
 
-  public void updateZipedFile(UpdateFile updateFile, String zipEntry, File destinationFile) {
-    Log.info("update zip file: " + destinationFile);
+  public void updateZipedFile(UpdateFile updateFile, String zipEntry, File destinationFile)
+      throws IOException {
+    //Log.info("update zip file: " + destinationFile);
     destinationFile.getParentFile().mkdirs();
     File zipFile = getTempFile(destinationFile, ".zip");
     File tmpFile = getTempFile(destinationFile, ".tmp");
     URL url;
-    try {
-      url = getURL(updateFile.getUrl());
-      int size = updateFile.getSize();
-      if ( size != 0 ) {
-        ProgressGenerator.get().setLimit(size);
-      }        
-      Streams.copy(url, zipFile);
-      unzip( zipFile, zipEntry, tmpFile);
-      zipFile.delete();
-      tmpFile.renameTo(destinationFile);
-      setInstalled(updateFile);
-    } catch (MalformedURLException e) {
-      throw new RuntimeException( e );
-    } catch (IOException e) {
-      throw new RuntimeException( e );
-    }    
+    url = getURL(updateFile.getUrl());
+    int size = updateFile.getSize();
+    if ( size != 0 ) {
+      ProgressGenerator.get().setLimit(size);
+    }        
+    Streams.copy(url, zipFile);
+    unzip( zipFile, zipEntry, tmpFile);
+    zipFile.delete();
+    tmpFile.renameTo(destinationFile);
+    setInstalled(updateFile);
   }
 
-  public void update(List<UpdateFile> updates) {}
+  public void update(List<UpdateFile> updates) throws IOException {}
  
 }

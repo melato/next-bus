@@ -31,7 +31,13 @@ public class PlanOptions {
   private int maxWalk;
   private float walkSpeed;
   private boolean fewerTransfers;
+  private int minTransferSeconds;
   
+  /** Get the minimum transfer time, in seconds */
+  public int getMinTransferTime() {
+    return minTransferSeconds;
+  }
+    
   /** Get the walk speed in m/s */
   public float getWalkSpeedMetric() {
     return walkSpeed * 1000f / 3600f;
@@ -86,6 +92,8 @@ public class PlanOptions {
     SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(context);
     maxWalk = getInt(settings, Pref.MAX_WALK_DISTANCE, 1000);
     walkSpeed = getFloat(settings, Pref.WALK_SPEED, 5.0f);
+    int minTransferMinutes = getInt(settings, Pref.MIN_TRANSFER_TIME, 3);
+    minTransferSeconds = minTransferMinutes * 60;
     fewerTransfers = getBoolean(settings, Pref.FEWER_TRANSFERS, true);    
   }
 }

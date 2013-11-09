@@ -1,5 +1,5 @@
 /*-------------------------------------------------------------------------
- * Copyright (c) 2012,2013, Alex Athanasopoulos.  All Rights Reserved.
+ * Copyright (c) 2012,2013 Alex Athanasopoulos.  All Rights Reserved.
  * alex@melato.org
  *-------------------------------------------------------------------------
  * This file is part of Athens Next Bus
@@ -18,18 +18,15 @@
  * along with Athens Next Bus.  If not, see <http://www.gnu.org/licenses/>.
  *-------------------------------------------------------------------------
  */
-package org.melato.bus.plan;
+package org.melato.bus.android.map;
 
-public interface LegAdapter {
-  String getLabel();    
-  String getFromName();
-  String getToName();
-  int getStartTime();
-  int getEndTime();
-  int getDuration();
-  
-  int getDiffTime();
-  float getDistance();
-  boolean isTransit();
-  boolean hasEnd();
+import java.util.List;
+
+import org.melato.bus.model.Route;
+
+import com.google.android.maps.GeoPoint;
+
+public class RoutePath {
+  public Route route;
+  public List<GeoPoint> points;
 }

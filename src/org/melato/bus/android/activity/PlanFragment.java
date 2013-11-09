@@ -266,6 +266,7 @@ public class PlanFragment extends Fragment implements OnClickListener, OnTimeSet
     request.setMaxWalkDistance(options.getMaxWalk());
     request.setWalkSpeed(options.getWalkSpeedMetric());
     request.setMin(options.isFewerTransfers() ? OTPRequest.OPT_TRANSFERS : OTPRequest.OPT_QUICK);
+    request.setMinTransferTime(options.getMinTransferTime());
     return request;
   }
 

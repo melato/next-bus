@@ -19,6 +19,13 @@
            android:defaultValue="5"
            android:inputType="number"
            android:singleLine="true" />
+        <EditTextPreference
+           android:key="min_transfer_minutes"
+           android:title="@string/min_transfer_time"
+           android:summary="@string/min_transfer_time_summary"
+           android:defaultValue="3"
+           android:inputType="number"
+           android:singleLine="true" />
         <CheckBoxPreference
             android:defaultValue="true"
             android:key="fewer_transfers"

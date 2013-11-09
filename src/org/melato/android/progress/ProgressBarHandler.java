@@ -47,8 +47,6 @@ public class ProgressBarHandler extends ActivityProgressHandler {
     super(activity);
     progressBar = (ProgressBar) activity.findViewById(progressBarId);
     status = (TextView) activity.findViewById(textViewId);
-    Log.i( "melato.org", "progressBar: " + progressBar );
-    Log.i( "melato.org", "status: " + status );
   }
   
   public void setCancelButton(Button button) {

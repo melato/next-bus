@@ -3,6 +3,9 @@
     <item android:id="@+id/schedule"
           android:icon="@drawable/schedule"                  
           android:title="@string/schedule" />
+    <item android:id="@+id/map"
+          android:icon="@drawable/map"                  
+          android:title="@string/map" />
     <item android:id="@+id/clear"
           android:icon="@drawable/clear"                  
           android:title="@string/clear" />

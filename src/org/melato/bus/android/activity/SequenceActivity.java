@@ -26,6 +26,7 @@ import java.util.List;
 import org.melato.bus.android.Info;
 import org.melato.bus.android.R;
 import org.melato.bus.android.app.HelpActivity;
+import org.melato.bus.android.map.SequenceMapActivity;
 import org.melato.bus.client.Formatting;
 import org.melato.bus.model.Route;
 import org.melato.bus.model.RouteManager;
@@ -206,6 +207,10 @@ public class SequenceActivity extends ListActivity {
         break;
       case R.id.schedule:
         startActivity(new Intent(this, SequenceScheduleActivity.class));
+        handled = true;
+        break;
+      case R.id.map:
+        SequenceActivities.showMap(this, sequence);
         handled = true;
         break;
     }

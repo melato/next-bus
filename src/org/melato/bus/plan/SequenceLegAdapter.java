@@ -22,6 +22,7 @@ package org.melato.bus.plan;
 
 import org.melato.bus.model.Route;
 import org.melato.bus.model.RouteManager;
+import org.melato.bus.model.Stop;
 
 public class SequenceLegAdapter implements LegAdapter {
   private SequenceItinerary.Leg leg;
@@ -55,7 +56,12 @@ public class SequenceLegAdapter implements LegAdapter {
 
   @Override
   public String getToName() {
-    return transit.leg.getStop2().getName();
+    Stop stop2 = transit.leg.getStop2();
+    if ( stop2 != null ) {
+      return stop2.getName();
+    } else {
+      return "";
+    }
   }
 
   @Override
@@ -84,8 +90,13 @@ public class SequenceLegAdapter implements LegAdapter {
   }
 
   @Override
-  public boolean isWalk() {
-    return walk != null;
+  public boolean isTransit() {
+    return transit != null;
+  }
+
+  @Override
+  public boolean hasEnd() {
+    return transit == null || transit.leg.getStop2() != null;
   }
 }
 

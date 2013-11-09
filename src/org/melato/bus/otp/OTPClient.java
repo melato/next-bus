@@ -28,7 +28,6 @@ import java.util.List;
 
 import org.melato.bus.client.Formatting;
 import org.melato.bus.otp.OTP.Plan;
-import org.melato.log.Log;
 import org.melato.update.Streams;
 
 /** Interfaces with the Open Trip Planner server, via HTTP.
@@ -90,9 +89,7 @@ public class OTPClient implements OTP.Planner {
   @Override
   public Plan plan(OTPRequest request) throws Exception {
     URL url = new URL(this.url + "?" + OTPClient.queryString(request));
-    Log.info(url);
     String data = Streams.copyToString(url);
-    Log.info("data.length: " + data.length());
     OTP.Plan otp = OTPParser.parse(data);
     otp.postParse();
     return otp;

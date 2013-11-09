@@ -1,5 +1,5 @@
 /*-------------------------------------------------------------------------
- * Copyright (c) 2012,2013, Alex Athanasopoulos.  All Rights Reserved.
+ * Copyright (c) 2012,2013 Alex Athanasopoulos.  All Rights Reserved.
  * alex@melato.org
  *-------------------------------------------------------------------------
  * This file is part of Athens Next Bus
@@ -18,18 +18,41 @@
  * along with Athens Next Bus.  If not, see <http://www.gnu.org/licenses/>.
  *-------------------------------------------------------------------------
  */
-package org.melato.bus.plan;
+package org.melato.bus.android.map;
 
-public interface LegAdapter {
-  String getLabel();    
-  String getFromName();
-  String getToName();
-  int getStartTime();
-  int getEndTime();
-  int getDuration();
+import java.util.AbstractList;
+
+import org.melato.bus.model.cache.RoutePoints;
+
+import com.google.android.maps.GeoPoint;
+
+public class RoutePointsGeoPointList extends AbstractList<GeoPoint> {
+  private RoutePoints points;
+  private int offset;
+  private int size;
   
-  int getDiffTime();
-  float getDistance();
-  boolean isTransit();
-  boolean hasEnd();
+  public RoutePointsGeoPointList(RoutePoints points) {
+    super();
+    this.points = points;
+    offset = 0;
+    size = points.size();
+  }
+
+  public RoutePointsGeoPointList(RoutePoints points, int stop1, int stop2) {
+    super();
+    this.points = points;
+    offset = stop1;
+    size = stop2 - stop1 + 1;
+  }
+
+  @Override
+  public GeoPoint get(int index) {
+    return RoutePlotter.getGeoPoint(points, offset + index);
+  }
+
+  @Override
+  public int size() {
+    return size;
+  }
+
 }

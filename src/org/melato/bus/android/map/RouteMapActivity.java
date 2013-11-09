@@ -55,7 +55,7 @@ public class RouteMapActivity extends MapActivity {
   private BaseRoutesOverlay routesOverlay;
   private boolean isShowingAll;
   private String title;
-  private static int defaultZoom = 15;
+  static int defaultZoom = 15;
   private Route route;
   
   @Override

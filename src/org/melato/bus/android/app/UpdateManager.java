@@ -21,6 +21,7 @@
 package org.melato.bus.android.app;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.List;
 
 import org.melato.bus.android.Info;
@@ -43,30 +44,26 @@ public class UpdateManager extends PortableUpdateManager {
     this.context = context;
     setIndexUrl(context.getResources().getString(R.string.update_url));
     setFilesDir(context.getFilesDir());
+    if ( ! Info.isValidDatabase(context) ) {
+      addMissingFile(ROUTES_UPDATE);
+    }
   }
   
-  public void update(List<UpdateFile> updates) {
+  public void update(List<UpdateFile> updates) throws IOException {
     ProgressGenerator progress = ProgressGenerator.get();
     for( UpdateFile f: updates ) {
       if ( ROUTES_UPDATE.equals(f.getName())) {
         File databaseFile = SqlRouteStorage.databaseFile(context);
         progress.setText(context.getString(R.string.routes_database));
         updateZipedFile(f, ROUTES_ENTRY, databaseFile);
+        // delete the previous file, which may be at a different location
+        // if it was created with app version <= 33 
+        File oldFile = new File(context.getFilesDir(), SqlRouteStorage.DATABASE_NAME);
+        if ( ! databaseFile.equals(oldFile)) {
+          oldFile.delete();
+        }        
         continue;
       }
     }
   }
-
-  @Override
-  public boolean isRequired() {
-    if ( super.isRequired() )
-      return true;
-    if ( ! Info.isValidDatabase(context) ) {
-      forceUpdates();
-      return true;
-    }
-    return false;
-  }
-  
-  
 }

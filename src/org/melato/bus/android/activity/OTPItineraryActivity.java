@@ -43,9 +43,8 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-/** Displays a single OTP itinerary */
+/** Displays a single OTP itinerary as a list of legs. */
 public class OTPItineraryActivity extends ListActivity {
-  public static String ITINERARY = "itinerary";
   private OTP.Itinerary itinerary;
 
 /** Called when the activity is first created. */
@@ -53,7 +52,7 @@ public class OTPItineraryActivity extends ListActivity {
   public void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     Intent intent = getIntent();
-    itinerary = (OTP.Itinerary) intent.getSerializableExtra(ITINERARY);
+    itinerary = (OTP.Itinerary) intent.getSerializableExtra(Keys.ITINERARY);
     setListAdapter(new ItineraryAdapter());
   }
 
@@ -93,12 +92,17 @@ public class OTPItineraryActivity extends ListActivity {
       toast.show();    
     }
   }
+
   @Override
   public boolean onOptionsItemSelected(MenuItem item) {
     boolean handled = false;
     switch(item.getItemId()) {
       case R.id.sequence:
         showSequence();
+        handled = true;
+        break;
+      case R.id.map:
+        SequenceActivities.showMap(this, itinerary);
         handled = true;
         break;
     }

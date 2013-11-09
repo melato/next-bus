@@ -119,7 +119,7 @@ public class SequenceScheduleActivity extends Activity implements OnItemClickLis
     SequenceInstance instance = instances.get(position);
     SequenceItinerary itinerary = instance.getItinerary();
     Intent intent = new Intent(this, SequenceInstanceActivity.class);
-    intent.putExtra(SequenceInstanceActivity.KEY_ITINERARY, itinerary);
+    intent.putExtra(Keys.ITINERARY, itinerary);
     startActivity(intent);
   }
   

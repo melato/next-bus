@@ -31,6 +31,7 @@ import org.melato.bus.android.activity.HomeActivity;
 import org.melato.log.Log;
 import org.melato.progress.CanceledException;
 import org.melato.progress.ProgressGenerator;
+import org.melato.update.PortableUpdateManager;
 import org.melato.update.UpdateFile;
 
 import android.app.Activity;
@@ -51,9 +52,10 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+/** The activity that performs database updates. */
 public class UpdateActivity extends Activity {
   public static final String ACCEPTED_TERMS = "accepted_terms";
-  private UpdateManager updateManager;
+  private PortableUpdateManager updateManager;
   private ActivityProgressHandler progress;
   private enum MessageState {
     TERMS,
@@ -68,6 +70,7 @@ public class UpdateActivity extends Activity {
     noteView.setMovementMethod(new LinkMovementMethod());    
   }
   
+  /** background task for retrieving the list of available updates. */
   class IndexTask extends AsyncTask<Void,Void,Boolean> {
     List<UpdateFile> updateFiles;
     @Override
@@ -251,7 +254,6 @@ public class UpdateActivity extends Activity {
      */
     public boolean checkUpdates() {
       if ( updateManager.isRequired() ) {
-        Log.info("update required");
         // assume that we have not data.  We have to update or die.
         startUpdateActivity();
         return false;

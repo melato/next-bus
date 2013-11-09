@@ -56,7 +56,6 @@ public class HelpActivity extends Activity {
     String name = getIntent().getStringExtra(KEY_NAME);
     if (name != null) {
       String lang = getResources().getConfiguration().locale.getLanguage();
-      Log.info("help lang=" + lang);
       return db.loadHelpByName(name, lang);
     }
     Uri uri = getIntent().getData();

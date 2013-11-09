@@ -20,6 +20,7 @@
  */
 package org.melato.bus.android.activity;
 
+import org.melato.bus.android.Info;
 import org.melato.bus.android.R;
 import org.melato.bus.model.Schedule;
 import org.melato.bus.otp.OTP;
@@ -62,14 +63,9 @@ public class OTPItinerariesFragment extends Fragment implements OnItemClickListe
     }
   }
 
-
-
   @Override
   public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-    OTP.Itinerary itinerary = plan.itineraries[position];
-    Intent intent = new Intent(getActivity(), OTPItineraryActivity.class);
-    intent.putExtra(OTPItineraryActivity.ITINERARY, itinerary);
-    startActivity(intent);
+    SequenceActivities.showItinerary(getActivity(), plan.itineraries[position]);
   }
 
   public void itineraryTimes(OTP.Itinerary itinerary, StringBuilder buf) {
